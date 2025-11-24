@@ -1,11 +1,9 @@
 import { Routes } from '@angular/router';
 
-import { WelcomePage } from './welcome.page';
-
 export const routes: Routes = [
   {
     path: '',
-    component: WelcomePage,
+    loadChildren: () => import('./pages/welcome/welcome.routes').then((m) => m.routes)
   },
   {
     path: 'tabs',

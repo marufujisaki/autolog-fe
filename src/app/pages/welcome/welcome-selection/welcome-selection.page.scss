@@ -1,0 +1,62 @@
+@use "../../../../theme/variables.scss" as v;
+
+.center {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+h2 {
+  text-align: center;
+  margin: 12px 0;
+}
+.subtitle {
+  text-align: center;
+  margin-bottom: 40px;
+}
+.card-list {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+auto-card {
+  cursor: pointer;
+}
+auto-card p {
+  color: v.$gray-text-color;
+  font-size: 9px;
+  font-weight: 400;
+}
+ion-button {
+  margin: 12px 0;
+}
+
+.button-row {
+  margin-top: 100px;
+  position: absolute;
+  bottom: 24px;
+  left: 0;
+  right: 0;
+  p {
+    text-align: center;
+    color: v.$body-color;
+    font-weight: 500;
+    font-size: 14px;
+  }
+}
+
+
+
+@media screen and (max-width: 575px) {
+  .button-row {
+    width: 80%;
+  }
+}
+
+@media screen and (min-width: 576px) {
+  .button-row {
+    min-width: 300px;
+  }
+}

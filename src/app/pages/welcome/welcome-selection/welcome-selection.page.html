@@ -1,0 +1,25 @@
+<ion-content fullscreen scroll-y="false">
+  <ion-grid class="center">
+    <ion-row>
+      <ion-col size="12">
+        <h2 class="title">
+          Bienvenido a Auto<span class="text-blue">Log</span>
+        </h2>
+        <p class="subtitle">Cuéntanos quién eres para empezar.</p>
+        @for (user of userTypes; track $index) {
+        <auto-card [title]="user.title" [icon]="user.icon">
+          <p>{{ user.description }}</p>
+        </auto-card>
+        }
+      </ion-col>
+    </ion-row>
+    <ion-row class="button-row">
+      <ion-col size="12">
+        <auto-button routerLink="/features" variant="primary" type="button"
+          >Continuar</auto-button
+        >
+        <p>Ya tienes una cuenta? <span class="link">Iniciar Sesión</span></p>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>

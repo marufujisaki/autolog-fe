@@ -1,0 +1,27 @@
+.primary {
+  font-size: 20px;
+  font-weight: 700;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  --background: var(--ion-color-primary);
+  --color: #fff;
+  --border-radius: 40px;
+}
+
+.secondary {
+  font-size: 0.95rem;
+  padding: 0.5em 1.5em;
+  --background: var(--ion-color-light);
+  --color: var(--ion-color-primary);
+  --border-radius: 8px;
+  display: flex;
+  align-items: center;
+}
+
+.icon-left {
+  margin-right: 0.5em;
+  width: 1.2em;
+  height: 1.2em;
+  vertical-align: middle;
+}

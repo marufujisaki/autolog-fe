@@ -1,3 +1,28 @@
+@use "theme/variables.scss" as v;
+
+/* Import Montserrat and Inter from Google Fonts */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Montserrat:wght@400;700&display=swap");
+
+/* Set Inter as the default font */
+body,
+html,
+ion-app,
+ion-content {
+  font-family: "Inter", Arial, Helvetica, sans-serif;
+}
+
+/* Utility class for Montserrat font */
+.font-montserrat {
+  font-family: "Montserrat", Arial, Helvetica, sans-serif !important;
+}
+
+:root {
+  --ion-font-family: "Inter", Arial, Helvetica, sans-serif;
+
+  --ion-font-family-ios: var(--ion-font-family);
+  --ion-font-family-md: var(--ion-font-family);
+}
+
 /*
  * App Global CSS
  * ----------------------------------------------------------------------------
@@ -34,4 +59,27 @@
 
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
-@import '@ionic/angular/css/palettes/dark.system.css';
+@import "@ionic/angular/css/palettes/dark.system.css";
+
+.title {
+  font-size: 24px;
+  font-weight: 700;
+  color: v.$text-color;
+}
+
+.subtitle {
+  font-size: 14px;
+  font-weight: 400;
+  color: v.$gray-text-color;
+}
+
+.text-blue {
+  color: v.$primary-color;
+}
+
+.link {
+  color: v.$primary-color;
+  text-decoration: none;
+  cursor: pointer;
+  font-weight: 600;
+}

@@ -1,0 +1,12 @@
+<ion-button
+  [ngClass]="variant"
+  [type]="type"
+  [disabled]="disabled"
+  [routerLink]="routerLink"
+  [routerDirection]="routerDirection"
+>
+  @if(variant === 'secondary' && icon) {
+  <lucide-icon [img]="icon" class="icon-left"></lucide-icon>
+  }
+  <ng-content></ng-content>
+</ion-button>

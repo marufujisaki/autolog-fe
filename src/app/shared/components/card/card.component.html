@@ -1,0 +1,12 @@
+<ion-card>
+  <div class="icon">
+    @if (icon) {
+    <lucide-angular [img]="icon" [color]="iconColor" class="lucide-custom"></lucide-angular>
+    }
+  </div>
+
+  <ion-card-content class="body">
+    <h4>{{ title }}</h4>
+    <ng-content></ng-content>
+  </ion-card-content>
+</ion-card>
