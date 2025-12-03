@@ -21,7 +21,11 @@
     </ion-row>
     <ion-row class="button-row">
       <ion-col size="12">
-        <auto-button routerLink="/features" variant="primary" type="button"
+        <auto-button
+          routerLink="/features"
+          variant="primary"
+          type="button"
+          [disabled]="!selectedUserTypeId"
           >Continuar</auto-button
         >
         <p>Ya tienes una cuenta? <span class="link">Iniciar Sesión</span></p>

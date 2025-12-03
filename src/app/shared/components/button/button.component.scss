@@ -1,3 +1,5 @@
+@use "../../../../theme/variables.scss" as v;
+
 .primary {
   font-size: 20px;
   font-weight: 700;
@@ -7,6 +9,10 @@
   --background: var(--ion-color-primary);
   --color: #fff;
   --border-radius: 40px;
+}
+
+.primary.disabled {
+  background: v.$primary-disabled-color;
 }
 
 .secondary {

@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { AuthService } from 'src/app/core/auth.service';
 import { IonContent, IonGrid, IonRow, IonCol } from '@ionic/angular/standalone';
 import {
   LucideAngularModule,
@@ -21,10 +22,12 @@ import { CardComponent } from 'src/app/shared/components/card/card.component';
     IonCol,
     CardComponent,
     LucideAngularModule,
-    ButtonComponent
-],
+    ButtonComponent,
+  ],
 })
 export class WelcomeSelectionPage {
+  constructor(private authService: AuthService) {}
+
   userTypes = [
     {
       id: 1,
@@ -49,5 +52,6 @@ export class WelcomeSelectionPage {
 
   selectUserType(id: number) {
     this.selectedUserTypeId = id;
+    this.authService.setUserType(id);
   }
 }
