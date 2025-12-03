@@ -1,14 +1,62 @@
-ion-content {
-  --background: #f4f5f8;
+@use "../../../../theme/variables.scss" as v;
+
+.center {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+.features-grid {
+  margin-top: 24px;
 }
 h2 {
   text-align: center;
-  margin: 24px 0;
+  margin: 12px 0;
 }
-ul {
-  list-style: disc inside;
-  margin: 0 0 0 24px;
+.subtitle {
+  text-align: center;
+  font-size: 12px;
+  margin-bottom: 40px;
 }
-li {
-  margin: 8px 0;
+.card-list {
+  margin: 0 1.5rem;
+}
+auto-card {
+  cursor: pointer;
+}
+auto-card p {
+  color: v.$gray-text-color;
+  font-size: 9px;
+  font-weight: 400;
+}
+ion-button {
+  margin: 12px 0;
+}
+
+.button-row {
+  margin: 100px auto auto auto;
+  position: absolute;
+  bottom: 24px;
+  left: 0;
+  right: 0;
+  p {
+    text-align: center;
+    color: v.$body-color;
+    font-weight: 500;
+    font-size: 14px;
+  }
+}
+
+
+
+@media screen and (max-width: 575px) {
+  .button-row {
+    width: 80%;
+  }
+}
+
+@media screen and (min-width: 576px) {
+  .button-row {
+    min-width: 300px;
+  }
 }

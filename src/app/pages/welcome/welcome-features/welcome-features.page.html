@@ -1,13 +1,41 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>Welcome Features</ion-title>
-  </ion-toolbar>
-</ion-header>
-<ion-content class="ion-padding">
-  <h2>App Features</h2>
-  <ul>
-    <li>Feature 1</li>
-    <li>Feature 2</li>
-    <li>Feature 3</li>
-  </ul>
+<ion-content fullscreen scroll-y="false">
+  <a [routerLink]="['/']" class="back-button"
+    ><lucide-angular
+      [img]="ChevronLeftIcon"
+      class="back-button-icon"
+    ></lucide-angular
+  ></a>
+  <ion-grid class="center features-grid">
+    <ion-row>
+      <ion-col size="12">
+        <h2 class="title">
+          Bienvenido a Auto<span class="text-blue">Log</span>
+        </h2>
+        <p class="subtitle">
+          Descubre lo que Auto<span class="text-blue">Log</span> puede hacer
+          para<br />
+          ayudarte a gestionar tu vehículo.
+        </p>
+        <div class="card-list">
+          @for (feature of features; track $index) {
+          <auto-card
+            [title]="feature.title"
+            [icon]="feature.icon"
+            [iconColor]="'primary'"
+          >
+            <p>{{ feature.description }}</p>
+          </auto-card>
+          }
+        </div>
+      </ion-col>
+    </ion-row>
+    <ion-row class="button-row">
+      <ion-col size="12">
+        <auto-button routerLink="/features" variant="primary" type="button"
+          >Continuar</auto-button
+        >
+        <p>Ya tienes una cuenta? <span class="link">Iniciar Sesión</span></p>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
 </ion-content>

@@ -1,3 +1,4 @@
+import { NgClass } from '@angular/common';
 import { Component, Input } from '@angular/core';
 import { IonCard, IonCardContent } from '@ionic/angular/standalone';
 import { LucideAngularModule } from 'lucide-angular';
@@ -8,10 +9,11 @@ import { LucideIconData } from 'lucide-angular/icons/types';
   templateUrl: './card.component.html',
   styleUrls: ['./card.component.scss'],
   standalone: true,
-  imports: [IonCard, IonCardContent, LucideAngularModule],
+  imports: [IonCard, IonCardContent, LucideAngularModule, NgClass],
 })
 export class CardComponent {
   @Input() title?: string;
   @Input() icon!: LucideIconData;
-  @Input() iconColor: string = '#73747A';
+  @Input() iconColor: 'primary' | 'selected' | 'default' = 'default';
+  @Input() selected: boolean = false;
 }

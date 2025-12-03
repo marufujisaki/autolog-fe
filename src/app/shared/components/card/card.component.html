@@ -1,7 +1,7 @@
-<ion-card>
+<ion-card [ngClass]="{ selected: selected }">
   <div class="icon">
     @if (icon) {
-    <lucide-angular [img]="icon" [color]="iconColor" class="lucide-custom"></lucide-angular>
+    <lucide-angular [img]="icon" class="lucide-custom" [ngClass]="'color-' + iconColor"></lucide-angular>
     }
   </div>
 

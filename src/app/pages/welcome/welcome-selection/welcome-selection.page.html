@@ -7,7 +7,13 @@
         </h2>
         <p class="subtitle">Cuéntanos quién eres para empezar.</p>
         @for (user of userTypes; track $index) {
-        <auto-card [title]="user.title" [icon]="user.icon">
+        <auto-card
+          [title]="user.title"
+          [icon]="user.icon"
+          (click)="selectUserType(user.id)"
+          [selected]="selectedUserTypeId === user.id"
+          [iconColor]="selectedUserTypeId === user.id ? 'selected' : 'default'"
+        >
           <p>{{ user.description }}</p>
         </auto-card>
         }

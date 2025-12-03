@@ -15,12 +15,6 @@ h2 {
   text-align: center;
   margin-bottom: 40px;
 }
-.card-list {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-}
 auto-card {
   cursor: pointer;
 }
@@ -34,7 +28,7 @@ ion-button {
 }
 
 .button-row {
-  margin-top: 100px;
+  margin: 100px auto auto auto;
   position: absolute;
   bottom: 24px;
   left: 0;
