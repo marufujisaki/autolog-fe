@@ -3,34 +3,31 @@
 .center {
   height: 100%;
   display: flex;
+  justify-content: center;
   align-items: center;
   flex-direction: column;
 }
-.features-grid {
-  margin-top: 24px;
-}
 h2 {
   text-align: center;
-  margin: 12px 0;
+  margin: 12px 0 48px 0;
 }
-.subtitle {
-  text-align: center;
-  font-size: 12px;
-  margin-bottom: 40px;
+.input-row {
+  max-width: 80%;
 }
-.card-list {
-  margin: 0 1.5rem;
-}
-auto-card {
-  cursor: pointer;
-}
-auto-card p {
-  color: v.$gray-text-color;
-  font-size: 9px;
-  font-weight: 400;
+.bottom-margin {
+  display: block;
+  margin-bottom: 19px;
 }
 ion-button {
   margin: 12px 0;
+}
+
+.forgot-password-link {
+  display: block;
+  font-weight: 500;
+  font-size: 14px;
+  color: v.$primary-color;
+  margin-top: 0.25rem;
 }
 
 .button-row {

@@ -9,6 +9,7 @@ import {
 } from 'lucide-angular';
 import { ButtonComponent } from 'src/app/shared/components/button/button.component';
 import { CardComponent } from 'src/app/shared/components/card/card.component';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-welcome-selection',
@@ -23,6 +24,7 @@ import { CardComponent } from 'src/app/shared/components/card/card.component';
     CardComponent,
     LucideAngularModule,
     ButtonComponent,
+    RouterModule
   ],
 })
 export class WelcomeSelectionPage {

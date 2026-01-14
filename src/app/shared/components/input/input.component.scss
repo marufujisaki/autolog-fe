@@ -1,0 +1,25 @@
+@use "../../../../theme/variables.scss" as v;
+
+.input-label {
+  font-size: 1rem;
+  font-weight: 600;
+  display: inline-block;
+  margin-bottom: 0.25rem;
+  color: v.$gray-text-color;
+}
+
+.auto-input {
+  width: 100%;
+  padding: 0.9rem 1rem;
+  border-radius: 14px;
+  border: 1px solid v.$input-fill-color;
+  font-size: 1rem;
+  outline: none;
+  font-weight: 600;
+  transition: border-color 0.2s;
+  background: v.$input-fill-color;
+  color: v.$input-text-color;
+}
+.auto-input:focus {
+  border-color: v.$primary-color;
+}

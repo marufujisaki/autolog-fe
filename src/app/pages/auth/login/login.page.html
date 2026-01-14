@@ -1,0 +1,43 @@
+<ion-content fullscreen scroll-y="false">
+  <ion-grid class="center">
+    <ion-row class="input-row">
+      <ion-col size="12">
+        <h2 class="title">Iniciar Sesi<span class="text-blue">ón</span></h2>
+        <auto-input
+          class="bottom-margin"
+          type="email"
+          placeholder="juan@mecanico.com"
+          autocomplete="email"
+          label="Correo"
+          [value]="loginForm.get('email')?.value"
+          (valueChange)="loginForm.get('email')?.setValue($event)"
+        ></auto-input>
+        <auto-input
+          type="password"
+          placeholder="********"
+          autocomplete="current-password"
+          label="Contraseña"
+          [value]="loginForm.get('password')?.value"
+          (valueChange)="loginForm.get('password')?.setValue($event)"
+        ></auto-input>
+        <a class="forgot-password-link" routerLink="/forgot-password"
+          >¿Olvidaste tu contraseña?</a>
+      </ion-col>
+    </ion-row>
+    <ion-row class="button-row">
+      <ion-col size="12">
+        <auto-button
+          routerLink="/features"
+          variant="primary"
+          type="button"
+          [disabled]="loginForm.invalid"
+          >Continuar</auto-button
+        >
+        <p>
+          No tienes una cuenta?
+          <a routerLink="/register" class="link">Regístrate</a>
+        </p>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>
