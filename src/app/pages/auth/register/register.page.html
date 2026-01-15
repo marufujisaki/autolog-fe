@@ -1,5 +1,76 @@
-<ion-content>
-  <h1 class="title">Regístrate</h1>
-
+<ion-content fullscreen scroll-y="false">
+  <ion-grid class="bottom">
+    <ion-row class="input-row">
+      <ion-col size="12">
+        <h2 class="title">Crear Cuen<span class="text-blue">ta</span></h2>
+        <auto-input
+          class="bottom-margin"
+          type="text"
+          placeholder="Jose Perez"
+          autocomplete="name"
+          label="Nombre Completo"
+          [value]="registerForm.get('fullName')?.value"
+          (valueChange)="registerForm.get('fullName')?.setValue($event)"
+        ></auto-input>
+        <auto-input
+          class="bottom-margin"
+          type="email"
+          placeholder="juan@mecanico.com"
+          autocomplete="email"
+          label="Correo"
+          [value]="registerForm.get('email')?.value"
+          (valueChange)="registerForm.get('email')?.setValue($event)"
+        ></auto-input>
+        <auto-input
+          class="bottom-margin"
+          type="password"
+          placeholder="********"
+          autocomplete="current-password"
+          label="Contraseña"
+          [value]="registerForm.get('password')?.value"
+          (valueChange)="registerForm.get('password')?.setValue($event)"
+        ></auto-input>
+        <auto-input
+          type="password"
+          placeholder="********"
+          autocomplete="current-password"
+          label="Confirmar Contraseña"
+          [value]="registerForm.get('confirmPassword')?.value"
+          (valueChange)="registerForm.get('confirmPassword')?.setValue($event)"
+        ></auto-input>
+      </ion-col>
+    </ion-row>
+    <ion-row class="button-row">
+      <ion-col size="12">
+        <auto-button
+          routerLink="/identity-verification"
+          variant="primary"
+          type="button"
+          [disabled]="registerForm.invalid"
+          (click)="onRegister()"
+          >Registrarme</auto-button
+        >
+        <div class="divider">
+          <span>OR</span>
+        </div>
+        <auto-button
+          class="google-button"
+          variant="secondary"
+          type="button"
+          (click)="googleAuth()"
+        >
+          <img
+            src="assets/icon/google.svg"
+            alt="Google Icon"
+            class="google-icon"
+          />
+          Continuar con Google</auto-button
+        >
+        <p>
+          Ya tienes una cuenta?
+          <a routerLink="/login" class="link">Iniciar Sesión</a>
+        </p>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
 </ion-content>
-

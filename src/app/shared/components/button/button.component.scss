@@ -16,13 +16,21 @@
 }
 
 .secondary {
-  font-size: 0.95rem;
-  padding: 0.5em 1.5em;
-  --background: var(--ion-color-light);
-  --color: var(--ion-color-primary);
-  --border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
   display: flex;
+  justify-content: center;
   align-items: center;
+  --background: #fff;
+  color: v.$gray-text-color;
+  --border-radius: 40px;
+  --border-color: var(--ion-color-primary);
+  --border-width: 1px;
+  --border-style: solid;
+  & .ion-activated {
+    --background: #6a99e6;
+    --color: #fff;
+  }
 }
 
 .icon-left {

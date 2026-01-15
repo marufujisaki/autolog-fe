@@ -1,12 +1,78 @@
-ion-content {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+@use "../../../../theme/variables.scss" as v;
+
+.bottom {
   height: 100%;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  flex-direction: column;
+}
+h2 {
+  text-align: center;
+  margin: 12px 0 29px 0;
+}
+.input-row {
+  max-width: 80%;
+}
+.bottom-margin {
+  display: block;
+  margin-bottom: 19px;
+}
+ion-button {
+  margin: 12px 0;
 }
 
-form {
-  width: 100%;
-  max-width: 400px;
+.forgot-password-link {
+  display: block;
+  font-weight: 500;
+  font-size: 14px;
+  color: v.$primary-color;
+  margin-top: 0.25rem;
+}
+
+.button-row {
+  margin-top: 15px;
+  p {
+    text-align: center;
+    color: v.$body-color;
+    font-weight: 500;
+    font-size: 14px;
+  }
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  color: #d9d9d9;
+  font-size: 14px;
+  margin: 28px 0;
+}
+
+.divider::before,
+.divider::after {
+  content: "";
+  flex: 1;
+  border-bottom: 1px solid #d9d9d9;
+}
+
+.divider::before {
+  margin-right: 12px;
+}
+
+.divider::after {
+  margin-left: 12px;
+}
+
+@media screen and (max-width: 575px) {
+  .button-row {
+    width: 80%;
+  }
+}
+
+@media screen and (min-width: 576px) {
+  .button-row {
+    min-width: 300px;
+    max-width: 30%;
+  }
 }
