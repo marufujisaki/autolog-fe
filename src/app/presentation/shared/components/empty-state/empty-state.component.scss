@@ -1,0 +1,37 @@
+// =============================================================================
+// EmptyStateComponent — Design System
+// =============================================================================
+//
+// Pure SCSS styling driven exclusively by design tokens. No third-party UI
+// library is used for visual rendering (Requirements 12.3, 12.5).
+// =============================================================================
+
+@use "../../styles/tokens" as tokens;
+@use "../../styles/mixins" as mixins;
+
+.app-empty-state {
+  @include mixins.flex-center(column, tokens.$space-3);
+  text-align: center;
+  padding: tokens.$space-7;
+  font-family: tokens.$font-family-base;
+
+  &__icon {
+    font-size: 4rem;
+    line-height: 1;
+  }
+
+  &__title {
+    margin: 0;
+    font-size: tokens.$font-size-lg;
+    font-weight: tokens.$font-weight-bold;
+    color: tokens.$color-text-primary;
+  }
+
+  &__description {
+    margin: 0;
+    font-size: tokens.$font-size-sm;
+    color: tokens.$color-text-secondary;
+    max-width: 400px;
+    line-height: tokens.$line-height-normal;
+  }
+}

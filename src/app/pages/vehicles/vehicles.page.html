@@ -1,0 +1,166 @@
+<div class="vehicles-container">
+  <!-- Header -->
+  <header class="vehicles-header">
+    <h1>{{ 'VEHICLES' | translate }}</h1>
+    <app-button
+      variant="primary"
+      (click)="openCreateModal()"
+      class="add-vehicle-btn"
+    >
+      {{ 'ADD_VEHICLE' | translate }}
+    </app-button>
+  </header>
+
+  <!-- Loading state -->
+  <app-loading
+    *ngIf="isLoading"
+    [text]="'LOADING_VEHICLES' | translate"
+  ></app-loading>
+
+  <!-- Empty state -->
+  <app-empty-state
+    *ngIf="!isLoading && vehicles.length === 0"
+    [title]="'NO_VEHICLES' | translate"
+    [description]="'NO_VEHICLES_MESSAGE' | translate"
+    [icon]="'car'"
+  ></app-empty-state>
+
+  <!-- Vehicles list -->
+  <div class="vehicles-list" *ngIf="!isLoading && vehicles.length > 0">
+    <app-card
+      *ngFor="let vehicle of vehicles"
+      variant="outlined"
+      class="vehicle-card"
+      (click)="viewVehicleDetail(vehicle.id)"
+    >
+      <div class="vehicle-card-content">
+        <div class="vehicle-info">
+          <h3 class="vehicle-title">{{ vehicle.brand }} {{ vehicle.model }}</h3>
+          <p class="vehicle-year">{{ vehicle.year }}</p>
+          <div class="vehicle-details" *ngIf="vehicle.licensePlate">
+            <span class="detail-label">{{ 'LICENSE_PLATE' | translate }}:</span>
+            <span class="detail-value">{{ vehicle.licensePlate }}</span>
+          </div>
+          <div
+            class="vehicle-details"
+            *ngIf="vehicle.currentMileage !== undefined"
+          >
+            <span class="detail-label">{{ 'MILEAGE' | translate }}:</span>
+            <span class="detail-value"
+              >{{ vehicle.currentMileage | number }} km</span
+            >
+          </div>
+        </div>
+        <div class="vehicle-arrow">
+          <span class="arrow-icon">&gt;</span>
+        </div>
+      </div>
+    </app-card>
+  </div>
+
+  <!-- Create vehicle modal -->
+  <app-modal
+    *ngIf="showCreateModal"
+    [title]="'CREATE_VEHICLE' | translate"
+    (onClose)="closeCreateModal()"
+  >
+    <form [formGroup]="createVehicleForm" class="create-vehicle-form">
+      <!-- Brand input -->
+      <div class="form-group">
+        <app-input
+          type="text"
+          [placeholder]="'BRAND_PLACEHOLDER' | translate"
+          formControlName="brand"
+          [class.error]="hasFieldError('brand')"
+        ></app-input>
+        <p class="error-message" *ngIf="hasFieldError('brand')">
+          {{ getFieldError('brand') | translate }}
+        </p>
+      </div>
+
+      <!-- Model input -->
+      <div class="form-group">
+        <app-input
+          type="text"
+          [placeholder]="'MODEL_PLACEHOLDER' | translate"
+          formControlName="model"
+          [class.error]="hasFieldError('model')"
+        ></app-input>
+        <p class="error-message" *ngIf="hasFieldError('model')">
+          {{ getFieldError('model') | translate }}
+        </p>
+      </div>
+
+      <!-- Year select -->
+      <div class="form-group">
+        <label class="form-label">{{ 'YEAR_PLACEHOLDER' | translate }}</label>
+        <app-select
+          [options]="getYearOptions()"
+          [placeholder]="'YEAR_PLACEHOLDER' | translate"
+          formControlName="year"
+          [class.error]="hasFieldError('year')"
+        ></app-select>
+        <p class="error-message" *ngIf="hasFieldError('year')">
+          {{ getFieldError('year') | translate }}
+        </p>
+      </div>
+
+      <!-- License plate input (optional) -->
+      <div class="form-group">
+        <app-input
+          type="text"
+          [placeholder]="'LICENSE_PLATE_PLACEHOLDER' | translate"
+          formControlName="licensePlate"
+        ></app-input>
+      </div>
+
+      <!-- VIN input (optional) -->
+      <div class="form-group">
+        <app-input
+          type="text"
+          [placeholder]="'VIN_PLACEHOLDER' | translate"
+          formControlName="vin"
+        ></app-input>
+      </div>
+
+      <!-- Color input (optional) -->
+      <div class="form-group">
+        <app-input
+          type="text"
+          [placeholder]="'COLOR_PLACEHOLDER' | translate"
+          formControlName="color"
+        ></app-input>
+      </div>
+
+      <!-- Current mileage input (optional) -->
+      <div class="form-group">
+        <app-input
+          type="number"
+          [placeholder]="'CURRENT_MILEAGE_PLACEHOLDER' | translate"
+          formControlName="currentMileage"
+        ></app-input>
+      </div>
+
+      <!-- Form buttons -->
+      <div class="form-actions">
+        <app-button variant="secondary" (click)="closeCreateModal()">
+          {{ 'CANCEL' | translate }}
+        </app-button>
+        <app-button
+          variant="primary"
+          (click)="submitCreateVehicle()"
+          [disabled]="!createVehicleForm.valid"
+        >
+          {{ 'CREATE' | translate }}
+        </app-button>
+      </div>
+    </form>
+  </app-modal>
+
+  <!-- Toast notification -->
+  <app-toast
+    *ngIf="toastVisible"
+    [message]="toastMessage | translate"
+    class="toast"
+  ></app-toast>
+</div>

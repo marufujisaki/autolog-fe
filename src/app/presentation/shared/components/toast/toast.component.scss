@@ -1,0 +1,123 @@
+// =============================================================================
+// ToastComponent — Design System
+// =============================================================================
+//
+// Pure SCSS styling driven exclusively by design tokens. No third-party UI
+// library is used for visual rendering (Requirements 12.3, 12.5).
+// =============================================================================
+
+@use "../../styles/tokens" as tokens;
+@use "../../styles/mixins" as mixins;
+
+.app-toast {
+  @include mixins.flex-center(row, tokens.$space-3);
+  @include mixins.elevation("lg");
+  @include mixins.transition("opacity");
+
+  min-width: 300px;
+  max-width: 500px;
+  padding: tokens.$space-4;
+  border-radius: tokens.$radius-md;
+  background-color: tokens.$color-surface;
+  border-left: 4px solid tokens.$color-info;
+  font-family: tokens.$font-family-base;
+  font-size: tokens.$font-size-base;
+  color: tokens.$color-text-primary;
+  animation: slideIn 300ms ease-out;
+
+  &__icon {
+    @include mixins.flex-center();
+    flex-shrink: 0;
+    width: tokens.$space-6;
+    height: tokens.$space-6;
+    border-radius: tokens.$radius-full;
+    font-weight: tokens.$font-weight-bold;
+    font-size: tokens.$font-size-lg;
+  }
+
+  &__content {
+    flex: 1;
+    line-height: tokens.$line-height-normal;
+  }
+
+  &__close {
+    @include mixins.transition("color");
+    @include mixins.focus-ring();
+
+    flex-shrink: 0;
+    background: transparent;
+    border: none;
+    color: tokens.$color-text-secondary;
+    cursor: pointer;
+    font-size: tokens.$font-size-base;
+    padding: tokens.$space-1;
+    min-width: auto;
+    height: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+      color: tokens.$color-text-primary;
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Type: success — green accent
+  // ---------------------------------------------------------------------------
+  &.success {
+    border-left-color: tokens.$color-success;
+
+    .app-toast__icon {
+      background-color: tokens.$color-success;
+      color: tokens.$color-on-success;
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Type: error — red accent
+  // ---------------------------------------------------------------------------
+  &.error {
+    border-left-color: tokens.$color-error;
+
+    .app-toast__icon {
+      background-color: tokens.$color-error;
+      color: tokens.$color-on-error;
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Type: warning — orange accent
+  // ---------------------------------------------------------------------------
+  &.warning {
+    border-left-color: tokens.$color-warning;
+
+    .app-toast__icon {
+      background-color: tokens.$color-warning;
+      color: tokens.$color-on-warning;
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Type: info — blue accent (default)
+  // ---------------------------------------------------------------------------
+  &.info {
+    border-left-color: tokens.$color-primary;
+
+    .app-toast__icon {
+      background-color: tokens.$color-primary;
+      color: tokens.$color-on-primary;
+    }
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}

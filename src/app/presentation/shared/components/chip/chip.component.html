@@ -1,0 +1,14 @@
+<div class="app-chip" [class]="variant" [class.disabled]="disabled">
+  <ng-content></ng-content>
+
+  <button
+    *ngIf="removable"
+    type="button"
+    class="app-chip__remove"
+    [disabled]="disabled"
+    aria-label="Remove"
+    (click)="onRemove($event)"
+  >
+    ✕
+  </button>
+</div>

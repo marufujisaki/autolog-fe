@@ -1,12 +1,15 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { IonApp, IonRouterOutlet } from '@ionic/angular/standalone';
-import { WelcomePage } from './welcome.page';
+import { TranslationService } from './core/services/translation.service';
 
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
-  imports: [IonApp, IonRouterOutlet, WelcomePage],
+  imports: [IonApp, IonRouterOutlet],
 })
 export class AppComponent {
+  // Inject TranslationService to initialize translations at app startup
+  private translationService = inject(TranslationService);
+
   constructor() {}
 }

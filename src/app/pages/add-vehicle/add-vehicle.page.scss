@@ -1,0 +1,83 @@
+@use "../../presentation/shared/styles/tokens" as t;
+
+.add-vehicle-page {
+  background: t.$color-background;
+  border-radius: t.$radius-5xl;
+  padding: t.$space-6 t.$space-8;
+  min-height: 100%;
+}
+
+.handle-bar {
+  width: 61px;
+  height: 5px;
+  background: #f5f5fc;
+  border-radius: 133px;
+  margin: 0 auto t.$space-6;
+}
+
+.page-title {
+  font-family: t.$font-family-base;
+  font-size: t.$font-size-xl;
+  font-weight: t.$font-weight-bold;
+  color: #303030;
+  text-align: center;
+  margin: 0 0 t.$space-7;
+}
+
+// ---------------------------------------------------------------------------
+// Form
+// ---------------------------------------------------------------------------
+
+.form-section {
+  display: flex;
+  flex-direction: column;
+  gap: t.$space-3;
+}
+
+.form-group {
+  width: 100%;
+}
+
+.form-row {
+  display: flex;
+  gap: t.$space-4;
+}
+
+.form-group--short {
+  flex: 0 0 124px;
+}
+
+.form-group--medium {
+  flex: 1;
+}
+
+// ---------------------------------------------------------------------------
+// Color Picker
+// ---------------------------------------------------------------------------
+
+.color-picker {
+  display: flex;
+  align-items: center;
+  gap: t.$space-3;
+  padding: t.$space-4 0;
+}
+
+.color-dot {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: transform t.$transition-duration-fast t.$transition-easing;
+
+  &:hover {
+    transform: scale(1.2);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Button
+// ---------------------------------------------------------------------------
+
+.button-section {
+  margin-top: t.$space-5;
+}

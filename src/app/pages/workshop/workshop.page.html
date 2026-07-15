@@ -1,0 +1,42 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>{{ 'workshop.title' | translate }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="workshop-content">
+  <!-- Loading state -->
+  <app-loading *ngIf="isLoading"></app-loading>
+
+  <!-- Error state -->
+  <div *ngIf="error && !isLoading" class="error-section">
+    <app-empty-state
+      [title]="'workshop.noWorkshop' | translate"
+      [description]="error"
+      [icon]="'alert-circle'"
+    ></app-empty-state>
+  </div>
+
+  <!-- Workshop information -->
+  <div *ngIf="workshop && !isLoading" class="workshop-container">
+    <app-card class="workshop-card">
+      <div class="card-content">
+        <div class="workshop-header">
+          <h2>{{ 'workshop.workshopDetails' | translate }}</h2>
+        </div>
+
+        <div class="workshop-details">
+          <div class="detail-item">
+            <label>{{ 'workshop.name' | translate }}</label>
+            <p class="detail-value">{{ workshop.name }}</p>
+          </div>
+
+          <div class="detail-item">
+            <label>{{ 'workshop.address' | translate }}</label>
+            <p class="detail-value">{{ workshop.address }}</p>
+          </div>
+        </div>
+      </div>
+    </app-card>
+  </div>
+</ion-content>

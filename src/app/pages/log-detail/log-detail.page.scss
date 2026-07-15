@@ -1,0 +1,227 @@
+@use "../../presentation/shared/styles/tokens" as t;
+
+.detail-page {
+  padding: t.$space-5 t.$space-6;
+  background: t.$color-background;
+  min-height: 100%;
+}
+
+// ---------------------------------------------------------------------------
+// Header
+// ---------------------------------------------------------------------------
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: t.$space-6;
+}
+
+.back-btn,
+.edit-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: t.$color-text-primary;
+  padding: t.$space-1;
+}
+
+.header-title {
+  font-family: t.$font-family-display;
+  font-size: t.$font-size-4xl;
+  font-weight: t.$font-weight-bold;
+  color: t.$color-text-primary;
+  margin: 0;
+}
+
+// ---------------------------------------------------------------------------
+// Vehicle Info
+// ---------------------------------------------------------------------------
+
+.vehicle-info {
+  margin-bottom: t.$space-4;
+}
+
+.info-row {
+  display: flex;
+  align-items: center;
+  gap: t.$space-2;
+  margin-bottom: t.$space-2;
+
+  .info-label {
+    font-size: t.$font-size-base;
+    font-weight: t.$font-weight-bold;
+    color: t.$color-primary;
+  }
+
+  .info-value {
+    font-size: t.$font-size-base;
+    font-weight: t.$font-weight-medium;
+    color: #111827;
+  }
+}
+
+.total-cost {
+  display: flex;
+  align-items: center;
+  gap: t.$space-2;
+  position: absolute;
+  right: t.$space-6;
+  top: 90px;
+
+  .cost-text {
+    font-size: t.$font-size-base;
+    font-weight: t.$font-weight-bold;
+    color: #111827;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Meta Row
+// ---------------------------------------------------------------------------
+
+.meta-row {
+  display: flex;
+  align-items: center;
+  gap: t.$space-6;
+  margin-bottom: t.$space-4;
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: t.$space-1;
+  font-size: t.$font-size-sm;
+  color: #9ca3af;
+}
+
+// ---------------------------------------------------------------------------
+// Divider
+// ---------------------------------------------------------------------------
+
+.divider {
+  height: 1px;
+  background: t.$color-border-light;
+  margin: t.$space-4 0;
+}
+
+// ---------------------------------------------------------------------------
+// Job Section
+// ---------------------------------------------------------------------------
+
+.job-section {
+  margin-bottom: t.$space-3;
+}
+
+.job-header {
+  display: flex;
+  align-items: center;
+  gap: t.$space-2;
+  margin-bottom: t.$space-2;
+}
+
+.job-title {
+  font-size: t.$font-size-lg;
+  font-weight: t.$font-weight-semibold;
+  color: t.$color-text-primary;
+  margin: 0;
+}
+
+.job-labels {
+  display: flex;
+  gap: t.$space-2;
+  margin-bottom: t.$space-2;
+}
+
+.label {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: t.$radius-xs;
+  font-size: t.$font-size-xs;
+  font-weight: t.$font-weight-semibold;
+  text-transform: uppercase;
+}
+
+.label-replacement {
+  background: t.$color-label-replacement-detail-bg;
+  color: t.$color-label-replacement-detail-text;
+}
+
+.label-service {
+  background: t.$color-label-service-detail-bg;
+  color: t.$color-label-service-detail-text;
+}
+
+.label-repair {
+  background: t.$color-label-repair-detail-bg;
+  color: t.$color-label-repair-detail-text;
+}
+
+.label-consumable {
+  background: t.$color-label-consumable-detail-bg;
+  color: t.$color-label-consumable-detail-text;
+}
+
+.label-inspection {
+  background: t.$color-primary;
+  color: t.$color-on-primary;
+}
+
+.job-description {
+  font-size: 11px;
+  color: #6b7280;
+  margin: 0 0 t.$space-3;
+  line-height: 1.5;
+}
+
+// ---------------------------------------------------------------------------
+// Items Table
+// ---------------------------------------------------------------------------
+
+.items-header {
+  display: flex;
+  justify-content: flex-end;
+  gap: t.$space-7;
+  font-size: t.$font-size-xs;
+  font-weight: t.$font-weight-semibold;
+  color: #999999;
+  margin-bottom: t.$space-2;
+}
+
+.col-qty,
+.col-unit,
+.col-sub {
+  text-align: right;
+  min-width: 40px;
+}
+
+.job-total {
+  display: flex;
+  justify-content: flex-end;
+  gap: t.$space-2;
+  margin-top: t.$space-3;
+}
+
+.total-label {
+  font-size: t.$font-size-base;
+  font-weight: t.$font-weight-semibold;
+  color: t.$color-text-primary;
+}
+
+.total-value {
+  font-size: t.$font-size-base;
+  font-weight: t.$font-weight-semibold;
+  color: t.$color-text-primary;
+}
+
+// ---------------------------------------------------------------------------
+// Loading
+// ---------------------------------------------------------------------------
+
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: t.$space-9;
+  color: t.$color-text-secondary;
+}

@@ -1,0 +1,157 @@
+// =============================================================================
+// InputComponent — Design System
+// =============================================================================
+//
+// Pure SCSS styling driven exclusively by design tokens. No third-party UI
+// library is used for visual rendering (Requirements 12.3, 12.5).
+// =============================================================================
+
+@use "../../styles/tokens" as tokens;
+@use "../../styles/mixins" as mixins;
+
+.app-input {
+  display: flex;
+  flex-direction: column;
+  gap: tokens.$space-1;
+  width: 100%;
+  font-family: tokens.$font-family-base;
+
+  &__label {
+    font-size: tokens.$font-size-sm;
+    font-weight: tokens.$font-weight-medium;
+    color: tokens.$color-text-primary;
+  }
+
+  &__field {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  &__icon {
+    position: absolute;
+    left: tokens.$space-3;
+    width: tokens.$space-4;
+    height: tokens.$space-4;
+    pointer-events: none;
+
+    &--search {
+      border: 2px solid tokens.$color-text-secondary;
+      border-radius: tokens.$radius-full;
+
+      &::after {
+        content: "";
+        position: absolute;
+        bottom: -6px;
+        right: -6px;
+        width: 6px;
+        height: 2px;
+        background-color: tokens.$color-text-secondary;
+        transform: rotate(45deg);
+      }
+    }
+  }
+
+  &__control {
+    @include mixins.transition("border-color, box-shadow");
+    @include mixins.focus-ring();
+
+    width: 100%;
+    font-family: tokens.$font-family-base;
+    font-size: tokens.$font-size-base;
+    line-height: tokens.$line-height-normal;
+    color: tokens.$color-text-primary;
+    background-color: tokens.$color-surface;
+    border: 1px solid tokens.$color-border;
+    border-radius: tokens.$radius-md;
+    padding: tokens.$space-3 tokens.$space-4;
+
+    &::placeholder {
+      color: tokens.$color-text-secondary;
+    }
+
+    &:focus {
+      border-color: tokens.$color-primary;
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+    }
+  }
+
+  // Reserve space for the leading search icon.
+  &__icon--search ~ &__control {
+    padding-left: tokens.$space-7;
+  }
+
+  &__toggle {
+    @include mixins.flex-center();
+    @include mixins.transition("color");
+    @include mixins.focus-ring();
+
+    position: absolute;
+    right: tokens.$space-2;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: tokens.$color-text-secondary;
+    font-size: tokens.$font-size-base;
+    padding: tokens.$space-1;
+
+    &:hover:not(:disabled) {
+      color: tokens.$color-text-primary;
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+    }
+  }
+
+  &__error {
+    margin: 0;
+    font-size: tokens.$font-size-xs;
+    color: tokens.$color-error;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Validation state: error
+  // ---------------------------------------------------------------------------
+  &.error {
+    .app-input__control {
+      border-color: tokens.$color-error;
+
+      &:focus {
+        border-color: tokens.$color-error;
+      }
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Validation state: success
+  // ---------------------------------------------------------------------------
+  &.success {
+    .app-input__control {
+      border-color: tokens.$color-success;
+
+      &:focus {
+        border-color: tokens.$color-success;
+      }
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Disabled state
+  // ---------------------------------------------------------------------------
+  &.disabled {
+    .app-input__label {
+      color: tokens.$color-text-disabled;
+    }
+
+    .app-input__control {
+      background-color: tokens.$color-disabled;
+      color: tokens.$color-text-disabled;
+      border-color: tokens.$color-disabled;
+      cursor: not-allowed;
+    }
+  }
+}

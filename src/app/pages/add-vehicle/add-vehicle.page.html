@@ -1,0 +1,87 @@
+<div class="add-vehicle-page">
+  <!-- Handle bar -->
+  <div class="handle-bar"></div>
+
+  <!-- Title -->
+  <h1 class="page-title">Add a vehicle</h1>
+
+  <!-- Form -->
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="form-section">
+    <div class="form-group">
+      <app-input
+        [formControl]="brandControl!"
+        type="text"
+        placeholder="Chevrolet"
+        label="Make"
+      ></app-input>
+    </div>
+
+    <div class="form-group">
+      <app-input
+        [formControl]="modelControl!"
+        type="text"
+        placeholder="Optra"
+        label="Model"
+      ></app-input>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group form-group--short">
+        <app-input
+          [formControl]="yearControl!"
+          type="text"
+          placeholder="2022"
+          label="Year"
+        ></app-input>
+      </div>
+      <div class="form-group form-group--medium">
+        <app-input
+          [formControl]="plateControl!"
+          type="text"
+          placeholder="AA453YR"
+          label="Plate"
+        ></app-input>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <app-input
+        [formControl]="colorControl!"
+        type="text"
+        placeholder="Blue"
+        label="Color"
+      ></app-input>
+    </div>
+
+    <div class="form-group">
+      <app-input
+        [formControl]="displayNameControl!"
+        type="text"
+        placeholder="Chile Van 2"
+        label="Display Name"
+      ></app-input>
+    </div>
+
+    <!-- Color picker visual (decorative) -->
+    <div class="color-picker">
+      <span class="color-dot" style="background: #FF0000"></span>
+      <span class="color-dot" style="background: #0000FF"></span>
+      <span class="color-dot" style="background: #00FF00"></span>
+      <span class="color-dot" style="background: #FFD700"></span>
+      <span class="color-dot" style="background: #000000"></span>
+      <span class="color-dot" style="background: #FFFFFF; border: 1px solid #ccc"></span>
+      <span class="color-dot" style="background: #808080"></span>
+    </div>
+
+    <div class="button-section">
+      <app-button
+        variant="primary"
+        type="submit"
+        [fullWidth]="true"
+        [disabled]="!form.valid || isLoading"
+      >
+        Add
+      </app-button>
+    </div>
+  </form>
+</div>

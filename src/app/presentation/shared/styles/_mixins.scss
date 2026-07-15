@@ -1,0 +1,103 @@
+// =============================================================================
+// Design System Mixins — AutoLog
+// =============================================================================
+//
+// Reusable SCSS mixins consumed by Design System components (button, input,
+// card, etc.). All mixins rely exclusively on the tokens defined in
+// `_tokens.scss` — no third-party UI library is used for visual rendering
+// (Requirement 12.5).
+// =============================================================================
+
+@use "./tokens" as tokens;
+
+// -----------------------------------------------------------------------------
+// flex-center
+// Centers content horizontally and vertically using flexbox.
+// -----------------------------------------------------------------------------
+@mixin flex-center($direction: row, $gap: 0) {
+  display: flex;
+  flex-direction: $direction;
+  align-items: center;
+  justify-content: center;
+
+  @if $gap != 0 {
+    gap: $gap;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// truncate-text
+// Truncates overflowing text with an ellipsis on a single line.
+// -----------------------------------------------------------------------------
+@mixin truncate-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// -----------------------------------------------------------------------------
+// focus-ring
+// Accessible focus-visible ring, consistent across all Design System
+// components. Does not rely on browser default outlines.
+// -----------------------------------------------------------------------------
+@mixin focus-ring($color: tokens.$color-border-focus, $offset: 2px) {
+  outline: none;
+
+  &:focus-visible {
+    outline: 2px solid $color;
+    outline-offset: $offset;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// transition
+// Consistent animation timing for interactive elements.
+// -----------------------------------------------------------------------------
+@mixin transition(
+  $properties: all,
+  $duration: tokens.$transition-duration-base,
+  $easing: tokens.$transition-easing
+) {
+  transition-property: $properties;
+  transition-duration: $duration;
+  transition-timing-function: $easing;
+}
+
+// -----------------------------------------------------------------------------
+// respond-to
+// Simple responsive breakpoint helper. Usage:
+//   @include respond-to("md") { ... }
+// -----------------------------------------------------------------------------
+@mixin respond-to($breakpoint) {
+  @if $breakpoint == "sm" {
+    @media (min-width: tokens.$breakpoint-sm) {
+      @content;
+    }
+  } @else if $breakpoint == "md" {
+    @media (min-width: tokens.$breakpoint-md) {
+      @content;
+    }
+  } @else if $breakpoint == "lg" {
+    @media (min-width: tokens.$breakpoint-lg) {
+      @content;
+    }
+  } @else {
+    @warn "Unknown breakpoint `#{$breakpoint}`. Expected one of: sm, md, lg.";
+  }
+}
+
+// -----------------------------------------------------------------------------
+// elevation
+// Applies one of the standard shadow tokens.
+// -----------------------------------------------------------------------------
+@mixin elevation($level: "sm") {
+  @if $level == "sm" {
+    box-shadow: tokens.$shadow-sm;
+  } @else if $level == "md" {
+    box-shadow: tokens.$shadow-md;
+  } @else if $level == "lg" {
+    box-shadow: tokens.$shadow-lg;
+  } @else {
+    @warn "Unknown elevation level `#{$level}`. Expected one of: sm, md, lg.";
+  }
+}

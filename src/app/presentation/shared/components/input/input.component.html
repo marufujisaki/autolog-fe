@@ -1,0 +1,43 @@
+<div class="app-input" [class]="resolvedState" [class.disabled]="disabled">
+  <label *ngIf="label" class="app-input__label" [for]="inputId">{{
+    label
+  }}</label>
+
+  <div class="app-input__field">
+    <span
+      *ngIf="type === 'search'"
+      class="app-input__icon app-input__icon--search"
+      aria-hidden="true"
+    ></span>
+
+    <input
+      class="app-input__control"
+      [id]="inputId"
+      [type]="nativeType"
+      [placeholder]="placeholder"
+      [disabled]="disabled"
+      [value]="value"
+      [attr.min]="min"
+      [attr.max]="max"
+      [attr.aria-invalid]="resolvedState === 'error' ? true : null"
+      [attr.aria-describedby]="errorMessage ? inputId + '-error' : null"
+      (input)="onInput($any($event.target).value)"
+      (blur)="onBlur()"
+    />
+
+    <button
+      *ngIf="type === 'password'"
+      type="button"
+      class="app-input__toggle"
+      [disabled]="disabled"
+      [attr.aria-label]="showPassword ? 'Hide password' : 'Show password'"
+      (click)="togglePasswordVisibility()"
+    >
+      {{ showPassword ? "🙈" : "👁" }}
+    </button>
+  </div>
+
+  <p *ngIf="errorMessage" class="app-input__error" [id]="inputId + '-error'">
+    {{ errorMessage }}
+  </p>
+</div>

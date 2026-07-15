@@ -1,0 +1,110 @@
+@use "../../presentation/shared/styles/tokens" as t;
+@use "../../presentation/shared/styles/mixins" as m;
+
+.login-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: t.$color-background;
+  padding: t.$space-6;
+  justify-content: center;
+}
+
+// ---------------------------------------------------------------------------
+// Title
+// ---------------------------------------------------------------------------
+
+.title-section {
+  text-align: center;
+  margin-bottom: t.$space-9;
+}
+
+.page-title {
+  font-family: t.$font-family-display;
+  font-size: t.$font-size-5xl;
+  font-weight: t.$font-weight-bold;
+  color: t.$color-text-primary;
+  margin: 0;
+}
+
+.text-primary {
+  color: t.$color-primary;
+}
+
+// ---------------------------------------------------------------------------
+// Form
+// ---------------------------------------------------------------------------
+
+.form-section {
+  display: flex;
+  flex-direction: column;
+  gap: t.$space-4;
+  padding: 0 t.$space-2;
+}
+
+.form-group {
+  width: 100%;
+}
+
+app-input {
+  width: 100%;
+}
+
+.forgot-link {
+  font-size: t.$font-size-md;
+  font-weight: t.$font-weight-medium;
+  color: t.$color-primary;
+  text-decoration: none;
+  align-self: flex-start;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Error Alert
+// ---------------------------------------------------------------------------
+
+.error-alert {
+  width: 100%;
+  padding: t.$space-3;
+  background-color: #fee2e2;
+  border-left: 4px solid t.$color-error;
+  border-radius: t.$radius-xs;
+  font-size: t.$font-size-base;
+  font-weight: t.$font-weight-medium;
+  color: t.$color-error;
+}
+
+// ---------------------------------------------------------------------------
+// Button
+// ---------------------------------------------------------------------------
+
+.button-section {
+  margin-top: t.$space-6;
+  padding: 0 t.$space-6;
+}
+
+// ---------------------------------------------------------------------------
+// Footer
+// ---------------------------------------------------------------------------
+
+.footer-text {
+  text-align: center;
+  font-size: t.$font-size-md;
+  font-weight: t.$font-weight-medium;
+  color: t.$color-text-body;
+  margin-top: auto;
+  padding-top: t.$space-9;
+}
+
+.signup-link {
+  color: t.$color-primary;
+  text-decoration: none;
+  font-weight: t.$font-weight-semibold;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}

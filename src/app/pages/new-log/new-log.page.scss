@@ -1,0 +1,509 @@
+@use "../../presentation/shared/styles/tokens" as t;
+
+.new-log-page {
+  padding: t.$space-4 t.$space-4 t.$space-9;
+  background: t.$color-background;
+  min-height: 100%;
+}
+
+// ---------------------------------------------------------------------------
+// Header
+// ---------------------------------------------------------------------------
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: t.$space-5;
+}
+
+.back-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: t.$color-text-primary;
+  padding: t.$space-1;
+}
+
+.header-title {
+  font-size: t.$font-size-3xl;
+  font-weight: t.$font-weight-semibold;
+  color: t.$color-text-primary;
+  margin: 0;
+}
+
+.header-spacer {
+  width: 24px;
+}
+
+// ---------------------------------------------------------------------------
+// Log Meta (Vehicle + Odometer)
+// ---------------------------------------------------------------------------
+
+.log-meta {
+  display: flex;
+  gap: t.$space-3;
+  margin-bottom: t.$space-3;
+}
+
+.vehicle-select {
+  flex: 1;
+}
+
+.odometer-field {
+  flex: 0 0 107px;
+}
+
+.meta-label {
+  display: block;
+  font-size: t.$font-size-sm;
+  font-weight: t.$font-weight-semibold;
+  color: t.$color-text-secondary;
+  margin-bottom: t.$space-1;
+}
+
+.select-field {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: t.$space-2 t.$space-3;
+  background: t.$color-surface-alt;
+  border-radius: t.$radius-lg;
+  font-size: t.$font-size-sm;
+  font-weight: t.$font-weight-semibold;
+  color: t.$color-text-dark;
+  cursor: pointer;
+}
+
+.value-field {
+  padding: t.$space-2 t.$space-3;
+  background: t.$color-surface-alt;
+  border-radius: t.$radius-lg;
+  font-size: t.$font-size-sm;
+  font-weight: t.$font-weight-semibold;
+  color: t.$color-text-dark;
+}
+
+// ---------------------------------------------------------------------------
+// Info Row
+// ---------------------------------------------------------------------------
+
+.info-row {
+  display: flex;
+  gap: t.$space-6;
+  margin-bottom: t.$space-4;
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  gap: t.$space-1;
+  font-size: t.$font-size-sm;
+  color: t.$color-text-secondary;
+}
+
+// ---------------------------------------------------------------------------
+// Add Log Bar (visual separator with active indicator)
+// ---------------------------------------------------------------------------
+
+.add-log-bar {
+  position: relative;
+  height: 1px;
+  margin-bottom: t.$space-5;
+}
+
+.bar-line {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: #dadada;
+}
+
+.bar-active {
+  position: absolute;
+  top: -0.5px;
+  left: 32px;
+  width: 75px;
+  height: 2px;
+  background: t.$color-primary;
+}
+
+// ---------------------------------------------------------------------------
+// Jobs Section
+// ---------------------------------------------------------------------------
+
+.jobs-section {
+  margin-bottom: t.$space-6;
+}
+
+.jobs-title {
+  font-size: t.$font-size-xl;
+  font-weight: t.$font-weight-semibold;
+  color: t.$color-text-primary;
+  margin: 0 0 t.$space-4;
+}
+
+.add-job-btn {
+  display: flex;
+  align-items: center;
+  gap: t.$space-2;
+  padding: t.$space-2 t.$space-4;
+  background: t.$color-primary;
+  color: t.$color-on-primary;
+  border: none;
+  border-radius: t.$radius-sm;
+  cursor: pointer;
+  font-size: t.$font-size-base;
+  font-weight: t.$font-weight-bold;
+  box-shadow: 0 4px 8px 2px rgba(0, 0, 0, 0.1);
+  margin-bottom: t.$space-5;
+  float: right;
+}
+
+.add-job-icon {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+// ---------------------------------------------------------------------------
+// Job Card
+// ---------------------------------------------------------------------------
+
+.job-card {
+  clear: both;
+  background: #f6f6f6;
+  border-radius: 12px;
+  padding: t.$space-3;
+  margin-bottom: t.$space-4;
+  box-shadow: t.$shadow-card;
+}
+
+.job-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: t.$space-2;
+}
+
+.job-title {
+  font-size: t.$font-size-lg;
+  font-weight: t.$font-weight-semibold;
+  color: #333333;
+  margin: 0;
+}
+
+.job-actions {
+  display: flex;
+  align-items: center;
+  gap: t.$space-2;
+  color: t.$color-text-primary;
+}
+
+.action-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: t.$color-text-primary;
+  padding: 2px;
+}
+
+// ---------------------------------------------------------------------------
+// Labels
+// ---------------------------------------------------------------------------
+
+.job-labels {
+  display: flex;
+  align-items: center;
+  gap: t.$space-2;
+  margin-bottom: t.$space-3;
+  flex-wrap: wrap;
+}
+
+.label {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: t.$radius-xs;
+  font-size: t.$font-size-xs;
+  font-weight: t.$font-weight-semibold;
+  text-transform: uppercase;
+}
+
+.label-consumable {
+  background: t.$color-label-consumable-detail-bg;
+  color: t.$color-label-consumable-detail-text;
+}
+
+.label-service {
+  background: t.$color-label-service-detail-bg;
+  color: t.$color-label-service-detail-text;
+}
+
+.label-replacement {
+  background: t.$color-label-replacement-detail-bg;
+  color: t.$color-label-replacement-detail-text;
+}
+
+.label-repair {
+  background: t.$color-label-repair-detail-bg;
+  color: t.$color-label-repair-detail-text;
+}
+
+.add-tag-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 10px;
+  background: transparent;
+  border: 1px solid t.$color-border;
+  border-radius: t.$radius-xs;
+  cursor: pointer;
+  font-size: t.$font-size-xs;
+  font-weight: t.$font-weight-semibold;
+  color: #3e3e3e;
+}
+
+// ---------------------------------------------------------------------------
+// Field Sections
+// ---------------------------------------------------------------------------
+
+.field-section {
+  margin-bottom: t.$space-3;
+}
+
+.field-label {
+  display: block;
+  font-size: t.$font-size-sm;
+  font-weight: t.$font-weight-semibold;
+  color: #333333;
+  margin-bottom: t.$space-1;
+}
+
+.text-field {
+  padding: t.$space-3;
+  background: t.$color-background;
+  border-radius: t.$radius-xs;
+  font-size: t.$font-size-sm;
+  color: #333333;
+  min-height: 39px;
+}
+
+.items-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: t.$space-2;
+}
+
+.add-item-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 10px;
+  background: transparent;
+  border: 1px solid t.$color-border;
+  border-radius: t.$radius-xs;
+  cursor: pointer;
+  font-size: t.$font-size-xs;
+  font-weight: t.$font-weight-semibold;
+  color: #3e3e3e;
+}
+
+// ---------------------------------------------------------------------------
+// Items Table
+// ---------------------------------------------------------------------------
+
+.items-table {
+  font-size: t.$font-size-sm;
+}
+
+.table-header {
+  display: grid;
+  grid-template-columns: 1fr 40px 60px 60px;
+  gap: t.$space-2;
+  padding-bottom: t.$space-1;
+  border-bottom: 1px solid t.$color-surface-alt;
+  margin-bottom: t.$space-2;
+
+  span {
+    font-size: t.$font-size-xs;
+    font-weight: t.$font-weight-semibold;
+    color: #999999;
+    text-align: right;
+
+    &.col-name {
+      text-align: left;
+    }
+  }
+}
+
+.table-row {
+  display: grid;
+  grid-template-columns: 1fr 40px 60px 60px;
+  gap: t.$space-2;
+  padding: t.$space-1 0;
+  border-bottom: 1px solid t.$color-surface-alt;
+
+  span {
+    font-size: t.$font-size-sm;
+    text-align: right;
+    color: t.$color-text-primary;
+    font-weight: t.$font-weight-semibold;
+
+    &.col-name {
+      text-align: left;
+      color: #838383;
+      font-weight: t.$font-weight-medium;
+    }
+  }
+}
+
+.table-total {
+  display: flex;
+  justify-content: flex-end;
+  gap: t.$space-2;
+  margin-top: t.$space-3;
+  font-size: t.$font-size-base;
+  font-weight: t.$font-weight-semibold;
+  color: t.$color-text-primary;
+}
+
+// ---------------------------------------------------------------------------
+// Service Fields
+// ---------------------------------------------------------------------------
+
+.service-fields {
+  display: flex;
+  gap: t.$space-3;
+}
+
+.small-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.tiny-label {
+  font-size: t.$font-size-sm;
+  font-weight: t.$font-weight-semibold;
+  color: #838383;
+}
+
+.value-box {
+  padding: t.$space-1 t.$space-3;
+  background: t.$color-background;
+  border-radius: t.$radius-xs;
+  font-size: t.$font-size-sm;
+  font-weight: t.$font-weight-medium;
+  color: #333333;
+  min-width: 34px;
+  text-align: center;
+}
+
+// ---------------------------------------------------------------------------
+// Save Section
+// ---------------------------------------------------------------------------
+
+.save-section {
+  padding: 0 t.$space-6;
+}
+
+// =============================================================================
+// ADD ITEM POPUP (Bottom Sheet)
+// Figma: Dark overlay + white rounded card with handle bar
+// =============================================================================
+
+.popup-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: t.$space-4;
+}
+
+.popup-sheet {
+  background: t.$color-background;
+  border-radius: t.$radius-5xl;
+  padding: t.$space-6 t.$space-6 t.$space-7;
+  width: 100%;
+  max-width: 356px;
+  position: relative;
+}
+
+.popup-handle {
+  width: 61px;
+  height: 5px;
+  background: #f9f9f9;
+  border-radius: 133px;
+  margin: 0 auto t.$space-5;
+}
+
+.popup-title {
+  font-size: t.$font-size-2xl;
+  font-weight: t.$font-weight-semibold;
+  color: t.$color-text-primary;
+  text-align: center;
+  margin: 0 0 t.$space-7;
+}
+
+.popup-field {
+  margin-bottom: t.$space-4;
+}
+
+.popup-label {
+  display: block;
+  font-size: t.$font-size-md;
+  font-weight: t.$font-weight-semibold;
+  color: t.$color-text-primary;
+  margin-bottom: t.$space-2;
+}
+
+.popup-input {
+  display: block;
+  padding: t.$space-3 t.$space-4;
+  background: t.$color-surface-alt;
+  border: none;
+  border-radius: 10px;
+  font-family: t.$font-family-base;
+  font-size: t.$font-size-md;
+  color: t.$color-text-primary;
+  outline: none;
+
+  &:focus {
+    box-shadow: 0 0 0 2px t.$color-primary;
+  }
+
+  &--wide {
+    width: 100%;
+    height: 38px;
+  }
+
+  &--short {
+    width: 86px;
+    height: 38px;
+  }
+
+  &--medium {
+    width: 103px;
+    height: 38px;
+  }
+}
+
+.popup-row {
+  display: flex;
+  gap: t.$space-4;
+  margin-bottom: t.$space-7;
+}
+
+.popup-actions {
+  padding: 0 t.$space-1;
+}

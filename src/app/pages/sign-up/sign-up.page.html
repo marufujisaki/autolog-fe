@@ -1,0 +1,114 @@
+<div class="signup-page">
+  <!-- Title -->
+  <h1 class="page-title">Create Account</h1>
+
+  <!-- Form -->
+  <form [formGroup]="signUpForm" (ngSubmit)="onSubmit()" class="form-section">
+    <div class="form-group">
+      <app-input
+        [formControl]="firstNameControl!"
+        type="text"
+        placeholder="Nombre Apellido"
+        label="Full Name"
+        [errorMessage]="
+          firstNameControl?.touched && firstNameControl?.hasError('required')
+            ? 'Full name is required'
+            : undefined
+        "
+      ></app-input>
+    </div>
+
+    <div class="form-group">
+      <app-input
+        [formControl]="emailControl!"
+        type="email"
+        placeholder="mechanic@taller.com"
+        label="Email"
+        [errorMessage]="
+          emailControl?.touched && emailControl?.hasError('required')
+            ? 'Email is required'
+            : emailControl?.touched && emailControl?.hasError('email')
+              ? 'Enter a valid email'
+              : undefined
+        "
+      ></app-input>
+    </div>
+
+    <div class="form-group">
+      <app-input
+        [formControl]="lastNameControl!"
+        type="tel"
+        placeholder="+58233243"
+        label="Phone"
+      ></app-input>
+    </div>
+
+    <div class="form-group">
+      <app-input
+        [formControl]="passwordControl!"
+        type="password"
+        placeholder="••••••••••••••"
+        label="Password"
+        [errorMessage]="
+          passwordControl?.touched && passwordControl?.hasError('required')
+            ? 'Password is required'
+            : passwordControl?.touched && passwordControl?.hasError('minlength')
+              ? 'Password must be at least 8 characters'
+              : undefined
+        "
+      ></app-input>
+    </div>
+
+    <div class="form-group">
+      <app-input
+        [formControl]="confirmPasswordControl!"
+        type="password"
+        placeholder="••••••••••••••"
+        label="Confirm Password"
+        [errorMessage]="
+          confirmPasswordControl?.touched && confirmPasswordControl?.hasError('required')
+            ? 'Please confirm your password'
+            : undefined
+        "
+      ></app-input>
+    </div>
+
+    <!-- Error Message -->
+    @if (errorMessage) {
+    <div class="error-alert">{{ errorMessage }}</div>
+    }
+
+    <!-- Submit Button -->
+    <div class="button-section">
+      <app-button
+        variant="primary"
+        type="submit"
+        [fullWidth]="true"
+        [disabled]="!signUpForm.valid || isLoading"
+      >
+        Sign up
+      </app-button>
+    </div>
+  </form>
+
+  <!-- Divider -->
+  <div class="divider">
+    <span class="divider-line"></span>
+    <span class="divider-text">OR</span>
+    <span class="divider-line"></span>
+  </div>
+
+  <!-- Google Button -->
+  <button class="google-btn" type="button">
+    <img src="assets/icon/google.png" alt="Google" class="google-icon" />
+    <span>Continue with Google</span>
+  </button>
+
+  <!-- Footer -->
+  <p class="footer-text">
+    Already have an account?
+    <a href="javascript:void(0)" (click)="navigateToLogin()" class="login-link">
+      Log in
+    </a>
+  </p>
+</div>

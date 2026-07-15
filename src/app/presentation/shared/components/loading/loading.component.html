@@ -1,0 +1,10 @@
+<div
+  class="app-loading"
+  [class]="size"
+  role="status"
+  [attr.aria-label]="ariaLabel"
+>
+  <div class="app-loading__spinner"></div>
+
+  <p *ngIf="text" class="app-loading__text">{{ text }}</p>
+</div>

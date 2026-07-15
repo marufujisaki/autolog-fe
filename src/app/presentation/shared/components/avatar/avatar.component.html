@@ -1,0 +1,16 @@
+<div class="app-avatar" [class]="size" [attr.aria-label]="ariaLabel">
+  <img
+    *ngIf="imageUrl"
+    class="app-avatar__image"
+    [src]="imageUrl"
+    [attr.alt]="ariaLabel || 'Avatar'"
+  />
+
+  <span *ngIf="!imageUrl && initials" class="app-avatar__initials">
+    {{ initials }}
+  </span>
+
+  <span *ngIf="!imageUrl && !initials" class="app-avatar__placeholder">
+    👤
+  </span>
+</div>

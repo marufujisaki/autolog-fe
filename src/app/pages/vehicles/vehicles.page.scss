@@ -1,0 +1,138 @@
+@import "../../presentation/shared/styles/tokens";
+@import "../../presentation/shared/styles/mixins";
+
+.vehicles-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  background-color: var(--color-background);
+  padding: $space-4;
+
+  .vehicles-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: $space-5;
+
+    h1 {
+      margin: 0;
+      font-size: $font-size-lg;
+      font-weight: $font-weight-bold;
+      color: var(--color-text-primary);
+    }
+
+    .add-vehicle-btn {
+      flex-shrink: 0;
+    }
+  }
+
+  .vehicles-list {
+    display: flex;
+    flex-direction: column;
+    gap: $space-4;
+
+    .vehicle-card {
+      cursor: pointer;
+      transition:
+        box-shadow 0.3s ease,
+        transform 0.3s ease;
+
+      &:hover {
+        @include elevation("md");
+      }
+
+      .vehicle-card-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: $space-4;
+        padding: $space-4 0;
+
+        .vehicle-info {
+          flex: 1;
+
+          .vehicle-title {
+            margin: 0;
+            font-size: $font-size-base;
+            font-weight: $font-weight-bold;
+            color: var(--color-text-primary);
+          }
+
+          .vehicle-year {
+            margin: $space-1 0 $space-2 0;
+            font-size: $font-size-sm;
+            color: var(--color-text-secondary);
+          }
+
+          .vehicle-details {
+            display: flex;
+            gap: $space-2;
+            margin: $space-1 0;
+            font-size: $font-size-sm;
+
+            .detail-label {
+              color: var(--color-text-secondary);
+              font-weight: $font-weight-medium;
+            }
+
+            .detail-value {
+              color: var(--color-text-primary);
+            }
+          }
+        }
+
+        .vehicle-arrow {
+          flex-shrink: 0;
+
+          .arrow-icon {
+            color: var(--color-text-secondary);
+            font-size: $font-size-lg;
+          }
+        }
+      }
+    }
+  }
+
+  .create-vehicle-form {
+    display: flex;
+    flex-direction: column;
+    gap: $space-4;
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: $space-1;
+
+      app-input,
+      app-select {
+        &.error {
+          --input-border-color: var(--color-error);
+        }
+      }
+
+      .error-message {
+        margin: 0;
+        font-size: $font-size-xs;
+        color: var(--color-error);
+      }
+    }
+
+    .form-actions {
+      display: flex;
+      gap: $space-4;
+      margin-top: $space-4;
+
+      app-button {
+        flex: 1;
+      }
+    }
+  }
+
+  .toast {
+    position: fixed;
+    bottom: $space-4;
+    left: $space-4;
+    right: $space-4;
+    z-index: 1000;
+  }
+}

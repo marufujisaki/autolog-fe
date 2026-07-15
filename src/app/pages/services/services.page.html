@@ -1,0 +1,49 @@
+<div class="services-page">
+  <!-- Header -->
+  <header class="page-header">
+    <button class="back-btn" (click)="goBack()" aria-label="Go back">
+      <lucide-angular [img]="ChevronLeftIcon" [size]="24"></lucide-angular>
+    </button>
+    <h1 class="header-title">AutoLog</h1>
+    <button class="search-btn" aria-label="Search">
+      <lucide-angular [img]="SearchIcon" [size]="24"></lucide-angular>
+    </button>
+  </header>
+
+  <!-- Section Title -->
+  <h2 class="section-title">Services</h2>
+
+  <!-- Log Cards -->
+  <div class="log-list">
+    @for (log of mockLogs; track log.id) {
+      <div class="log-card" (click)="viewLog(log.id)">
+        <!-- Date + Labels Row -->
+        <div class="card-top">
+          <span class="log-date">{{ log.date }}</span>
+          <div class="labels">
+            @for (type of log.types; track type) {
+              <span class="label" [ngClass]="getTypeClass(type)">
+                {{ getTypeLabel(type) }}
+              </span>
+            }
+          </div>
+        </div>
+
+        <!-- Title -->
+        <h3 class="log-title">{{ log.title }}</h3>
+
+        <!-- Description -->
+        <p class="log-description">{{ log.description }}</p>
+
+        <!-- Vehicle + Arrow -->
+        <div class="card-bottom">
+          <div class="separator"></div>
+          <div class="vehicle-row">
+            <span class="vehicle-name">{{ log.vehicle }}</span>
+            <lucide-angular [img]="ChevronRightIcon" [size]="24" class="arrow-icon"></lucide-angular>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+</div>

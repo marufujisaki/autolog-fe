@@ -1,0 +1,43 @@
+<div class="features-page">
+  <!-- Back Button -->
+  <button class="back-btn" (click)="goBack()" aria-label="Go back">
+    <lucide-angular [img]="ChevronLeftIcon" [size]="24"></lucide-angular>
+  </button>
+
+  <!-- Header -->
+  <div class="header">
+    <h1 class="page-title">
+      Bienvenido a Auto<span class="text-primary">Log</span>
+    </h1>
+    <p class="page-subtitle">
+      Descubre lo que Auto<span class="text-primary">Log</span> puede hacer para
+      ayudarte a gestionar tu vehículo.
+    </p>
+  </div>
+
+  <!-- Feature Cards -->
+  <div class="feature-list">
+    @for (feature of features; track feature.title) {
+    <div class="feature-card">
+      <div class="feature-icon">
+        <lucide-angular [img]="feature.icon" [size]="24"></lucide-angular>
+      </div>
+      <div class="feature-content">
+        <h3 class="feature-title">{{ feature.title }}</h3>
+        <p class="feature-description">{{ feature.description }}</p>
+      </div>
+    </div>
+    }
+  </div>
+
+  <!-- Register Button -->
+  <div class="actions">
+    <app-button
+      variant="primary"
+      [fullWidth]="true"
+      (clicked)="navigateToSignUp()"
+    >
+      Registrarme
+    </app-button>
+  </div>
+</div>

@@ -1,0 +1,234 @@
+@import "../../presentation/shared/styles/tokens";
+
+.share-vehicle-content {
+  --background: var(--ion-color-light);
+
+  .loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: $space-6;
+    gap: $space-5;
+    min-height: 200px;
+
+    p {
+      color: var(--ion-color-medium);
+      text-align: center;
+    }
+  }
+
+  .vehicle-info {
+    padding: $space-4;
+    padding-top: $space-6;
+
+    ion-card {
+      margin: 0;
+      box-shadow: $shadow-sm;
+      border-radius: $radius-lg;
+
+      ion-card-header {
+        padding-bottom: $space-3;
+
+        ion-card-title {
+          font-size: 18px;
+          font-weight: 600;
+          color: var(--ion-color-dark);
+        }
+      }
+
+      ion-card-content {
+        padding-top: 0;
+
+        .vehicle-detail {
+          margin: $space-2 0;
+          color: var(--ion-color-dark);
+          font-size: 14px;
+
+          &:first-child {
+            margin-top: 0;
+          }
+        }
+      }
+    }
+  }
+
+  .share-section {
+    padding: $space-4;
+    padding-top: $space-6;
+
+    .no-share {
+      .no-share-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: $space-5;
+        padding: $space-6 $space-4;
+        border-radius: $radius-lg;
+        background: var(--ion-color-light-shade);
+        text-align: center;
+
+        ion-text {
+          width: 100%;
+
+          h2 {
+            margin: 0 0 $space-2 0;
+            color: var(--ion-color-dark);
+            font-size: 18px;
+            font-weight: 600;
+          }
+
+          p {
+            margin: 0;
+            color: var(--ion-color-medium);
+            font-size: 14px;
+          }
+        }
+
+        app-button {
+          width: 100%;
+        }
+      }
+    }
+
+    .active-share {
+      display: flex;
+      flex-direction: column;
+      gap: $space-6;
+
+      .qr-section,
+      .link-section,
+      .expiration-info,
+      .revoke-section {
+        h2 {
+          margin: 0 0 $space-3 0;
+          color: var(--ion-color-dark);
+          font-size: 16px;
+          font-weight: 600;
+        }
+      }
+
+      .qr-section {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: $space-3;
+
+        .qr-container {
+          display: flex;
+          justify-content: center;
+          padding: $space-4;
+          background: white;
+          border-radius: $radius-lg;
+          border: 1px solid var(--ion-color-light-shade);
+
+          qrcode {
+            img {
+              max-width: 100%;
+              height: auto;
+            }
+          }
+        }
+
+        .qr-description {
+          margin: 0;
+          color: var(--ion-color-medium);
+          font-size: 13px;
+          text-align: center;
+        }
+      }
+
+      .link-section {
+        display: flex;
+        flex-direction: column;
+        gap: $space-3;
+
+        .link-container {
+          display: flex;
+          gap: $space-2;
+          align-items: center;
+
+          .share-link-input {
+            flex: 1;
+            padding: $space-3 $space-3;
+            border: 1px solid var(--ion-color-light-shade);
+            border-radius: $radius-md;
+            font-size: 13px;
+            color: var(--ion-color-medium);
+            background: white;
+            font-family: monospace;
+            overflow-x: auto;
+
+            &:focus {
+              outline: none;
+              border-color: var(--ion-color-primary);
+            }
+          }
+
+          app-button {
+            white-space: nowrap;
+          }
+        }
+      }
+
+      .expiration-info {
+        padding: $space-3 $space-4;
+        background: var(--ion-color-warning-tint);
+        border-radius: $radius-md;
+
+        ion-text {
+          p {
+            margin: 0;
+            color: var(--ion-color-warning);
+            font-size: 13px;
+            font-weight: 500;
+          }
+        }
+      }
+
+      .revoke-section {
+        display: flex;
+        justify-content: center;
+        padding-top: $space-4;
+        border-top: 1px solid var(--ion-color-light-shade);
+
+        app-button {
+          width: 100%;
+          max-width: 200px;
+        }
+      }
+    }
+
+    .expired-share {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: $space-5;
+      padding: $space-6 $space-4;
+      border-radius: $radius-lg;
+      background: var(--ion-color-light-shade);
+      text-align: center;
+
+      ion-text {
+        width: 100%;
+
+        h2 {
+          margin: 0 0 $space-2 0;
+          color: var(--ion-color-medium);
+          font-size: 16px;
+          font-weight: 600;
+        }
+
+        p {
+          margin: 0;
+          color: var(--ion-color-medium);
+          font-size: 13px;
+        }
+      }
+
+      app-button {
+        width: 100%;
+      }
+    }
+  }
+}

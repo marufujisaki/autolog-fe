@@ -1,0 +1,48 @@
+<div class="welcome-page">
+  <!-- Header -->
+  <div class="header">
+    <h1 class="app-title">
+      Welcome to Auto<span class="text-primary">Log</span>
+    </h1>
+    <p class="app-subtitle">Tell us who you are to get started.</p>
+  </div>
+
+  <!-- Role Selection Cards -->
+  <div class="role-cards">
+    @for (userType of userTypes; track userType.id) {
+    <div
+      class="role-card"
+      [class.selected]="selectedType === userType.id"
+      (click)="selectUserType(userType)"
+    >
+      <div class="role-icon">
+        <lucide-angular [img]="userType.icon" [size]="24"></lucide-angular>
+      </div>
+      <div class="role-info">
+        <h3 class="role-title">{{ userType.title }}</h3>
+        <p class="role-description">{{ userType.description }}</p>
+      </div>
+    </div>
+    }
+  </div>
+
+  <!-- Next Button -->
+  <div class="actions">
+    <app-button
+      variant="primary"
+      [fullWidth]="true"
+      [disabled]="!selectedType"
+      (clicked)="navigateNext()"
+    >
+      Next
+    </app-button>
+  </div>
+
+  <!-- Login Link -->
+  <p class="login-link-text">
+    Already have an account?
+    <a href="javascript:void(0)" (click)="navigateToLogin()" class="login-link">
+      Log in
+    </a>
+  </p>
+</div>

@@ -1,0 +1,232 @@
+<div class="vehicle-detail-container">
+  <!-- Header with back button -->
+  <header class="vehicle-detail-header">
+    <button class="back-button" (click)="goBack()">
+      <span class="back-icon">&lt;</span>
+      {{ 'BACK' | translate }}
+    </button>
+    <h1>{{ 'VEHICLE_DETAILS' | translate }}</h1>
+    <div class="header-spacer"></div>
+  </header>
+
+  <!-- Loading state for vehicle -->
+  <app-loading
+    *ngIf="isLoadingVehicle"
+    [text]="'LOADING_VEHICLE' | translate"
+  ></app-loading>
+
+  <!-- Vehicle details card -->
+  <div *ngIf="!isLoadingVehicle && vehicle" class="vehicle-details-card">
+    <app-card variant="elevated">
+      <div class="vehicle-info-header">
+        <div class="vehicle-title-section">
+          <h2 class="vehicle-title">{{ vehicle.brand }} {{ vehicle.model }}</h2>
+          <p class="vehicle-year">{{ vehicle.year }}</p>
+        </div>
+        <app-button variant="secondary" (click)="openEditModal()">
+          {{ 'EDIT' | translate }}
+        </app-button>
+      </div>
+
+      <div class="vehicle-info-grid">
+        <div class="info-item" *ngIf="vehicle.licensePlate">
+          <span class="label">{{ 'LICENSE_PLATE' | translate }}</span>
+          <span class="value">{{ vehicle.licensePlate }}</span>
+        </div>
+        <div class="info-item" *ngIf="vehicle.vin">
+          <span class="label">{{ 'VIN' | translate }}</span>
+          <span class="value">{{ vehicle.vin }}</span>
+        </div>
+        <div class="info-item" *ngIf="vehicle.color">
+          <span class="label">{{ 'COLOR' | translate }}</span>
+          <span class="value">{{ vehicle.color }}</span>
+        </div>
+        <div class="info-item" *ngIf="vehicle.currentMileage !== undefined">
+          <span class="label">{{ 'CURRENT_MILEAGE' | translate }}</span>
+          <span class="value">{{ vehicle.currentMileage | number }} km</span>
+        </div>
+        <div class="info-item">
+          <span class="label">{{ 'CREATED_AT' | translate }}</span>
+          <span class="value">{{ formatDate(vehicle.createdAt) }}</span>
+        </div>
+      </div>
+    </app-card>
+  </div>
+
+  <!-- Maintenance logs section -->
+  <div class="logs-section" *ngIf="!isLoadingVehicle && vehicle">
+    <div class="logs-header">
+      <h3>{{ 'MAINTENANCE_LOGS' | translate }}</h3>
+      <app-button variant="primary" (click)="createLog()">
+        {{ 'ADD_LOG' | translate }}
+      </app-button>
+    </div>
+
+    <!-- Loading state for logs -->
+    <app-loading
+      *ngIf="isLoadingLogs"
+      [text]="'LOADING_LOGS' | translate"
+    ></app-loading>
+
+    <!-- Empty state for logs -->
+    <app-empty-state
+      *ngIf="!isLoadingLogs && logs.length === 0"
+      [title]="'NO_LOGS' | translate"
+      [description]="'NO_LOGS_MESSAGE' | translate"
+      [icon]="'clipboard'"
+    ></app-empty-state>
+
+    <!-- Logs list -->
+    <div class="logs-list" *ngIf="!isLoadingLogs && logs.length > 0">
+      <app-card
+        *ngFor="let log of logs"
+        variant="outlined"
+        class="log-card"
+        (click)="viewLogDetail(log.id)"
+      >
+        <div class="log-card-content">
+          <div class="log-info">
+            <h4 class="log-date">{{ formatDate(log.serviceDate) }}</h4>
+            <p class="log-cost" *ngIf="log.totalCost">
+              {{ 'TOTAL_COST' | translate }}: ${{ log.totalCost | number:
+              '1.2-2' }}
+            </p>
+            <p class="log-jobs-count">
+              {{ 'JOBS' | translate }}: {{ log.jobs?.length || 0 }}
+            </p>
+            <p class="log-photos-count" *ngIf="log.photos">
+              {{ 'PHOTOS' | translate }}: {{ log.photos.length }}
+            </p>
+          </div>
+          <div class="log-arrow">
+            <span class="arrow-icon">&gt;</span>
+          </div>
+        </div>
+      </app-card>
+    </div>
+
+    <!-- Pagination controls -->
+    <div class="pagination-controls" *ngIf="!isLoadingLogs && logs.length > 0">
+      <app-button
+        variant="secondary"
+        (click)="previousPage()"
+        [disabled]="!hasPreviousPage()"
+      >
+        {{ 'PREVIOUS' | translate }}
+      </app-button>
+      <span class="page-info"> {{ currentPage + 1 }} / {{ totalPages }} </span>
+      <app-button
+        variant="secondary"
+        (click)="nextPage()"
+        [disabled]="!hasNextPage()"
+      >
+        {{ 'NEXT' | translate }}
+      </app-button>
+    </div>
+  </div>
+
+  <!-- Edit vehicle modal -->
+  <app-modal
+    *ngIf="showEditModal && vehicle"
+    [title]="'EDIT_VEHICLE' | translate"
+    (onClose)="closeEditModal()"
+  >
+    <form [formGroup]="editVehicleForm" class="edit-vehicle-form">
+      <!-- Brand input -->
+      <div class="form-group">
+        <app-input
+          type="text"
+          [placeholder]="'BRAND_PLACEHOLDER' | translate"
+          formControlName="brand"
+          [class.error]="hasFieldError('brand')"
+        ></app-input>
+        <p class="error-message" *ngIf="hasFieldError('brand')">
+          {{ getFieldError('brand') | translate }}
+        </p>
+      </div>
+
+      <!-- Model input -->
+      <div class="form-group">
+        <app-input
+          type="text"
+          [placeholder]="'MODEL_PLACEHOLDER' | translate"
+          formControlName="model"
+          [class.error]="hasFieldError('model')"
+        ></app-input>
+        <p class="error-message" *ngIf="hasFieldError('model')">
+          {{ getFieldError('model') | translate }}
+        </p>
+      </div>
+
+      <!-- Year select -->
+      <div class="form-group">
+        <app-select
+          [options]="getYearOptions()"
+          [placeholder]="'YEAR_PLACEHOLDER' | translate"
+          formControlName="year"
+          [class.error]="hasFieldError('year')"
+        ></app-select>
+        <p class="error-message" *ngIf="hasFieldError('year')">
+          {{ getFieldError('year') | translate }}
+        </p>
+      </div>
+
+      <!-- License plate input (optional) -->
+      <div class="form-group">
+        <app-input
+          type="text"
+          [placeholder]="'LICENSE_PLATE_PLACEHOLDER' | translate"
+          formControlName="licensePlate"
+        ></app-input>
+      </div>
+
+      <!-- VIN input (optional) -->
+      <div class="form-group">
+        <app-input
+          type="text"
+          [placeholder]="'VIN_PLACEHOLDER' | translate"
+          formControlName="vin"
+        ></app-input>
+      </div>
+
+      <!-- Color input (optional) -->
+      <div class="form-group">
+        <app-input
+          type="text"
+          [placeholder]="'COLOR_PLACEHOLDER' | translate"
+          formControlName="color"
+        ></app-input>
+      </div>
+
+      <!-- Current mileage input (optional) -->
+      <div class="form-group">
+        <app-input
+          type="number"
+          [placeholder]="'CURRENT_MILEAGE_PLACEHOLDER' | translate"
+          formControlName="currentMileage"
+        ></app-input>
+      </div>
+
+      <!-- Form buttons -->
+      <div class="form-actions">
+        <app-button variant="secondary" (click)="closeEditModal()">
+          {{ 'CANCEL' | translate }}
+        </app-button>
+        <app-button
+          variant="primary"
+          (click)="submitEditVehicle()"
+          [disabled]="!editVehicleForm.valid"
+        >
+          {{ 'SAVE' | translate }}
+        </app-button>
+      </div>
+    </form>
+  </app-modal>
+
+  <!-- Toast notification -->
+  <app-toast
+    *ngIf="toastVisible"
+    [message]="toastMessage | translate"
+    class="toast"
+  ></app-toast>
+</div>

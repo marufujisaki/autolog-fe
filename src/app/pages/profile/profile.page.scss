@@ -1,0 +1,187 @@
+@use "../../presentation/shared/styles/tokens" as t;
+
+.profile-page {
+  padding: t.$space-6;
+  background: t.$color-background;
+  min-height: 100%;
+}
+
+// ---------------------------------------------------------------------------
+// Header
+// ---------------------------------------------------------------------------
+
+.profile-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: t.$space-8;
+}
+
+.app-brand {
+  font-family: t.$font-family-display;
+  font-size: t.$font-size-4xl;
+  font-weight: t.$font-weight-bold;
+  color: t.$color-text-primary;
+  margin: 0;
+}
+
+.logout-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: t.$color-text-primary;
+  padding: t.$space-2;
+}
+
+// ---------------------------------------------------------------------------
+// User Info
+// ---------------------------------------------------------------------------
+
+.user-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: t.$space-6;
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.user-name {
+  font-size: 26px;
+  font-weight: t.$font-weight-semibold;
+  color: t.$color-text-primary;
+  margin: 0;
+}
+
+.user-email {
+  font-size: t.$font-size-lg;
+  font-weight: t.$font-weight-medium;
+  color: t.$color-text-primary;
+  margin: 0;
+}
+
+.user-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: t.$color-border;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.edit-btn {
+  width: 47px;
+  height: 47px;
+  border-radius: 50%;
+  background: t.$color-surface-alt;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: t.$color-text-primary;
+}
+
+// ---------------------------------------------------------------------------
+// Divider
+// ---------------------------------------------------------------------------
+
+.divider {
+  height: 1px;
+  background: t.$color-border;
+  margin: t.$space-5 0;
+}
+
+// ---------------------------------------------------------------------------
+// Section Header
+// ---------------------------------------------------------------------------
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: t.$space-5;
+}
+
+.section-title {
+  font-size: t.$font-size-xl;
+  font-weight: t.$font-weight-bold;
+  color: t.$color-text-dark;
+  margin: 0;
+}
+
+.add-btn {
+  display: flex;
+  align-items: center;
+  gap: t.$space-2;
+  padding: t.$space-2 t.$space-4;
+  background: t.$color-primary;
+  color: t.$color-on-primary;
+  border: none;
+  border-radius: t.$radius-2xl;
+  cursor: pointer;
+  font-size: t.$font-size-base;
+  font-weight: t.$font-weight-bold;
+
+  &:hover {
+    background: t.$color-primary-dark;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Mechanics List
+// ---------------------------------------------------------------------------
+
+.mechanics-list {
+  display: flex;
+  flex-direction: column;
+  gap: t.$space-4;
+}
+
+.mechanic-card {
+  display: flex;
+  align-items: center;
+  gap: t.$space-4;
+  padding: t.$space-4 t.$space-5;
+  background: t.$color-surface;
+  border-radius: t.$radius-sm;
+  box-shadow: t.$shadow-md;
+}
+
+.mechanic-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: t.$color-surface-alt;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: t.$color-text-primary;
+}
+
+.mechanic-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.mechanic-name {
+  font-size: t.$font-size-md;
+  font-weight: t.$font-weight-semibold;
+  color: t.$color-text-primary;
+  margin: 0;
+}
+
+.mechanic-contact,
+.mechanic-phone {
+  font-size: t.$font-size-base;
+  font-weight: t.$font-weight-medium;
+  color: t.$color-text-secondary;
+  margin: 0;
+}

@@ -1,0 +1,26 @@
+<div class="app-toast" *ngIf="isVisible" [class]="type" role="alert">
+  <div class="app-toast__icon">
+    <span>{{
+      type === "success"
+        ? "✓"
+        : type === "error"
+          ? "✕"
+          : type === "warning"
+            ? "⚠"
+            : "ℹ"
+    }}</span>
+  </div>
+
+  <div class="app-toast__content">
+    {{ message }}
+  </div>
+
+  <button
+    type="button"
+    class="app-toast__close"
+    aria-label="Dismiss"
+    (click)="dismiss()"
+  >
+    ✕
+  </button>
+</div>

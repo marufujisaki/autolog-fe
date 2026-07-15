@@ -1,0 +1,142 @@
+@use "../../presentation/shared/styles/tokens" as t;
+@use "../../presentation/shared/styles/mixins" as m;
+
+.signup-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: t.$color-background;
+  padding: t.$space-6 t.$space-8;
+  overflow-y: auto;
+}
+
+// ---------------------------------------------------------------------------
+// Title
+// ---------------------------------------------------------------------------
+
+.page-title {
+  font-family: t.$font-family-base;
+  font-size: t.$font-size-4xl;
+  font-weight: t.$font-weight-bold;
+  color: t.$color-text-primary;
+  margin: t.$space-9 0 t.$space-6;
+  text-align: center;
+}
+
+// ---------------------------------------------------------------------------
+// Form
+// ---------------------------------------------------------------------------
+
+.form-section {
+  display: flex;
+  flex-direction: column;
+  gap: t.$space-3;
+}
+
+.form-group {
+  width: 100%;
+}
+
+app-input {
+  width: 100%;
+}
+
+// ---------------------------------------------------------------------------
+// Error Alert
+// ---------------------------------------------------------------------------
+
+.error-alert {
+  width: 100%;
+  padding: t.$space-3;
+  background-color: #fee2e2;
+  border-left: 4px solid t.$color-error;
+  border-radius: t.$radius-xs;
+  font-size: t.$font-size-base;
+  font-weight: t.$font-weight-medium;
+  color: t.$color-error;
+}
+
+// ---------------------------------------------------------------------------
+// Button
+// ---------------------------------------------------------------------------
+
+.button-section {
+  margin-top: t.$space-5;
+  padding: 0 t.$space-2;
+}
+
+// ---------------------------------------------------------------------------
+// Divider
+// ---------------------------------------------------------------------------
+
+.divider {
+  display: flex;
+  align-items: center;
+  gap: t.$space-3;
+  margin: t.$space-5 0;
+}
+
+.divider-line {
+  flex: 1;
+  height: 1px;
+  background: t.$color-border;
+}
+
+.divider-text {
+  font-size: t.$font-size-md;
+  font-weight: t.$font-weight-semibold;
+  color: t.$color-border;
+}
+
+// ---------------------------------------------------------------------------
+// Google Button
+// ---------------------------------------------------------------------------
+
+.google-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: t.$space-3;
+  width: 100%;
+  padding: t.$space-4;
+  background: t.$color-background;
+  border: 1px solid t.$color-primary;
+  border-radius: t.$radius-4xl;
+  cursor: pointer;
+  font-size: t.$font-size-lg;
+  font-weight: t.$font-weight-semibold;
+  color: t.$color-text-secondary;
+  transition: background t.$transition-duration-base t.$transition-easing;
+
+  &:hover {
+    background: t.$color-surface-alt;
+  }
+}
+
+.google-icon {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+}
+
+// ---------------------------------------------------------------------------
+// Footer
+// ---------------------------------------------------------------------------
+
+.footer-text {
+  text-align: center;
+  font-size: t.$font-size-md;
+  font-weight: t.$font-weight-medium;
+  color: t.$color-text-body;
+  margin-top: t.$space-6;
+}
+
+.login-link {
+  color: t.$color-primary;
+  text-decoration: none;
+  font-weight: t.$font-weight-semibold;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}

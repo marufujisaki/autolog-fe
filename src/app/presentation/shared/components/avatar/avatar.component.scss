@@ -1,0 +1,66 @@
+// =============================================================================
+// AvatarComponent — Design System
+// =============================================================================
+//
+// Pure SCSS styling driven exclusively by design tokens. No third-party UI
+// library is used for visual rendering (Requirements 12.3, 12.5).
+// =============================================================================
+
+@use "../../styles/tokens" as tokens;
+@use "../../styles/mixins" as mixins;
+
+.app-avatar {
+  @include mixins.flex-center();
+  @include mixins.elevation("sm");
+
+  width: tokens.$space-8;
+  height: tokens.$space-8;
+  border-radius: tokens.$radius-full;
+  background-color: tokens.$color-background;
+  border: 2px solid tokens.$color-border;
+  overflow: hidden;
+  flex-shrink: 0;
+  font-family: tokens.$font-family-base;
+
+  // ---------------------------------------------------------------------------
+  // Size: sm — small avatar
+  // ---------------------------------------------------------------------------
+  &.sm {
+    width: tokens.$space-6;
+    height: tokens.$space-6;
+    font-size: tokens.$font-size-xs;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Size: md — medium avatar (default)
+  // ---------------------------------------------------------------------------
+  &.md {
+    width: tokens.$space-8;
+    height: tokens.$space-8;
+    font-size: tokens.$font-size-base;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Size: lg — large avatar
+  // ---------------------------------------------------------------------------
+  &.lg {
+    width: tokens.$space-8;
+    height: tokens.$space-8;
+    font-size: tokens.$font-size-lg;
+  }
+
+  &__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  &__initials {
+    font-weight: tokens.$font-weight-bold;
+    color: tokens.$color-text-primary;
+  }
+
+  &__placeholder {
+    font-size: tokens.$font-size-lg;
+  }
+}

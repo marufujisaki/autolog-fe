@@ -1,0 +1,11 @@
+<div class="app-empty-state">
+  <div class="app-empty-state__icon">{{ icon }}</div>
+
+  <h3 class="app-empty-state__title">{{ title }}</h3>
+
+  <p *ngIf="description" class="app-empty-state__description">
+    {{ description }}
+  </p>
+
+  <ng-content></ng-content>
+</div>

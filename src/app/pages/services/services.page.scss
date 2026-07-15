@@ -1,0 +1,180 @@
+@use "../../presentation/shared/styles/tokens" as t;
+
+.services-page {
+  padding: t.$space-4 t.$space-3;
+  background: t.$color-background;
+  min-height: 100%;
+}
+
+// ---------------------------------------------------------------------------
+// Header
+// ---------------------------------------------------------------------------
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: t.$space-5;
+}
+
+.back-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: t.$color-text-primary;
+  padding: t.$space-1;
+}
+
+.header-title {
+  font-family: t.$font-family-display;
+  font-size: t.$font-size-4xl;
+  font-weight: t.$font-weight-bold;
+  color: t.$color-text-primary;
+  margin: 0;
+}
+
+.search-btn {
+  width: 47px;
+  height: 47px;
+  border-radius: 50%;
+  background: t.$color-surface-alt;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: t.$color-text-primary;
+}
+
+// ---------------------------------------------------------------------------
+// Section Title
+// ---------------------------------------------------------------------------
+
+.section-title {
+  font-size: t.$font-size-3xl;
+  font-weight: t.$font-weight-semibold;
+  color: t.$color-text-primary;
+  margin: 0 0 t.$space-4;
+}
+
+// ---------------------------------------------------------------------------
+// Log Cards
+// ---------------------------------------------------------------------------
+
+.log-list {
+  display: flex;
+  flex-direction: column;
+  gap: t.$space-5;
+}
+
+.log-card {
+  background: #f9fafb;
+  border-radius: t.$radius-xl;
+  padding: t.$space-4;
+  cursor: pointer;
+  transition: transform t.$transition-duration-base t.$transition-easing;
+
+  &:hover {
+    transform: translateY(-1px);
+  }
+}
+
+.card-top {
+  display: flex;
+  align-items: center;
+  gap: t.$space-3;
+  margin-bottom: t.$space-3;
+}
+
+.log-date {
+  font-size: t.$font-size-base;
+  font-weight: t.$font-weight-medium;
+  color: #323232;
+}
+
+.labels {
+  display: flex;
+  gap: t.$space-2;
+  flex-wrap: wrap;
+}
+
+.label {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: t.$font-size-xs;
+  font-weight: t.$font-weight-semibold;
+  text-transform: uppercase;
+}
+
+.label-replacement {
+  background: t.$color-label-replacement;
+  color: t.$color-on-primary;
+}
+
+.label-service {
+  background: t.$color-label-service;
+  color: t.$color-on-primary;
+}
+
+.label-repair {
+  background: t.$color-label-repair;
+  color: t.$color-on-primary;
+}
+
+.label-consumable {
+  background: t.$color-label-consumable;
+  color: t.$color-on-primary;
+}
+
+.label-inspection {
+  background: t.$color-primary;
+  color: t.$color-on-primary;
+}
+
+// ---------------------------------------------------------------------------
+// Card Content
+// ---------------------------------------------------------------------------
+
+.log-title {
+  font-size: t.$font-size-lg;
+  font-weight: t.$font-weight-semibold;
+  color: t.$color-text-primary;
+  margin: 0 0 t.$space-2;
+  white-space: pre-line;
+}
+
+.log-description {
+  font-size: 11px;
+  font-weight: t.$font-weight-regular;
+  color: #6b7280;
+  margin: 0 0 t.$space-3;
+  line-height: 1.5;
+}
+
+.card-bottom {
+  margin-top: t.$space-3;
+}
+
+.separator {
+  height: 1px;
+  background: t.$color-text-secondary;
+  opacity: 0.2;
+  margin-bottom: t.$space-3;
+}
+
+.vehicle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.vehicle-name {
+  font-size: 11px;
+  font-weight: t.$font-weight-regular;
+  color: #6b7280;
+}
+
+.arrow-icon {
+  color: t.$color-text-primary;
+}

@@ -1,0 +1,38 @@
+// =============================================================================
+// CardComponent — Design System
+// =============================================================================
+//
+// Pure SCSS styling driven exclusively by design tokens. No third-party UI
+// library is used for visual rendering (Requirements 12.3, 12.5).
+// =============================================================================
+
+@use "../../styles/tokens" as tokens;
+@use "../../styles/mixins" as mixins;
+
+.app-card {
+  background-color: tokens.$color-surface;
+  border-radius: tokens.$radius-lg;
+
+  // ---------------------------------------------------------------------------
+  // Variant: elevated — uses shadow for depth
+  // ---------------------------------------------------------------------------
+  &.elevated {
+    @include mixins.elevation("md");
+    border: none;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Variant: outlined — uses border instead of shadow
+  // ---------------------------------------------------------------------------
+  &.outlined {
+    border: 1px solid tokens.$color-border;
+    box-shadow: none;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Padding state
+  // ---------------------------------------------------------------------------
+  &.padded {
+    padding: tokens.$space-5;
+  }
+}

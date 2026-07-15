@@ -1,0 +1,215 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button (click)="goBack()"></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{ 'log.create.title' | translate }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="log-create-page">
+  <!-- General form errors -->
+  <div *ngIf="formErrors['general']" class="error-banner">
+    {{ 'error.' + formErrors['general'] | translate }}
+  </div>
+
+  <form [formGroup]="logForm" (ngSubmit)="submitLog()" class="log-form">
+    <!-- Service Date -->
+    <div class="form-group">
+      <label>{{ 'log.serviceDate' | translate }}</label>
+      <app-input
+        type="date"
+        formControlName="serviceDate"
+        [state]="formErrors['serviceDate'] ? 'error' : 'default'"
+      >
+      </app-input>
+      <span *ngIf="formErrors['serviceDate']" class="error-text">
+        {{ 'error.' + formErrors['serviceDate'] | translate }}
+      </span>
+    </div>
+
+    <!-- Mileage at Service -->
+    <div class="form-group">
+      <label>{{ 'log.mileageAtService' | translate }}</label>
+      <app-input
+        type="number"
+        min="0"
+        max="9999999"
+        formControlName="mileageAtService"
+        [state]="formErrors['mileageAtService'] ? 'error' : 'default'"
+      >
+      </app-input>
+      <span *ngIf="formErrors['mileageAtService']" class="error-text">
+        {{ 'error.' + formErrors['mileageAtService'] | translate }}
+      </span>
+    </div>
+
+    <!-- Jobs Section -->
+    <div class="jobs-section">
+      <h3>{{ 'log.jobs' | translate }}</h3>
+
+      <div *ngIf="formErrors['jobs']" class="error-banner">
+        {{ 'error.' + formErrors['jobs'] | translate }}
+      </div>
+
+      <div *ngFor="let job of jobs; let i = index" class="job-card">
+        <div class="job-header">
+          <span class="job-number"
+            >{{ 'log.job' | translate }} #{{ i + 1 }}</span
+          >
+          <app-button
+            type="button"
+            variant="ghost"
+            (clicked)="removeJob(i)"
+            [disabled]="jobs.length === 1"
+            ariaLabel="Remove job"
+          >
+            ✕
+          </app-button>
+        </div>
+
+        <!-- Job Title -->
+        <div class="form-group">
+          <label>{{ 'log.jobTitle' | translate }}</label>
+          <app-input
+            type="text"
+            [(ngModel)]="job.title"
+            [ngModelOptions]="{ standalone: true }"
+            [state]="jobErrors[i]?.['title'] ? 'error' : 'default'"
+          >
+          </app-input>
+          <span *ngIf="jobErrors[i]?.['title']" class="error-text">
+            {{ 'error.' + jobErrors[i]['title'] | translate }}
+          </span>
+        </div>
+
+        <!-- Job Description -->
+        <div class="form-group">
+          <label>{{ 'log.jobDescription' | translate }}</label>
+          <app-input
+            type="text"
+            [(ngModel)]="job.description"
+            [ngModelOptions]="{ standalone: true }"
+          >
+          </app-input>
+        </div>
+
+        <!-- Maintenance Types (Multi-Select Chips) -->
+        <div class="form-group">
+          <label>{{ 'log.maintenanceTypes' | translate }}</label>
+          <div class="maintenance-types">
+            <app-chip
+              *ngFor="let type of maintenanceTypes"
+              [variant]="job.maintenanceTypes.includes(type) ? 'selected' : 'default'"
+              (click)="updateJobTypes(i, job.maintenanceTypes.includes(type) ? job.maintenanceTypes.filter(t => t !== type) : [...job.maintenanceTypes, type])"
+            >
+              {{ 'maintenanceType.' + type | translate }}
+            </app-chip>
+          </div>
+          <span *ngIf="jobErrors[i]?.['maintenanceTypes']" class="error-text">
+            {{ 'error.' + jobErrors[i]['maintenanceTypes'] | translate }}
+          </span>
+        </div>
+
+        <!-- Job Cost -->
+        <div class="form-group">
+          <label>{{ 'log.jobCost' | translate }}</label>
+          <app-input
+            type="number"
+            min="0"
+            [(ngModel)]="job.cost"
+            [ngModelOptions]="{ standalone: true }"
+            placeholder="0.00"
+          >
+          </app-input>
+        </div>
+      </div>
+
+      <!-- Add Job Button -->
+      <app-button
+        type="button"
+        variant="secondary"
+        (clicked)="addJob()"
+        [disabled]="jobs.length >= 50"
+        class="add-job-btn"
+      >
+        + {{ 'log.addJob' | translate }}
+      </app-button>
+    </div>
+
+    <!-- Cost Section -->
+    <div class="cost-section">
+      <h3>{{ 'log.cost' | translate }}</h3>
+
+      <div class="form-group">
+        <label>{{ 'log.totalCost' | translate }}</label>
+        <app-input
+          type="number"
+          min="0"
+          formControlName="totalCost"
+          placeholder="{{ 'log.autoCalculated' | translate }}"
+        >
+        </app-input>
+      </div>
+
+      <div class="calculated-cost">
+        <strong>{{ 'log.calculatedTotal' | translate }}: </strong>
+        <span>{{ calculatedTotalCost | currency:'USD':'symbol':'1.2-2' }}</span>
+      </div>
+    </div>
+
+    <!-- Photo Upload Section -->
+    <div class="photo-section">
+      <h3>{{ 'log.photos' | translate }}</h3>
+
+      <div *ngIf="formErrors['photos']" class="error-banner">
+        {{ 'error.' + formErrors['photos'] | translate }}
+      </div>
+
+      <div class="photo-input-wrapper">
+        <input
+          type="file"
+          multiple
+          accept="image/jpeg,image/png,image/webp"
+          (change)="onPhotoSelect($event)"
+          #photoInput
+          hidden
+        />
+        <app-button
+          type="button"
+          variant="primary"
+          (clicked)="photoInput.click()"
+        >
+          {{ 'log.uploadPhotos' | translate }}
+        </app-button>
+      </div>
+
+      <!-- Photo Previews -->
+      <div *ngIf="previewUrls.length > 0" class="photo-previews">
+        <div
+          *ngFor="let url of previewUrls; let i = index"
+          class="photo-preview"
+        >
+          <img [src]="url" alt="Photo preview" />
+          <app-button
+            type="button"
+            variant="ghost"
+            class="remove-photo-btn"
+            (clicked)="removePhoto(i)"
+            ariaLabel="Remove photo"
+          >
+            ✕
+          </app-button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Submit Button -->
+    <div class="form-actions">
+      <app-button type="submit" variant="primary" [disabled]="isLoading">
+        <span *ngIf="!isLoading">{{ 'log.create' | translate }}</span>
+        <app-loading *ngIf="isLoading"></app-loading>
+      </app-button>
+    </div>
+  </form>
+</ion-content>

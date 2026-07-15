@@ -1,0 +1,142 @@
+// =============================================================================
+// Design Tokens — AutoLog Design System
+// =============================================================================
+// Extracted from Figma file: AutoLog (LKJGuYzghFvIccRdhz8f5U)
+// =============================================================================
+
+// -----------------------------------------------------------------------------
+// Color tokens
+// -----------------------------------------------------------------------------
+$color-primary: #306fd3;
+$color-primary-dark: #1e3a8a;
+$color-primary-light: #62a9f3;
+
+$color-secondary: #1b223a;
+$color-secondary-dark: #070707;
+$color-secondary-light: #73747a;
+
+$color-accent: #8a38f5;
+
+$color-background: #ffffff;
+$color-surface: #ffffff;
+$color-surface-alt: #f4f5fc;
+$color-surface-gray: #f6f6f6;
+$color-surface-light-gray: #f8cfa9d;
+
+$color-text-primary: #070707;
+$color-text-secondary: #73747a;
+$color-text-disabled: #b1b1be;
+$color-text-dark: #1b223a;
+$color-text-body: #333333;
+
+$color-border: #d9d9d9;
+$color-border-light: #dadada;
+$color-border-focus: $color-primary;
+
+$color-error: #d64545;
+$color-warning: #f8c190;
+$color-success: #84d3b3;
+$color-info: $color-primary;
+
+$color-disabled: #e5e7eb;
+
+// Label colors
+$color-label-replacement: #bc96ff;
+$color-label-replacement-detail-bg: #ede0ff;
+$color-label-replacement-detail-text: #7838bc;
+$color-label-service: #62a9f3;
+$color-label-service-detail-bg: #dbeafe;
+$color-label-service-detail-text: #1e3a8a;
+$color-label-repair: #f8c190;
+$color-label-repair-detail-bg: #f8e4d2;
+$color-label-repair-detail-text: #e78f42;
+$color-label-consumable: #84d3b3;
+$color-label-consumable-detail-bg: #d1fae5;
+$color-label-consumable-detail-text: #065f46;
+
+// "on-*" tokens
+$color-on-primary: #ffffff;
+$color-on-secondary: #ffffff;
+$color-on-accent: #ffffff;
+$color-on-error: #ffffff;
+$color-on-warning: #1b223a;
+$color-on-success: #ffffff;
+$color-on-surface: $color-text-primary;
+
+// -----------------------------------------------------------------------------
+// Border radius tokens
+// -----------------------------------------------------------------------------
+$radius-xs: 6px;
+$radius-sm: 7px;
+$radius-md: 8px;
+$radius-lg: 14px;
+$radius-xl: 16px;
+$radius-2xl: 18px;
+$radius-3xl: 27px;
+$radius-4xl: 32px;
+$radius-5xl: 40px;
+$radius-full: 999px;
+
+// -----------------------------------------------------------------------------
+// Shadow tokens
+// -----------------------------------------------------------------------------
+$shadow-sm: 0 1px 4px 0 rgba(0, 0, 0, 0.05);
+$shadow-md: 0 4px 8px 2px rgba(0, 0, 0, 0.05);
+$shadow-lg: 0 2px 4px 1px rgba(0, 0, 0, 0.25);
+$shadow-card: 0 4px 8px 2px rgba(0, 0, 0, 0.04);
+$shadow-focus: 0 1px 4px 0 rgba(58, 134, 255, 1);
+
+// -----------------------------------------------------------------------------
+// Typography tokens
+// -----------------------------------------------------------------------------
+$font-family-base: "Inter", Arial, Helvetica, sans-serif;
+$font-family-display: "Montserrat", Arial, Helvetica, sans-serif;
+
+$font-size-xs: 0.5rem; // 8px
+$font-size-sm: 0.625rem; // 10px
+$font-size-base: 0.75rem; // 12px
+$font-size-md: 0.875rem; // 14px
+$font-size-lg: 1rem; // 16px
+$font-size-xl: 1.125rem; // 18px
+$font-size-2xl: 1.25rem; // 20px
+$font-size-3xl: 1.375rem; // 22px
+$font-size-4xl: 1.5rem; // 24px
+$font-size-5xl: 2.25rem; // 36px
+
+$font-weight-regular: 400;
+$font-weight-medium: 500;
+$font-weight-semibold: 600;
+$font-weight-bold: 700;
+
+$line-height-tight: 1.2;
+$line-height-normal: 1.5;
+$line-height-relaxed: 1.75;
+
+// -----------------------------------------------------------------------------
+// Spacing tokens (4px base unit)
+// -----------------------------------------------------------------------------
+$space-1: 4px;
+$space-2: 8px;
+$space-3: 12px;
+$space-4: 16px;
+$space-5: 20px;
+$space-6: 24px;
+$space-7: 32px;
+$space-8: 40px;
+$space-9: 48px;
+$space-10: 56px;
+$space-11: 64px;
+
+// -----------------------------------------------------------------------------
+// Motion tokens
+// -----------------------------------------------------------------------------
+$transition-duration-fast: 150ms;
+$transition-duration-base: 200ms;
+$transition-easing: ease-in-out;
+
+// -----------------------------------------------------------------------------
+// Breakpoint tokens
+// -----------------------------------------------------------------------------
+$breakpoint-sm: 480px;
+$breakpoint-md: 768px;
+$breakpoint-lg: 1024px;

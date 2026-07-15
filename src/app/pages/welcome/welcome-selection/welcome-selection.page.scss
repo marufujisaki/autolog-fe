@@ -1,0 +1,136 @@
+@use "../../../presentation/shared/styles/tokens" as t;
+@use "../../../presentation/shared/styles/mixins" as m;
+
+.welcome-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: t.$color-background;
+  padding: t.$space-6 t.$space-6 t.$space-7;
+}
+
+// ---------------------------------------------------------------------------
+// Header
+// ---------------------------------------------------------------------------
+
+.header {
+  padding-top: 80px;
+  text-align: center;
+  margin-bottom: t.$space-9;
+}
+
+.app-title {
+  font-family: t.$font-family-display;
+  font-size: t.$font-size-4xl;
+  font-weight: t.$font-weight-bold;
+  color: t.$color-text-primary;
+  margin: 0 0 t.$space-2;
+}
+
+.text-primary {
+  color: t.$color-primary;
+}
+
+.app-subtitle {
+  font-size: t.$font-size-md;
+  font-weight: t.$font-weight-regular;
+  color: t.$color-text-secondary;
+  margin: 0;
+}
+
+// ---------------------------------------------------------------------------
+// Role Cards
+// ---------------------------------------------------------------------------
+
+.role-cards {
+  display: flex;
+  flex-direction: column;
+  gap: t.$space-4;
+  margin-bottom: auto;
+}
+
+.role-card {
+  display: flex;
+  align-items: center;
+  gap: t.$space-4;
+  padding: t.$space-5;
+  background: t.$color-surface;
+  border-radius: t.$radius-md;
+  box-shadow: t.$shadow-md;
+  cursor: pointer;
+  transition: all t.$transition-duration-base t.$transition-easing;
+  border: 2px solid transparent;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: t.$shadow-lg;
+  }
+
+  &.selected {
+    border-color: t.$color-primary;
+    box-shadow: t.$shadow-focus;
+  }
+}
+
+.role-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: t.$color-surface-alt;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: t.$color-text-primary;
+}
+
+.role-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.role-title {
+  font-size: t.$font-size-md;
+  font-weight: t.$font-weight-semibold;
+  color: t.$color-text-primary;
+  margin: 0;
+}
+
+.role-description {
+  font-size: 9px;
+  font-weight: t.$font-weight-regular;
+  color: t.$color-text-secondary;
+  margin: 0;
+}
+
+// ---------------------------------------------------------------------------
+// Actions
+// ---------------------------------------------------------------------------
+
+.actions {
+  margin-top: t.$space-9;
+  padding: 0 t.$space-8;
+}
+
+// ---------------------------------------------------------------------------
+// Login Link
+// ---------------------------------------------------------------------------
+
+.login-link-text {
+  text-align: center;
+  font-size: t.$font-size-md;
+  font-weight: t.$font-weight-medium;
+  color: t.$color-text-body;
+  margin-top: t.$space-6;
+}
+
+.login-link {
+  color: t.$color-primary;
+  text-decoration: none;
+  font-weight: t.$font-weight-semibold;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}

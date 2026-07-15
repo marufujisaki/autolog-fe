@@ -1,0 +1,48 @@
+<div class="profile-page">
+  <!-- Header -->
+  <header class="profile-header">
+    <h1 class="app-brand">AutoLog</h1>
+    <button class="logout-btn" (click)="logout()" aria-label="Log out">
+      <lucide-angular [img]="LogOutIcon" [size]="24"></lucide-angular>
+    </button>
+  </header>
+
+  <!-- User Info -->
+  <div class="user-section">
+    <div class="user-info">
+      <h2 class="user-name">{{ userName }}</h2>
+      <p class="user-email">{{ userEmail }}</p>
+    </div>
+    <div class="user-avatar">
+      <button class="edit-btn" aria-label="Edit profile">
+        <lucide-angular [img]="PencilIcon" [size]="20"></lucide-angular>
+      </button>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Mechanics Section -->
+  <div class="section-header">
+    <h3 class="section-title">Mechanics</h3>
+    <button class="add-btn">
+      <lucide-angular [img]="PlusIcon" [size]="15"></lucide-angular>
+      <span>Add</span>
+    </button>
+  </div>
+
+  <div class="mechanics-list">
+    @for (mechanic of mechanics; track mechanic.name) {
+    <div class="mechanic-card">
+      <div class="mechanic-icon">
+        <lucide-angular [img]="WrenchIcon" [size]="24"></lucide-angular>
+      </div>
+      <div class="mechanic-info">
+        <h4 class="mechanic-name">{{ mechanic.name }}</h4>
+        <p class="mechanic-contact">{{ mechanic.contact }}</p>
+        <p class="mechanic-phone">{{ mechanic.phone }}</p>
+      </div>
+    </div>
+    }
+  </div>
+</div>

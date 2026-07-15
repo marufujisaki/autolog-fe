@@ -1,0 +1,130 @@
+// =============================================================================
+// ButtonComponent — Design System
+// =============================================================================
+//
+// Pure SCSS styling driven exclusively by design tokens. No third-party UI
+// library is used for visual rendering (Requirements 12.3, 12.5).
+// =============================================================================
+
+@use "../../styles/tokens" as tokens;
+@use "../../styles/mixins" as mixins;
+
+.app-button {
+  @include mixins.flex-center(row, tokens.$space-2);
+  @include mixins.transition(
+    "background-color, border-color, color, box-shadow"
+  );
+  @include mixins.focus-ring();
+
+  font-family: tokens.$font-family-base;
+  font-size: tokens.$font-size-base;
+  font-weight: tokens.$font-weight-medium;
+  line-height: tokens.$line-height-normal;
+
+  border: 1px solid transparent;
+  border-radius: tokens.$radius-md;
+  padding: tokens.$space-3 tokens.$space-5;
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+
+  &.full-width {
+    width: 100%;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Variant: primary — filled background using the primary color token.
+  // Figma: 300x55, border-radius 40px, font-size 20px bold, white text
+  // ---------------------------------------------------------------------------
+  &.primary {
+    background-color: tokens.$color-primary;
+    color: tokens.$color-on-primary;
+    border-color: tokens.$color-primary;
+    border-radius: tokens.$radius-5xl;
+    font-size: tokens.$font-size-2xl;
+    font-weight: tokens.$font-weight-bold;
+    padding: tokens.$space-4 tokens.$space-7;
+    min-height: 55px;
+
+    &:hover:not(:disabled) {
+      background-color: tokens.$color-primary-dark;
+      border-color: tokens.$color-primary-dark;
+    }
+
+    &:active:not(:disabled) {
+      background-color: tokens.$color-primary-dark;
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Variant: secondary — outlined style using the secondary color token.
+  // ---------------------------------------------------------------------------
+  &.secondary {
+    background-color: tokens.$color-surface;
+    color: tokens.$color-secondary;
+    border-color: tokens.$color-secondary;
+
+    &:hover:not(:disabled) {
+      background-color: tokens.$color-background;
+      border-color: tokens.$color-secondary-dark;
+      color: tokens.$color-secondary-dark;
+    }
+
+    &:active:not(:disabled) {
+      background-color: tokens.$color-border;
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Variant: ghost — transparent background, colored text/border on hover.
+  // ---------------------------------------------------------------------------
+  &.ghost {
+    background-color: transparent;
+    color: tokens.$color-primary;
+    border-color: transparent;
+
+    &:hover:not(:disabled) {
+      background-color: tokens.$color-background;
+      color: tokens.$color-primary-dark;
+      border-color: tokens.$color-primary-light;
+    }
+
+    &:active:not(:disabled) {
+      background-color: tokens.$color-border;
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Variant: icon-button — square/circular shape sized for icon-only content.
+  // ---------------------------------------------------------------------------
+  &.icon-button {
+    background-color: transparent;
+    color: tokens.$color-secondary;
+    border-color: transparent;
+    border-radius: tokens.$radius-full;
+    padding: tokens.$space-2;
+    width: tokens.$space-8;
+    height: tokens.$space-8;
+
+    &:hover:not(:disabled) {
+      background-color: tokens.$color-background;
+      color: tokens.$color-secondary-dark;
+    }
+
+    &:active:not(:disabled) {
+      background-color: tokens.$color-border;
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Disabled state — shared across all variants.
+  // ---------------------------------------------------------------------------
+  &:disabled {
+    background-color: tokens.$color-disabled;
+    color: tokens.$color-text-disabled;
+    border-color: tokens.$color-disabled;
+    cursor: not-allowed;
+    pointer-events: none;
+    opacity: 0.6;
+  }
+}

@@ -1,0 +1,69 @@
+// =============================================================================
+// ChipComponent — Design System
+// =============================================================================
+//
+// Pure SCSS styling driven exclusively by design tokens. No third-party UI
+// library is used for visual rendering (Requirements 12.3, 12.5).
+// =============================================================================
+
+@use "../../styles/tokens" as tokens;
+@use "../../styles/mixins" as mixins;
+
+.app-chip {
+  @include mixins.flex-center(row, tokens.$space-1);
+  @include mixins.transition("background-color, border-color, color");
+
+  background-color: tokens.$color-background;
+  color: tokens.$color-text-primary;
+  border: 1px solid tokens.$color-border;
+  border-radius: tokens.$radius-full;
+  padding: tokens.$space-1 tokens.$space-3;
+  font-size: tokens.$font-size-sm;
+  font-weight: tokens.$font-weight-medium;
+  font-family: tokens.$font-family-base;
+  white-space: nowrap;
+
+  // ---------------------------------------------------------------------------
+  // Variant: selected — filled background using the primary color token.
+  // ---------------------------------------------------------------------------
+  &.selected {
+    background-color: tokens.$color-primary;
+    color: tokens.$color-on-primary;
+    border-color: tokens.$color-primary;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Disabled state
+  // ---------------------------------------------------------------------------
+  &.disabled {
+    background-color: tokens.$color-disabled;
+    color: tokens.$color-text-disabled;
+    border-color: tokens.$color-disabled;
+    cursor: not-allowed;
+  }
+
+  &__remove {
+    @include mixins.transition("color");
+    @include mixins.focus-ring();
+
+    background: transparent;
+    border: none;
+    color: inherit;
+    cursor: pointer;
+    font-size: tokens.$font-size-xs;
+    padding: 0;
+    min-width: auto;
+    height: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover:not(:disabled) {
+      color: tokens.$color-error;
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+    }
+  }
+}

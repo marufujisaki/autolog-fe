@@ -1,14 +1,97 @@
 import { Routes } from '@angular/router';
+import { authGuard } from './presentation/guards/auth.guard';
+import { roleGuard } from './presentation/guards/role.guard';
+import { UserType } from './core/models/user.model';
 
-import { WelcomePage } from './welcome.page';
-
+/**
+ * Root application routes with lazy loading and guards.
+ * Implements Requirement 11.1: App routes with lazy loading and guards.
+ * Implements Requirement 3.6: Authentication and authorization checks.
+ *
+ * Route Structure:
+ * - Public routes (welcome, login, sign-up) - no guards
+ * - Authenticated routes (tabs, vehicles, profile) - authGuard
+ * - Role-restricted routes (workshop) - authGuard + roleGuard(MECANICO)
+ *
+ * All routes use lazy loading to optimize bundle size and initial load time.
+ * The router uses Ionic's RouteReuseStrategy (configured in app.config.ts)
+ * and IonRouterOutlet (used in app.component template) for native navigation integration.
+ */
 export const routes: Routes = [
+  // Public routes - no authentication required
   {
     path: '',
-    component: WelcomePage,
+    loadChildren: () =>
+      import('./pages/welcome/welcome.routes').then((m) => m.routes),
   },
+  {
+    path: 'login',
+    loadComponent: () =>
+      import('./pages/login/login.page').then((m) => m.LoginPage),
+  },
+  {
+    path: 'sign-up',
+    loadComponent: () =>
+      import('./pages/sign-up/sign-up.page').then((m) => m.SignUpPage),
+  },
+  {
+    path: 'forgot-password',
+    loadComponent: () =>
+      import('./pages/forgot-password/forgot-password.page').then(
+        (m) => m.ForgotPasswordPage,
+      ),
+  },
+  {
+    path: 'forgot-password/reset',
+    loadComponent: () =>
+      import('./pages/forgot-password/reset-password/reset-password.page').then(
+        (m) => m.ResetPasswordPage,
+      ),
+  },
+
+  // Authenticated routes - authGuard required
   {
     path: 'tabs',
     loadChildren: () => import('./tabs/tabs.routes').then((m) => m.routes),
+    canActivate: [authGuard],
+  },
+  {
+    path: 'vehicles',
+    loadChildren: () =>
+      import('./pages/vehicles/vehicles.routes').then((m) => m.vehiclesRoutes),
+    canActivate: [authGuard],
+  },
+  {
+    path: 'services',
+    loadComponent: () =>
+      import('./pages/services/services.page').then((m) => m.ServicesPage),
+    canActivate: [authGuard],
+  },
+  {
+    path: 'new-log',
+    loadComponent: () =>
+      import('./pages/new-log/new-log.page').then((m) => m.NewLogPage),
+    canActivate: [authGuard],
+  },
+  {
+    path: 'profile',
+    loadComponent: () =>
+      import('./pages/profile/profile.page').then((m) => m.ProfilePage),
+    canActivate: [authGuard],
+  },
+
+  // Role-restricted routes
+  // Workshop page is only accessible to MECANICO users (Requirement 3.6, 9.5)
+  {
+    path: 'workshop',
+    loadComponent: () =>
+      import('./pages/workshop/workshop.page').then((m) => m.WorkshopPage),
+    canActivate: [authGuard, roleGuard([UserType.MECANICO])],
+  },
+
+  // Catch-all redirect to welcome page
+  {
+    path: '**',
+    redirectTo: '',
   },
 ];
