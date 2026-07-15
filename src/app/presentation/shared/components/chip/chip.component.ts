@@ -43,6 +43,9 @@ export class ChipComponent {
   @Output() removed = new EventEmitter<void>();
 
   onRemove(event: Event): void {
+    if (!this.removable) {
+      return;
+    }
     event.stopPropagation();
     this.removed.emit();
   }

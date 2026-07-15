@@ -48,8 +48,22 @@ describe('VehiclesPage', () => {
       'updateVehicle',
     ]);
     const routerSpy = jasmine.createSpyObj('Router', ['navigate']);
-    const translateSpy = jasmine.createSpyObj('TranslateService', ['use']);
+    const translateSpy = jasmine.createSpyObj('TranslateService', [
+      'use',
+      'translate',
+      'instant',
+      'get',
+    ]);
     translateSpy.currentLang = 'es';
+    (translateSpy.translate as any).and.callFake((key: string) => {
+      const signal: any = () => key;
+      signal.set = () => {};
+      signal.update = () => {};
+      signal.asReadonly = () => signal;
+      return signal;
+    });
+    translateSpy.instant.and.callFake((key: string) => key);
+    (translateSpy.get as any).and.callFake((key: string) => of(key));
 
     await TestBed.configureTestingModule({
       imports: [VehiclesPage, ReactiveFormsModule, TranslatePipe],
@@ -162,7 +176,7 @@ describe('VehiclesPage', () => {
       component.closeCreateModal();
 
       expect(component.showCreateModal).toBeFalse();
-      expect(component.createVehicleForm.get('brand')?.value).toBe('');
+      expect(component.createVehicleForm.get('brand')?.value).toBeNull();
     });
   });
 
@@ -273,11 +287,11 @@ describe('VehiclesPage', () => {
     });
 
     it('should generate year options', () => {
-      const years: number[] = component.getYearOptions() as unknown as number[];
+      const years = component.getYearOptions();
 
       expect(years.length).toBeGreaterThan(0);
-      expect(years[0]).toBe(new Date().getFullYear() + 1);
-      expect(years[years.length - 1]).toBe(1886);
+      expect(years[0].value).toBe(new Date().getFullYear() + 1);
+      expect(years[years.length - 1].value).toBe(1886);
     });
   });
 });

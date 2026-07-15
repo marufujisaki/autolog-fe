@@ -7,22 +7,25 @@
 
   <!-- Form -->
   <form [formGroup]="form" (ngSubmit)="onSubmit()" class="form-section">
+    <!-- Make (with autocomplete) -->
     <div class="form-group">
-      <app-input
-        [formControl]="brandControl!"
-        type="text"
-        placeholder="Chevrolet"
+      <app-autocomplete
+        [formControl]="brandControl"
         label="Make"
-      ></app-input>
+        placeholder="Chevrolet"
+        [searchFn]="searchMakes"
+        (optionSelected)="onMakeSelected($event)"
+      ></app-autocomplete>
     </div>
 
+    <!-- Model (with autocomplete, depends on selected make) -->
     <div class="form-group">
-      <app-input
-        [formControl]="modelControl!"
-        type="text"
-        placeholder="Optra"
+      <app-autocomplete
+        [formControl]="modelControl"
         label="Model"
-      ></app-input>
+        placeholder="Aveo"
+        [searchFn]="searchModels"
+      ></app-autocomplete>
     </div>
 
     <div class="form-row">
@@ -64,12 +67,15 @@
 
     <!-- Color picker visual (decorative) -->
     <div class="color-picker">
-      <span class="color-dot" style="background: #FF0000"></span>
-      <span class="color-dot" style="background: #0000FF"></span>
-      <span class="color-dot" style="background: #00FF00"></span>
-      <span class="color-dot" style="background: #FFD700"></span>
+      <span class="color-dot" style="background: #ff0000"></span>
+      <span class="color-dot" style="background: #0000ff"></span>
+      <span class="color-dot" style="background: #00ff00"></span>
+      <span class="color-dot" style="background: #ffd700"></span>
       <span class="color-dot" style="background: #000000"></span>
-      <span class="color-dot" style="background: #FFFFFF; border: 1px solid #ccc"></span>
+      <span
+        class="color-dot"
+        style="background: #ffffff; border: 1px solid #ccc"
+      ></span>
       <span class="color-dot" style="background: #808080"></span>
     </div>
 

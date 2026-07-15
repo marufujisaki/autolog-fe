@@ -103,6 +103,49 @@
 }
 
 // ---------------------------------------------------------------------------
+// Mechanic Selector
+// ---------------------------------------------------------------------------
+
+.mechanic-selector {
+  flex: 1;
+}
+
+.mechanic-select {
+  border: none;
+  background: transparent;
+  font-family: t.$font-family-base;
+  font-size: t.$font-size-sm;
+  color: t.$color-text-secondary;
+  outline: none;
+  cursor: pointer;
+  padding: 2px 4px;
+
+  &:focus {
+    color: t.$color-primary;
+  }
+}
+
+.mechanic-input {
+  border: none;
+  border-bottom: 1px solid t.$color-border-light;
+  background: transparent;
+  font-family: t.$font-family-base;
+  font-size: t.$font-size-sm;
+  color: t.$color-text-primary;
+  outline: none;
+  padding: 2px 4px;
+  width: 140px;
+
+  &::placeholder {
+    color: t.$color-text-secondary;
+  }
+
+  &:focus {
+    border-color: t.$color-primary;
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Add Log Bar (visual separator with active indicator)
 // ---------------------------------------------------------------------------
 
@@ -190,6 +233,11 @@
   align-items: center;
   justify-content: space-between;
   margin-bottom: t.$space-2;
+  gap: t.$space-2;
+}
+
+.job-title-autocomplete {
+  flex: 1;
 }
 
 .job-title {

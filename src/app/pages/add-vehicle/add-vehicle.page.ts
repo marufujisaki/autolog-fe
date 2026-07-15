@@ -7,25 +7,34 @@ import {
   FormControl,
 } from '@angular/forms';
 import { Router } from '@angular/router';
+import { Observable, map } from 'rxjs';
 import { VehicleService } from '../../core/ports/vehicle.port';
+import { VehicleCatalogService } from '../../core/ports/vehicle-catalog.port';
 import { CreateVehicleData } from '../../core/models/vehicle.model';
 import { ButtonComponent } from '../../presentation/shared/components/button/button.component';
 import { InputComponent } from '../../presentation/shared/components/input/input.component';
+import { AutocompleteComponent } from '../../presentation/shared/components/autocomplete/autocomplete.component';
 
 /**
- * AddVehiclePage — Add a new vehicle form (Figma: "Add vehicle - Clients & Personal").
- * Form fields: Make, Model, Year, Plate, Color, Display Name
+ * AddVehiclePage — Add a new vehicle form with autocomplete for Make and Model.
  */
 @Component({
   selector: 'app-add-vehicle',
   templateUrl: './add-vehicle.page.html',
   styleUrls: ['./add-vehicle.page.scss'],
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, ButtonComponent, InputComponent],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    ButtonComponent,
+    InputComponent,
+    AutocompleteComponent,
+  ],
 })
 export class AddVehiclePage {
   private fb = inject(FormBuilder);
   private vehicleService = inject(VehicleService);
+  private catalogService = inject(VehicleCatalogService);
   private router = inject(Router);
 
   isLoading = false;
@@ -38,6 +47,27 @@ export class AddVehiclePage {
     color: ['', [Validators.maxLength(30)]],
     displayName: ['', [Validators.maxLength(50)]],
   });
+
+  /** Search function passed to the Make autocomplete */
+  searchMakes = (query: string): Observable<string[]> => {
+    return this.catalogService
+      .searchMakes(query)
+      .pipe(map((makes) => makes.map((m) => m.name)));
+  };
+
+  /** Search function passed to the Model autocomplete (depends on selected make) */
+  searchModels = (query: string): Observable<string[]> => {
+    const makeName = this.form.get('brand')?.value || '';
+    if (!makeName) {
+      return new Observable<string[]>((subscriber) => {
+        subscriber.next([]);
+        subscriber.complete();
+      });
+    }
+    return this.catalogService
+      .searchModels(makeName, query)
+      .pipe(map((models) => models.map((m) => m.name)));
+  };
 
   get brandControl(): FormControl<string> {
     return this.form.get('brand') as FormControl<string>;
@@ -61,6 +91,11 @@ export class AddVehiclePage {
 
   get displayNameControl(): FormControl<string> {
     return this.form.get('displayName') as FormControl<string>;
+  }
+
+  onMakeSelected(make: string): void {
+    // When a make is selected, clear the model field
+    this.form.get('model')?.setValue('');
   }
 
   onSubmit(): void {

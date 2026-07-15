@@ -25,4 +25,7 @@ export abstract class MaintenanceLogService {
   abstract deleteLog(logId: string): Observable<void>;
   abstract addJob(logId: string, data: CreateJobData): Observable<Job>;
   abstract removeJob(logId: string, jobId: string): Observable<void>;
+
+  /** Get previously-used mechanic names for the current user */
+  abstract getMechanicNames(): Observable<string[]>;
 }

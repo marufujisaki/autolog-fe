@@ -14,6 +14,29 @@ import {
   UserRoundIcon,
   CalendarIcon,
   Disc3Icon,
+  DropletIcon,
+  FilterIcon,
+  ThermometerIcon,
+  WrenchIcon,
+  CircleIcon,
+  ZapIcon,
+  WindIcon,
+  ClockIcon,
+  SettingsIcon,
+  BatteryIcon,
+  BoltIcon,
+  PowerIcon,
+  LightbulbIcon,
+  LinkIcon,
+  FlameIcon,
+  HammerIcon,
+  SnowflakeIcon,
+  FanIcon,
+  WavesIcon,
+  SparklesIcon,
+  TruckIcon,
+  CloudRainIcon,
+  ScaleIcon,
 } from 'lucide-angular';
 
 /**
@@ -80,6 +103,57 @@ export class LogDetailPage implements OnInit {
 
   getTypeLabel(type: MaintenanceType): string {
     return type.charAt(0) + type.slice(1).toLowerCase();
+  }
+
+  /** Resolve a Lucide icon name (kebab-case) to its icon data object */
+  getJobIcon(job: Job): any {
+    if (!job.icon) return Disc3Icon;
+    const iconMap: Record<string, any> = {
+      droplet: DropletIcon,
+      droplets: DropletIcon,
+      filter: FilterIcon,
+      thermometer: ThermometerIcon,
+      'flask-round': DropletIcon,
+      'spray-can': WindIcon,
+      'disc-3': Disc3Icon,
+      'circle-dot': CircleIcon,
+      wrench: WrenchIcon,
+      'grip-vertical': WrenchIcon,
+      'refresh-cw': CircleIcon,
+      circle: CircleIcon,
+      'move-horizontal': ScaleIcon,
+      scale: ScaleIcon,
+      gauge: GaugeIcon,
+      zap: ZapIcon,
+      wind: WindIcon,
+      clock: ClockIcon,
+      settings: SettingsIcon,
+      'scan-line': SettingsIcon,
+      battery: BatteryIcon,
+      bolt: BoltIcon,
+      power: PowerIcon,
+      lightbulb: LightbulbIcon,
+      'zap-off': ZapIcon,
+      'arrow-down-up': WrenchIcon,
+      'arrow-up-down': WrenchIcon,
+      link: LinkIcon,
+      'link-2': LinkIcon,
+      cog: SettingsIcon,
+      'volume-2': WrenchIcon,
+      flame: FlameIcon,
+      pipe: WrenchIcon,
+      paintbrush: WrenchIcon,
+      hammer: HammerIcon,
+      square: WrenchIcon,
+      'cloud-rain': CloudRainIcon,
+      snowflake: SnowflakeIcon,
+      fan: FanIcon,
+      'clipboard-check': SettingsIcon,
+      waves: WavesIcon,
+      sparkles: SparklesIcon,
+      truck: TruckIcon,
+    };
+    return iconMap[job.icon] || Disc3Icon;
   }
 
   formatDate(dateString: string): string {

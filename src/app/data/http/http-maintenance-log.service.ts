@@ -64,4 +64,8 @@ export class HttpMaintenanceLogService extends MaintenanceLogService {
   removeJob(logId: string, jobId: string): Observable<void> {
     return this.http.delete<void>(`${this.logsUrl}/${logId}/jobs/${jobId}`);
   }
+
+  getMechanicNames(): Observable<string[]> {
+    return this.http.get<string[]>(`${this.logsUrl}/mechanic-names`);
+  }
 }

@@ -30,4 +30,7 @@ export abstract class AuthService {
    * Requirement 13.5: update preferred language and sync with backend
    */
   abstract updatePreferredLanguage(language: string): Observable<void>;
+
+  /** Update the user's sharing preference (USUARIO only) */
+  abstract updateAllowSharing(allowSharing: boolean): Observable<void>;
 }

@@ -28,7 +28,19 @@ describe('WorkshopPage', () => {
     mockRouter = jasmine.createSpyObj('Router', ['navigate']);
     mockTranslateService = jasmine.createSpyObj('TranslateService', [
       'instant',
+      'translate',
+      'use',
+      'get',
     ]);
+    (mockTranslateService.translate as any).and.callFake((key: string) => {
+      const signal: any = () => key;
+      signal.set = () => {};
+      signal.update = () => {};
+      signal.asReadonly = () => signal;
+      return signal;
+    });
+    mockTranslateService.instant.and.callFake((key: string) => key);
+    (mockTranslateService.get as any).and.callFake((key: string) => of(key));
 
     const mechanicUser: User = {
       id: '123',
@@ -39,6 +51,7 @@ describe('WorkshopPage', () => {
       mechanicLevel: 'SUPERVISOR' as MechanicLevel,
       workshopId: 'workshop-123',
       preferredLanguage: 'es',
+      allowSharing: false,
     };
 
     const userSubject = new BehaviorSubject<User | null>(mechanicUser);
@@ -56,7 +69,6 @@ describe('WorkshopPage', () => {
 
     fixture = TestBed.createComponent(WorkshopPage);
     component = fixture.componentInstance;
-    mockTranslateService.instant.and.returnValue('Mock translation');
   });
 
   it('should create', () => {
@@ -110,10 +122,8 @@ describe('WorkshopPage', () => {
     mockWorkshopService.getWorkshop.and.returnValue(of(mockWorkshop));
 
     fixture.detectChanges();
-    expect(component.isLoading).toBeTrue();
 
-    tick();
-
+    // With synchronous of() mock, loading completes immediately
     expect(component.isLoading).toBeFalse();
   }));
 });

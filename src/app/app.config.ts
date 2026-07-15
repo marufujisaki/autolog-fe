@@ -33,6 +33,7 @@ import { PhotoService } from './core/ports/photo.port';
 import { ShareService } from './core/ports/share.port';
 import { WorkshopService } from './core/ports/workshop.port';
 import { SecureStorageService } from './core/ports/secure-storage.port';
+import { VehicleCatalogService } from './core/ports/vehicle-catalog.port';
 
 // HTTP service implementations (from data/http)
 import { HttpAuthService } from './data/http/http-auth.service';
@@ -41,6 +42,7 @@ import { HttpMaintenanceLogService } from './data/http/http-maintenance-log.serv
 import { HttpPhotoService } from './data/http/http-photo.service';
 import { HttpShareService } from './data/http/http-share.service';
 import { HttpWorkshopService } from './data/http/http-workshop.service';
+import { HttpVehicleCatalogService } from './data/http/http-vehicle-catalog.service';
 
 // Storage implementations (from data/storage)
 import { CapacitorStorageService } from './data/storage/capacitor-storage.service';
@@ -101,5 +103,8 @@ export function getAppProviders(): ApplicationConfig['providers'] {
 
     // Service port bindings - Secure storage (Requirement 11.2)
     { provide: SecureStorageService, useClass: CapacitorStorageService },
+
+    // Service port bindings - Vehicle catalog (autocomplete)
+    { provide: VehicleCatalogService, useClass: HttpVehicleCatalogService },
   ];
 }

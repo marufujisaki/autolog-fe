@@ -1,20 +1,26 @@
-<div class="app-modal" [class.open]="isOpen">
+<div
+  class="app-modal"
+  *ngIf="isOpen"
+  role="dialog"
+  [attr.aria-modal]="true"
+  [attr.aria-labelledby]="title ? modalTitleId : null"
+>
   <div class="app-modal__backdrop" (click)="onBackdropClick()"></div>
 
-  <div class="app-modal__container" role="dialog" [attr.aria-modal]="true">
+  <div class="app-modal__container">
     <div class="app-modal__header" *ngIf="title">
-      <h2 class="app-modal__title">{{ title }}</h2>
+      <h2 class="app-modal__title" [id]="modalTitleId">{{ title }}</h2>
       <button
         type="button"
         class="app-modal__close"
         aria-label="Close modal"
-        (click)="onCloseClick()"
+        (click)="onCloseClick(); $event.stopPropagation()"
       >
         ✕
       </button>
     </div>
 
-    <div class="app-modal__content">
+    <div class="app-modal__body">
       <ng-content></ng-content>
     </div>
   </div>

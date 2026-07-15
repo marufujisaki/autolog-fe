@@ -27,9 +27,33 @@
 
   <!-- Info Row (Mechanic + Date) -->
   <div class="info-row">
-    <div class="info-item">
-      <lucide-angular [img]="UserRoundIcon" [size]="12"></lucide-angular>
-      <span>{{ mechanic }}</span>
+    <div class="mechanic-selector">
+      @if (!showNewMechanicInput && previousMechanics.length > 0) {
+      <div class="info-item">
+        <lucide-angular [img]="UserRoundIcon" [size]="12"></lucide-angular>
+        <select
+          class="mechanic-select"
+          [ngModel]="selectedMechanic"
+          (ngModelChange)="onMechanicChange($event)"
+        >
+          <option value="" disabled>Seleccionar mecánico</option>
+          @for (name of previousMechanics; track name) {
+          <option [value]="name">{{ name }}</option>
+          }
+          <option value="__new__">+ Nuevo mecánico</option>
+        </select>
+      </div>
+      } @else {
+      <div class="info-item">
+        <lucide-angular [img]="UserRoundIcon" [size]="12"></lucide-angular>
+        <input
+          type="text"
+          class="mechanic-input"
+          placeholder="Nombre del mecánico"
+          [(ngModel)]="newMechanicName"
+        />
+      </div>
+      }
     </div>
     <div class="info-item">
       <lucide-angular [img]="CalendarIcon" [size]="12"></lucide-angular>
@@ -60,9 +84,15 @@
     <div class="job-card">
       <!-- Job Title Row -->
       <div class="job-title-row">
-        <h3 class="job-title">Job {{ job.id }}: {{ job.title }}</h3>
+        <app-autocomplete
+          class="job-title-autocomplete"
+          [placeholder]="'Search job type...'"
+          [searchFn]="searchJobsWithCache"
+          [ngModel]="job.title"
+          (ngModelChange)="job.title = $event"
+          (optionSelected)="onJobSelected(i, $event)"
+        ></app-autocomplete>
         <div class="job-actions">
-          <lucide-angular [img]="DropletIcon" [size]="17"></lucide-angular>
           <button class="action-btn">
             <lucide-angular [img]="PencilIcon" [size]="13"></lucide-angular>
           </button>

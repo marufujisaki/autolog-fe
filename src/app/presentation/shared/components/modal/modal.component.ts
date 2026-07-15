@@ -19,6 +19,8 @@ import { CommonModule } from '@angular/common';
   styleUrls: ['./modal.component.scss'],
 })
 export class ModalComponent {
+  private static nextId = 0;
+
   /**
    * Controls whether the modal is visible. When true, the modal and backdrop
    * are rendered and interactive.
@@ -27,6 +29,9 @@ export class ModalComponent {
 
   /** Optional title rendered in the modal header. */
   @Input() title?: string;
+
+  /** Unique ID for linking aria-labelledby to the title element. */
+  readonly modalTitleId = `app-modal-title-${ModalComponent.nextId++}`;
 
   /**
    * Emitted when the user requests to close the modal (e.g., by clicking

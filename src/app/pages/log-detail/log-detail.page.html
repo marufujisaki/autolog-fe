@@ -31,7 +31,7 @@
   <div class="meta-row">
     <div class="meta-item">
       <lucide-angular [img]="UserRoundIcon" [size]="12"></lucide-angular>
-      <span>Danys</span>
+      <span>{{ log.mechanicName || 'N/A' }}</span>
     </div>
     <div class="meta-item">
       <lucide-angular [img]="CalendarIcon" [size]="12"></lucide-angular>
@@ -46,7 +46,7 @@
   <div class="job-section">
     <!-- Job Header -->
     <div class="job-header">
-      <lucide-angular [img]="Disc3Icon" [size]="15"></lucide-angular>
+      <lucide-angular [img]="getJobIcon(job)" [size]="15"></lucide-angular>
       <h3 class="job-title">Job {{ i + 1 }} - {{ job.title }}</h3>
     </div>
 

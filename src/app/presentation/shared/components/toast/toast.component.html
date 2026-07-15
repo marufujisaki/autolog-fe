@@ -1,4 +1,13 @@
-<div class="app-toast" *ngIf="isVisible" [class]="type" role="alert">
+<div
+  class="app-toast"
+  *ngIf="isVisible"
+  [class.app-toast--success]="type === 'success'"
+  [class.app-toast--error]="type === 'error'"
+  [class.app-toast--warning]="type === 'warning'"
+  [class.app-toast--info]="type === 'info'"
+  role="status"
+  aria-live="polite"
+>
   <div class="app-toast__icon">
     <span>{{
       type === "success"

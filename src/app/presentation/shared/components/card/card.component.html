@@ -1,3 +1,8 @@
-<div class="app-card" [class]="variant" [class.padded]="padded">
+<article
+  class="app-card"
+  [class.app-card--elevated]="variant === 'elevated'"
+  [class.app-card--outlined]="variant === 'outlined'"
+  [class.app-card--padded]="padded"
+>
   <ng-content></ng-content>
-</div>
+</article>

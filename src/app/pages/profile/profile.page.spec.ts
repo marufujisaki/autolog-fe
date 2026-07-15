@@ -24,6 +24,7 @@ describe('ProfilePage', () => {
     lastName: 'Doe',
     userType: UserType.USUARIO,
     preferredLanguage: 'es',
+    allowSharing: false,
   };
 
   beforeEach(async () => {

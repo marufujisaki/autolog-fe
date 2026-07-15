@@ -1,4 +1,9 @@
-<div class="app-input" [class]="resolvedState" [class.disabled]="disabled">
+<div
+  class="app-input"
+  [class.app-input--error]="resolvedState === 'error'"
+  [class.app-input--success]="resolvedState === 'success'"
+  [class.app-input--disabled]="disabled"
+>
   <label *ngIf="label" class="app-input__label" [for]="inputId">{{
     label
   }}</label>
@@ -12,6 +17,8 @@
 
     <input
       class="app-input__control"
+      [class.app-input--error]="resolvedState === 'error'"
+      [class.app-input--success]="resolvedState === 'success'"
       [id]="inputId"
       [type]="nativeType"
       [placeholder]="placeholder"
@@ -28,7 +35,7 @@
     <button
       *ngIf="type === 'password'"
       type="button"
-      class="app-input__toggle"
+      class="app-input__toggle app-input__password-toggle"
       [disabled]="disabled"
       [attr.aria-label]="showPassword ? 'Hide password' : 'Show password'"
       (click)="togglePasswordVisibility()"
@@ -37,7 +44,12 @@
     </button>
   </div>
 
-  <p *ngIf="errorMessage" class="app-input__error" [id]="inputId + '-error'">
+  <p
+    *ngIf="errorMessage"
+    class="app-input__error"
+    role="alert"
+    [id]="inputId + '-error'"
+  >
     {{ errorMessage }}
   </p>
 </div>

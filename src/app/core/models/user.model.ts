@@ -25,6 +25,7 @@ export interface User {
   mechanicLevel?: MechanicLevel;
   workshopId?: string;
   preferredLanguage: string;
+  allowSharing: boolean;
 }
 
 /** Credentials submitted on login. */

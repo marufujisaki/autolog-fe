@@ -16,6 +16,7 @@ export interface Job {
   id: string;
   logId: string;
   title: string;
+  icon?: string;
   description?: string;
   cost?: number;
   maintenanceTypes: MaintenanceType[];
@@ -25,6 +26,7 @@ export interface Job {
 /** Data submitted when adding a job to a maintenance log. */
 export interface CreateJobData {
   title: string;
+  icon?: string;
   description?: string;
   cost?: number;
   maintenanceTypes: MaintenanceType[];

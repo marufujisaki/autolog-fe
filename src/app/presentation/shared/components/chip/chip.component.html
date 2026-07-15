@@ -1,14 +1,21 @@
-<div class="app-chip" [class]="variant" [class.disabled]="disabled">
+<button
+  type="button"
+  class="app-chip"
+  [class.app-chip--default]="variant === 'default'"
+  [class.app-chip--selected]="variant === 'selected'"
+  [class.app-chip--disabled]="disabled"
+  [disabled]="disabled"
+  [attr.aria-pressed]="variant === 'selected' ? true : null"
+>
   <ng-content></ng-content>
 
-  <button
+  <span
     *ngIf="removable"
-    type="button"
     class="app-chip__remove"
-    [disabled]="disabled"
+    role="button"
     aria-label="Remove"
     (click)="onRemove($event)"
   >
     ✕
-  </button>
-</div>
+  </span>
+</button>

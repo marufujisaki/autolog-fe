@@ -1,4 +1,4 @@
-<div class="app-select" [class.disabled]="disabled">
+<div class="app-select" [class.app-select--disabled]="disabled">
   <label *ngIf="label" class="app-select__label" [for]="selectId">{{
     label
   }}</label>
@@ -7,23 +7,28 @@
     class="app-select__control"
     [id]="selectId"
     [disabled]="disabled"
-    [value]="value"
+    [attr.placeholder]="placeholder"
     [attr.aria-invalid]="errorMessage ? true : null"
     [attr.aria-describedby]="errorMessage ? selectId + '-error' : null"
     (change)="onSelectionChange($any($event.target).value)"
     (blur)="onBlur()"
   >
-    <option value="" disabled hidden>{{ placeholder }}</option>
     <option
       *ngFor="let opt of options"
       [value]="opt.value"
-      [disabled]="opt.disabled"
+      [disabled]="opt.disabled || false"
+      [selected]="opt.value.toString() === value?.toString()"
     >
       {{ opt.label }}
     </option>
   </select>
 
-  <p *ngIf="errorMessage" class="app-select__error" [id]="selectId + '-error'">
+  <p
+    *ngIf="errorMessage"
+    class="app-select__error"
+    role="alert"
+    [id]="selectId + '-error'"
+  >
     {{ errorMessage }}
   </p>
 </div>

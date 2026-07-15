@@ -1,11 +1,11 @@
-<div class="app-empty-state">
+<article class="app-empty-state" role="status" aria-live="polite">
   <div class="app-empty-state__icon">{{ icon }}</div>
 
-  <h3 class="app-empty-state__title">{{ title }}</h3>
+  <h2 class="app-empty-state__title">{{ title }}</h2>
 
-  <p *ngIf="description" class="app-empty-state__description">
+  <p *ngIf="description !== undefined" class="app-empty-state__description">
     {{ description }}
   </p>
 
   <ng-content></ng-content>
-</div>
+</article>

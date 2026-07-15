@@ -1,0 +1,44 @@
+<div class="app-autocomplete" [class.app-autocomplete--disabled]="disabled">
+  <label *ngIf="label" class="app-autocomplete__label" [for]="inputId">
+    {{ label }}
+  </label>
+
+  <div class="app-autocomplete__field">
+    <input
+      class="app-autocomplete__input"
+      [id]="inputId"
+      type="text"
+      [placeholder]="placeholder"
+      [disabled]="disabled"
+      [value]="value"
+      autocomplete="off"
+      role="combobox"
+      aria-autocomplete="list"
+      [attr.aria-expanded]="showDropdown"
+      [attr.aria-activedescendant]="highlightedIndex >= 0 ? inputId + '-option-' + highlightedIndex : null"
+      (input)="onInput($event)"
+      (focus)="onFocus()"
+      (blur)="onBlur()"
+      (keydown)="onKeyDown($event)"
+    />
+
+    <ul
+      *ngIf="showDropdown"
+      class="app-autocomplete__dropdown"
+      role="listbox"
+      [attr.id]="inputId + '-listbox'"
+    >
+      <li
+        *ngFor="let option of suggestions; let i = index"
+        class="app-autocomplete__option"
+        [class.app-autocomplete__option--highlighted]="i === highlightedIndex"
+        [id]="inputId + '-option-' + i"
+        role="option"
+        [attr.aria-selected]="i === highlightedIndex"
+        (mousedown)="selectOption(option)"
+      >
+        {{ option }}
+      </li>
+    </ul>
+  </div>
+</div>

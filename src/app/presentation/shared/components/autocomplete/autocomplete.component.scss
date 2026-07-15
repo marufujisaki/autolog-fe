@@ -1,0 +1,83 @@
+@use "../../styles/tokens" as t;
+@use "../../styles/mixins" as m;
+
+.app-autocomplete {
+  position: relative;
+  width: 100%;
+
+  &__label {
+    display: block;
+    font-size: t.$font-size-lg;
+    font-weight: t.$font-weight-semibold;
+    color: t.$color-text-secondary;
+    margin-bottom: t.$space-1;
+  }
+
+  &__field {
+    position: relative;
+  }
+
+  &__input {
+    width: 100%;
+    padding: t.$space-3 t.$space-4;
+    background: t.$color-surface-alt;
+    border: none;
+    border-radius: t.$radius-lg;
+    font-family: t.$font-family-base;
+    font-size: t.$font-size-lg;
+    font-weight: t.$font-weight-semibold;
+    color: t.$color-text-dark;
+    outline: none;
+    transition: box-shadow t.$transition-duration-base t.$transition-easing;
+
+    &:focus {
+      box-shadow: 0 0 0 2px t.$color-primary;
+    }
+
+    &::placeholder {
+      color: t.$color-text-secondary;
+      font-weight: t.$font-weight-regular;
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+
+  &__dropdown {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    max-height: 200px;
+    overflow-y: auto;
+    background: t.$color-surface;
+    border-radius: t.$radius-md;
+    box-shadow: t.$shadow-lg;
+    z-index: 1000;
+    list-style: none;
+    margin: 0;
+    padding: t.$space-1 0;
+  }
+
+  &__option {
+    padding: t.$space-3 t.$space-4;
+    font-size: t.$font-size-md;
+    color: t.$color-text-primary;
+    cursor: pointer;
+    transition: background t.$transition-duration-fast t.$transition-easing;
+
+    &:hover,
+    &--highlighted {
+      background: t.$color-surface-alt;
+    }
+  }
+
+  &--disabled {
+    .app-autocomplete__input {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+}

@@ -98,6 +98,90 @@
 }
 
 // ---------------------------------------------------------------------------
+// Sharing Toggle Section
+// ---------------------------------------------------------------------------
+
+.sharing-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: t.$space-4;
+  padding: t.$space-3 0;
+}
+
+.sharing-info {
+  flex: 1;
+}
+
+.sharing-title {
+  font-size: t.$font-size-lg;
+  font-weight: t.$font-weight-semibold;
+  color: t.$color-text-dark;
+  margin: 0 0 4px;
+}
+
+.sharing-description {
+  font-size: t.$font-size-base;
+  font-weight: t.$font-weight-regular;
+  color: t.$color-text-secondary;
+  margin: 0;
+  line-height: 1.4;
+}
+
+// Toggle switch
+.toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 48px;
+  height: 26px;
+  flex-shrink: 0;
+
+  input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+
+    &:checked + .toggle-slider {
+      background-color: t.$color-primary;
+    }
+
+    &:checked + .toggle-slider::before {
+      transform: translateX(22px);
+    }
+
+    &:disabled + .toggle-slider {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+
+  &.loading {
+    opacity: 0.6;
+  }
+}
+
+.toggle-slider {
+  position: absolute;
+  cursor: pointer;
+  inset: 0;
+  background-color: #ccc;
+  border-radius: 26px;
+  transition: background-color 0.2s ease;
+
+  &::before {
+    content: "";
+    position: absolute;
+    height: 20px;
+    width: 20px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    border-radius: 50%;
+    transition: transform 0.2s ease;
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Section Header
 // ---------------------------------------------------------------------------
 

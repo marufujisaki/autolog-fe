@@ -73,6 +73,10 @@ export class ToastComponent implements OnInit, OnDestroy {
   }
 
   dismiss(): void {
+    if (this.dismissTimeout) {
+      clearTimeout(this.dismissTimeout);
+      this.dismissTimeout = undefined;
+    }
     this.isVisible = false;
     this.dismissed.emit();
   }

@@ -111,6 +111,10 @@ export class HttpAuthService extends AuthService {
     return this.http.put<void>(`${this.baseUrl}/language`, { language });
   }
 
+  updateAllowSharing(allowSharing: boolean): Observable<void> {
+    return this.http.put<void>(`${this.baseUrl}/sharing`, { allowSharing });
+  }
+
   private async restoreSession(): Promise<void> {
     const accessToken = await this.storage.getItem(ACCESS_TOKEN_KEY);
     if (accessToken) {
@@ -142,6 +146,7 @@ export class HttpAuthService extends AuthService {
       userType: claims.userType,
       mechanicLevel: claims.mechanicLevel,
       preferredLanguage: 'es',
+      allowSharing: false,
     });
   }
 

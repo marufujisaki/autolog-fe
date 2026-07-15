@@ -10,6 +10,8 @@ export interface MaintenanceLog {
   id: string;
   vehicleId: string;
   createdBy: string;
+  mechanicId?: string;
+  mechanicName?: string;
   serviceDate: string;
   mileageAtService: number;
   totalCost?: number;
@@ -23,6 +25,7 @@ export interface CreateLogData {
   serviceDate: string;
   mileageAtService: number;
   totalCost?: number;
+  mechanicName?: string;
   jobs: CreateJobData[];
 }
 
