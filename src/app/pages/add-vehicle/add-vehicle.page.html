@@ -65,18 +65,19 @@
       ></app-input>
     </div>
 
-    <!-- Color picker visual (decorative) -->
-    <div class="color-picker">
-      <span class="color-dot" style="background: #ff0000"></span>
-      <span class="color-dot" style="background: #0000ff"></span>
-      <span class="color-dot" style="background: #00ff00"></span>
-      <span class="color-dot" style="background: #ffd700"></span>
-      <span class="color-dot" style="background: #000000"></span>
-      <span
-        class="color-dot"
-        style="background: #ffffff; border: 1px solid #ccc"
-      ></span>
-      <span class="color-dot" style="background: #808080"></span>
+    <!-- Card Color Selector -->
+    <div class="card-color-section">
+      <label class="card-color-label">Card Color</label>
+      <div class="card-color-picker">
+        @for (c of cardColorOptions; track c) {
+        <span
+          class="card-color-dot"
+          [style.background]="c"
+          [class.selected]="form.get('cardColor')?.value === c"
+          (click)="selectCardColor(c)"
+        ></span>
+        }
+      </div>
     </div>
 
     <div class="button-section">

@@ -1,9 +1,16 @@
 @use "../../presentation/shared/styles/tokens" as t;
 
 .new-log-page {
-  padding: t.$space-4 t.$space-4 t.$space-9;
+  padding: t.$space-4 t.$space-4 140px;
   background: t.$color-background;
   min-height: 100%;
+  height: 100%;
+  max-height: 100dvh;
+  box-sizing: border-box;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
 }
 
 // ---------------------------------------------------------------------------
@@ -13,11 +20,15 @@
 .page-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  margin-bottom: t.$space-5;
+  justify-content: center;
+  position: relative;
+  margin-bottom: t.$space-6;
+  padding-top: t.$space-4;
 }
 
 .back-btn {
+  position: absolute;
+  left: 0;
   background: none;
   border: none;
   cursor: pointer;
@@ -26,40 +37,84 @@
 }
 
 .header-title {
-  font-size: t.$font-size-3xl;
+  font-size: 22px;
   font-weight: t.$font-weight-semibold;
   color: t.$color-text-primary;
   margin: 0;
 }
 
 .header-spacer {
-  width: 24px;
+  display: none;
 }
 
 // ---------------------------------------------------------------------------
-// Log Meta (Vehicle + Odometer)
+// Log Meta (Two-column layout: Vehicle+Mechanic left, Odometer+Date right)
 // ---------------------------------------------------------------------------
 
 .log-meta {
   display: flex;
-  gap: t.$space-3;
-  margin-bottom: t.$space-3;
+  justify-content: space-between;
+  margin-bottom: t.$space-5;
 }
 
-.vehicle-select {
-  flex: 1;
+.meta-col {
+  display: flex;
+  flex-direction: column;
+  gap: t.$space-3;
+
+  &--left {
+    flex: 0 0 213px;
+    max-width: 213px;
+  }
+
+  &--right {
+    flex: 0 0 95px;
+  }
 }
 
 .odometer-field {
-  flex: 0 0 107px;
+  width: 100%;
 }
 
 .meta-label {
   display: block;
-  font-size: t.$font-size-sm;
+  font-size: 10px;
   font-weight: t.$font-weight-semibold;
   color: t.$color-text-secondary;
-  margin-bottom: t.$space-1;
+  margin-bottom: 6px;
+}
+
+.odometer-input {
+  width: 100%;
+  height: 33px;
+  min-height: 33px;
+  box-sizing: border-box;
+  padding: 0 t.$space-3;
+  background: t.$color-surface-alt;
+  border-radius: t.$radius-lg;
+  border: 1px solid t.$color-surface-alt;
+  font-family: t.$font-family-base;
+  font-size: 10px;
+  font-weight: t.$font-weight-semibold;
+  color: t.$color-secondary-dark;
+  outline: none;
+  transition: border-color t.$transition-duration-base t.$transition-easing;
+
+  &:focus {
+    border-color: t.$color-primary;
+  }
+
+  &::placeholder {
+    color: t.$color-text-secondary;
+    font-weight: t.$font-weight-regular;
+  }
+}
+
+.odometer-error {
+  display: block;
+  font-size: 8px;
+  color: t.$color-error;
+  margin-top: 2px;
 }
 
 .select-field {
@@ -75,31 +130,28 @@
   cursor: pointer;
 }
 
-.value-field {
-  padding: t.$space-2 t.$space-3;
-  background: t.$color-surface-alt;
-  border-radius: t.$radius-lg;
-  font-size: t.$font-size-sm;
-  font-weight: t.$font-weight-semibold;
-  color: t.$color-text-dark;
-}
+// (value-field removed — odometer now uses an input)
 
 // ---------------------------------------------------------------------------
-// Info Row
+// Info Items (Mechanic + Date) — now inside meta columns
 // ---------------------------------------------------------------------------
-
-.info-row {
-  display: flex;
-  gap: t.$space-6;
-  margin-bottom: t.$space-4;
-}
 
 .info-item {
   display: flex;
   align-items: center;
   gap: t.$space-1;
-  font-size: t.$font-size-sm;
+  font-family: t.$font-family-base;
+  font-size: 10px;
+  font-weight: t.$font-weight-medium;
   color: t.$color-text-secondary;
+}
+
+.date-selector {
+  cursor: pointer;
+
+  &:hover {
+    color: t.$color-primary;
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -107,21 +159,59 @@
 // ---------------------------------------------------------------------------
 
 .mechanic-selector {
+  position: relative;
   flex: 1;
 }
 
-.mechanic-select {
-  border: none;
-  background: transparent;
-  font-family: t.$font-family-base;
-  font-size: t.$font-size-sm;
-  color: t.$color-text-secondary;
-  outline: none;
+.mechanic-label {
   cursor: pointer;
-  padding: 2px 4px;
+  transition: color t.$transition-duration-fast t.$transition-easing;
 
-  &:focus {
+  &:hover {
     color: t.$color-primary;
+  }
+}
+
+.mechanic-dropdown-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 50;
+}
+
+.mechanic-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  min-width: 180px;
+  background: t.$color-surface-alt;
+  border-radius: t.$radius-lg;
+  padding: t.$space-2 0;
+  z-index: 51;
+  box-shadow: t.$shadow-md;
+}
+
+.mechanic-option {
+  padding: t.$space-2 t.$space-4;
+  font-family: t.$font-family-base;
+  font-size: 10px;
+  font-weight: t.$font-weight-semibold;
+  color: t.$color-secondary-dark;
+  cursor: pointer;
+  transition: background t.$transition-duration-fast t.$transition-easing;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.04);
+  }
+
+  &--new {
+    color: t.$color-primary;
+    font-weight: t.$font-weight-semibold;
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+    margin-top: t.$space-1;
+    padding-top: t.$space-3;
   }
 }
 
@@ -130,11 +220,12 @@
   border-bottom: 1px solid t.$color-border-light;
   background: transparent;
   font-family: t.$font-family-base;
-  font-size: t.$font-size-sm;
+  font-size: 10px;
+  font-weight: t.$font-weight-medium;
   color: t.$color-text-primary;
   outline: none;
-  padding: 2px 4px;
-  width: 140px;
+  padding: 2px 0;
+  width: 120px;
 
   &::placeholder {
     color: t.$color-text-secondary;
@@ -143,6 +234,24 @@
   &:focus {
     border-color: t.$color-primary;
   }
+}
+
+// ---------------------------------------------------------------------------
+// Date Modal
+// ---------------------------------------------------------------------------
+
+.date-modal {
+  --height: auto;
+  --width: 90%;
+  --border-radius: 16px;
+}
+
+.date-picker {
+  --background: #ffffff;
+  --ion-color-primary: #{t.$color-primary};
+  --ion-text-color: #070707;
+  --ion-color-step-550: #73747a;
+  color: #070707;
 }
 
 // ---------------------------------------------------------------------------
@@ -181,11 +290,27 @@
   margin-bottom: t.$space-6;
 }
 
+.jobs-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: t.$space-4;
+}
+
 .jobs-title {
   font-size: t.$font-size-xl;
   font-weight: t.$font-weight-semibold;
   color: t.$color-text-primary;
-  margin: 0 0 t.$space-4;
+  margin: 0;
+}
+
+.jobs-empty-hint {
+  font-size: t.$font-size-base;
+  font-weight: t.$font-weight-regular;
+  color: t.$color-text-secondary;
+  margin: t.$space-5 0;
+  text-align: center;
+  font-style: italic;
 }
 
 .add-job-btn {
@@ -201,7 +326,6 @@
   font-size: t.$font-size-base;
   font-weight: t.$font-weight-bold;
   box-shadow: 0 4px 8px 2px rgba(0, 0, 0, 0.1);
-  margin-bottom: t.$space-5;
   float: right;
 }
 
@@ -238,6 +362,25 @@
 
 .job-title-autocomplete {
   flex: 1;
+
+  ::ng-deep .app-autocomplete__input {
+    background: transparent;
+    padding: t.$space-2 0;
+    font-size: t.$font-size-lg;
+    border-radius: 0;
+
+    &:focus {
+      background: t.$color-background;
+      padding: t.$space-2 t.$space-3;
+      border-radius: t.$radius-xs;
+      box-shadow: none;
+    }
+  }
+}
+
+.job-icon-display {
+  color: t.$color-primary;
+  flex-shrink: 0;
 }
 
 .job-title {
@@ -317,6 +460,44 @@
   color: #3e3e3e;
 }
 
+.tag-selector {
+  position: relative;
+}
+
+.tag-dropdown-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 50;
+}
+
+.tag-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  min-width: 140px;
+  background: t.$color-surface-alt;
+  border-radius: t.$radius-md;
+  padding: t.$space-2 0;
+  z-index: 51;
+  box-shadow: t.$shadow-md;
+}
+
+.tag-option {
+  padding: t.$space-2 t.$space-3;
+  font-size: t.$font-size-xs;
+  font-weight: t.$font-weight-semibold;
+  cursor: pointer;
+  text-transform: uppercase;
+  transition: opacity t.$transition-duration-fast t.$transition-easing;
+
+  &:hover {
+    opacity: 0.7;
+  }
+}
+
 // ---------------------------------------------------------------------------
 // Field Sections
 // ---------------------------------------------------------------------------
@@ -333,13 +514,26 @@
   margin-bottom: t.$space-1;
 }
 
-.text-field {
+.description-field {
+  width: 100%;
   padding: t.$space-3;
   background: t.$color-background;
+  border: none;
   border-radius: t.$radius-xs;
+  font-family: t.$font-family-base;
   font-size: t.$font-size-sm;
   color: #333333;
   min-height: 39px;
+  resize: vertical;
+  outline: none;
+
+  &:focus {
+    box-shadow: 0 0 0 1px t.$color-primary;
+  }
+
+  &::placeholder {
+    color: t.$color-text-secondary;
+  }
 }
 
 .items-label-row {
@@ -454,12 +648,83 @@
   text-align: center;
 }
 
+.value-box-wrapper {
+  display: flex;
+  align-items: center;
+  background: t.$color-background;
+  border-radius: t.$radius-xs;
+  padding: t.$space-1 t.$space-2;
+  min-width: 45px;
+}
+
+.currency-prefix {
+  font-size: t.$font-size-sm;
+  font-weight: t.$font-weight-medium;
+  color: #333333;
+}
+
+.service-cost-input {
+  border: none;
+  background: transparent;
+  font-family: t.$font-family-base;
+  font-size: t.$font-size-sm;
+  font-weight: t.$font-weight-medium;
+  color: #333333;
+  outline: none;
+  width: 50px;
+  padding: 0;
+
+  &::placeholder {
+    color: t.$color-text-secondary;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Job Total (bottom right of each card)
+// ---------------------------------------------------------------------------
+
+.job-total-row {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: t.$space-2;
+  margin-top: t.$space-3;
+  padding-top: t.$space-2;
+}
+
+.job-total-label {
+  font-size: t.$font-size-base;
+  font-weight: t.$font-weight-semibold;
+  color: #333333;
+}
+
+.job-total-value {
+  font-size: t.$font-size-base;
+  font-weight: t.$font-weight-bold;
+  color: #333333;
+}
+
 // ---------------------------------------------------------------------------
 // Save Section
 // ---------------------------------------------------------------------------
 
 .save-section {
+  position: fixed;
+  bottom: 100px;
+  left: 0;
+  right: 0;
   padding: 0 t.$space-6;
+  z-index: 10;
+}
+
+.save-error {
+  margin-bottom: t.$space-2;
+  padding: t.$space-2 t.$space-3;
+  background: rgba(190, 35, 35, 0.1);
+  border-radius: t.$radius-sm;
+  color: t.$color-error;
+  font-size: t.$font-size-sm;
+  text-align: center;
 }
 
 // =============================================================================

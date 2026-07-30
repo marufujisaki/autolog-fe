@@ -1,48 +1,50 @@
-<div class="welcome-page">
-  <!-- Header -->
-  <div class="header">
-    <h1 class="app-title">
-      Welcome to Auto<span class="text-primary">Log</span>
-    </h1>
-    <p class="app-subtitle">Tell us who you are to get started.</p>
-  </div>
-
-  <!-- Role Selection Cards -->
-  <div class="role-cards">
-    @for (userType of userTypes; track userType.id) {
-    <div
-      class="role-card"
-      [class.selected]="selectedType === userType.id"
-      (click)="selectUserType(userType)"
-    >
-      <div class="role-icon">
-        <lucide-angular [img]="userType.icon" [size]="24"></lucide-angular>
-      </div>
-      <div class="role-info">
-        <h3 class="role-title">{{ userType.title }}</h3>
-        <p class="role-description">{{ userType.description }}</p>
-      </div>
-    </div>
-    }
-  </div>
-
-  <!-- Next Button -->
-  <div class="actions">
-    <app-button
-      variant="primary"
-      [fullWidth]="true"
-      [disabled]="!selectedType"
-      (clicked)="navigateNext()"
-    >
-      Next
-    </app-button>
-  </div>
-
-  <!-- Login Link -->
-  <p class="login-link-text">
-    Already have an account?
-    <a href="javascript:void(0)" (click)="navigateToLogin()" class="login-link">
-      Log in
-    </a>
-  </p>
-</div>
+<ion-content fullscreen [scrollY]="false">
+  <ion-grid class="center">
+    <ion-row>
+      <ion-col size="12">
+        <h2 class="title">
+          {{ 'auth.welcome' | translate }}<span class="text-blue"
+            >{{ 'auth.welcomeHighlight' | translate }}</span
+          >
+        </h2>
+        <p class="subtitle">{{ 'auth.welcomeSubtitle' | translate }}</p>
+        @for (userType of userTypes; track userType.id) {
+        <div
+          class="role-card"
+          [class.selected]="selectedType === userType.id"
+          (click)="selectUserType(userType)"
+        >
+          <div
+            class="role-icon"
+            [class.icon-selected]="selectedType === userType.id"
+          >
+            <lucide-angular [img]="userType.icon" [size]="24"></lucide-angular>
+          </div>
+          <div class="role-info">
+            <h4>{{ userType.titleKey | translate }}</h4>
+            <p>{{ userType.descriptionKey | translate }}</p>
+          </div>
+        </div>
+        }
+      </ion-col>
+    </ion-row>
+    <ion-row class="button-row">
+      <ion-col size="12">
+        <app-button
+          variant="primary"
+          [fullWidth]="true"
+          [disabled]="!selectedType"
+          (clicked)="navigateNext()"
+        >
+          {{ 'auth.continue' | translate }}
+        </app-button>
+        <p>
+          {{ 'auth.alreadyHaveAccount' | translate }}
+          <span class="link" (click)="navigateToLogin()"
+            >{{ 'auth.login' | translate }}</span
+          >
+        </p>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>

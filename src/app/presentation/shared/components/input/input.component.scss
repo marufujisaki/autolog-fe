@@ -1,10 +1,6 @@
 // =============================================================================
 // InputComponent — Design System
 // =============================================================================
-//
-// Pure SCSS styling driven exclusively by design tokens. No third-party UI
-// library is used for visual rendering (Requirements 12.3, 12.5).
-// =============================================================================
 
 @use "../../styles/tokens" as tokens;
 @use "../../styles/mixins" as mixins;
@@ -17,9 +13,11 @@
   font-family: tokens.$font-family-base;
 
   &__label {
-    font-size: tokens.$font-size-sm;
-    font-weight: tokens.$font-weight-medium;
-    color: tokens.$color-text-primary;
+    font-size: 1rem;
+    font-weight: tokens.$font-weight-semibold;
+    display: inline-block;
+    margin-bottom: 0.25rem;
+    color: tokens.$color-text-secondary;
   }
 
   &__field {
@@ -53,21 +51,23 @@
   }
 
   &__control {
-    @include mixins.transition("border-color, box-shadow");
-    @include mixins.focus-ring();
-
     width: 100%;
     font-family: tokens.$font-family-base;
-    font-size: tokens.$font-size-base;
+    font-size: 1rem;
+    font-weight: tokens.$font-weight-semibold;
     line-height: tokens.$line-height-normal;
-    color: tokens.$color-text-primary;
-    background-color: tokens.$color-surface;
-    border: 1px solid tokens.$color-border;
-    border-radius: tokens.$radius-md;
-    padding: tokens.$space-3 tokens.$space-4;
+    color: tokens.$color-secondary-dark;
+    background-color: tokens.$color-surface-alt;
+    border: 1px solid tokens.$color-surface-alt;
+    border-radius: tokens.$radius-lg;
+    padding: 0.9rem 1rem;
+    outline: none;
+    transition: border-color tokens.$transition-duration-base
+      tokens.$transition-easing;
 
     &::placeholder {
       color: tokens.$color-text-secondary;
+      font-weight: tokens.$font-weight-regular;
     }
 
     &:focus {
@@ -76,6 +76,7 @@
 
     &:disabled {
       cursor: not-allowed;
+      opacity: 0.6;
     }
   }
 
@@ -85,18 +86,17 @@
   }
 
   &__toggle {
-    @include mixins.flex-center();
-    @include mixins.transition("color");
-    @include mixins.focus-ring();
-
+    display: flex;
+    align-items: center;
+    justify-content: center;
     position: absolute;
-    right: tokens.$space-2;
+    right: tokens.$space-3;
     background: transparent;
     border: none;
     cursor: pointer;
     color: tokens.$color-text-secondary;
-    font-size: tokens.$font-size-base;
     padding: tokens.$space-1;
+    transition: color tokens.$transition-duration-base tokens.$transition-easing;
 
     &:hover:not(:disabled) {
       color: tokens.$color-text-primary;
@@ -116,7 +116,8 @@
   // ---------------------------------------------------------------------------
   // Validation state: error
   // ---------------------------------------------------------------------------
-  &.error {
+  &.error,
+  &--error {
     .app-input__control {
       border-color: tokens.$color-error;
 
@@ -129,7 +130,8 @@
   // ---------------------------------------------------------------------------
   // Validation state: success
   // ---------------------------------------------------------------------------
-  &.success {
+  &.success,
+  &--success {
     .app-input__control {
       border-color: tokens.$color-success;
 
@@ -142,7 +144,8 @@
   // ---------------------------------------------------------------------------
   // Disabled state
   // ---------------------------------------------------------------------------
-  &.disabled {
+  &.disabled,
+  &--disabled {
     .app-input__label {
       color: tokens.$color-text-disabled;
     }

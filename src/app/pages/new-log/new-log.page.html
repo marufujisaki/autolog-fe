@@ -4,62 +4,96 @@
     <button class="back-btn" (click)="goBack()" aria-label="Go back">
       <lucide-angular [img]="ChevronLeftIcon" [size]="24"></lucide-angular>
     </button>
-    <h1 class="header-title">New Log</h1>
+    <h1 class="header-title">
+      {{ (isEditMode ? 'newLog.editTitle' : 'newLog.title') | translate }}
+    </h1>
     <div class="header-spacer"></div>
   </header>
 
-  <!-- Vehicle Selector + Odometer -->
+  <!-- Header Section (Vehicle/Mechanic left column + Odometer/Date right column) -->
   <div class="log-meta">
-    <div class="vehicle-select">
-      <label class="meta-label">Vehicle</label>
-      <div class="select-field">
-        <span>{{ selectedVehicle }}</span>
-        <lucide-angular [img]="ChevronDownIcon" [size]="14"></lucide-angular>
+    <div class="meta-col meta-col--left">
+      <app-select
+        [label]="'newLog.vehicle' | translate"
+        [placeholder]="'newLog.selectVehicle' | translate"
+        [options]="vehicleOptions"
+        [ngModel]="selectedVehicleId"
+        [disabled]="isEditMode"
+        (ngModelChange)="onVehicleChange($event)"
+      ></app-select>
+      <div class="info-item mechanic-selector">
+        <lucide-angular [img]="UserRoundIcon" [size]="12"></lucide-angular>
+        @if (showNewMechanicInput) {
+        <input
+          type="text"
+          class="mechanic-input"
+          [placeholder]="'newLog.mechanicName' | translate"
+          [(ngModel)]="newMechanicName"
+        />
+        } @else {
+        <span class="mechanic-label" (click)="toggleMechanicDropdown()">
+          {{ selectedMechanic || ('newLog.mechanic' | translate) }}
+        </span>
+        } @if (mechanicDropdownOpen) {
+        <div
+          class="mechanic-dropdown-overlay"
+          (click)="closeMechanicDropdown()"
+        ></div>
+        <div class="mechanic-dropdown">
+          @for (name of previousMechanics; track name) {
+          <div class="mechanic-option" (click)="selectMechanic(name)">
+            {{ name }}
+          </div>
+          }
+          <div
+            class="mechanic-option mechanic-option--new"
+            (click)="selectNewMechanic()"
+          >
+            {{ 'newLog.newMechanic' | translate }}
+          </div>
+        </div>
+        }
       </div>
     </div>
-    <div class="odometer-field">
-      <label class="meta-label">Odometer</label>
-      <div class="value-field">
-        <span>{{ odometer }}</span>
+    <div class="meta-col meta-col--right">
+      <div class="odometer-field">
+        <label class="meta-label">{{ 'newLog.odometer' | translate }}</label>
+        <input
+          type="number"
+          class="odometer-input"
+          [(ngModel)]="odometerValue"
+          [min]="currentVehicleMileage"
+          placeholder="{{ currentVehicleMileage || 0 }}"
+        />
+        @if (odometerValue && odometerValue < currentVehicleMileage) {
+        <span class="odometer-error"
+          >{{ 'newLog.odometerMinError' | translate:{ min: currentVehicleMileage
+          } }}</span
+        >
+        }
+      </div>
+      <div class="info-item date-selector" (click)="openDatePicker()">
+        <lucide-angular [img]="CalendarIcon" [size]="12"></lucide-angular>
+        <span>{{ selectedDate || ('newLog.date' | translate) }}</span>
       </div>
     </div>
   </div>
 
-  <!-- Info Row (Mechanic + Date) -->
-  <div class="info-row">
-    <div class="mechanic-selector">
-      @if (!showNewMechanicInput && previousMechanics.length > 0) {
-      <div class="info-item">
-        <lucide-angular [img]="UserRoundIcon" [size]="12"></lucide-angular>
-        <select
-          class="mechanic-select"
-          [ngModel]="selectedMechanic"
-          (ngModelChange)="onMechanicChange($event)"
-        >
-          <option value="" disabled>Seleccionar mecánico</option>
-          @for (name of previousMechanics; track name) {
-          <option [value]="name">{{ name }}</option>
-          }
-          <option value="__new__">+ Nuevo mecánico</option>
-        </select>
-      </div>
-      } @else {
-      <div class="info-item">
-        <lucide-angular [img]="UserRoundIcon" [size]="12"></lucide-angular>
-        <input
-          type="text"
-          class="mechanic-input"
-          placeholder="Nombre del mecánico"
-          [(ngModel)]="newMechanicName"
-        />
-      </div>
-      }
-    </div>
-    <div class="info-item">
-      <lucide-angular [img]="CalendarIcon" [size]="12"></lucide-angular>
-      <span>{{ date }}</span>
-    </div>
-  </div>
+  <!-- Hidden date picker -->
+  <ion-modal
+    [isOpen]="showDatePicker"
+    (didDismiss)="showDatePicker = false"
+    class="date-modal"
+  >
+    <ng-template>
+      <ion-datetime
+        class="date-picker"
+        presentation="date"
+        [max]="todayISO"
+        (ionChange)="onDateChange($event)"
+      ></ion-datetime>
+    </ng-template>
+  </ion-modal>
 
   <!-- Add New Log Button (secondary action bar) -->
   <div class="add-log-bar">
@@ -69,33 +103,41 @@
 
   <!-- Jobs Section -->
   <div class="jobs-section">
-    <h2 class="jobs-title">Jobs</h2>
+    <div class="jobs-header">
+      <h2 class="jobs-title">{{ 'newLog.jobs' | translate }}</h2>
+      <button type="button" class="add-job-btn" (click)="addJob()">
+        <div class="add-job-icon">
+          <lucide-angular [img]="PlusIcon" [size]="14"></lucide-angular>
+        </div>
+        <span>{{ 'newLog.addNewJob' | translate }}</span>
+      </button>
+    </div>
 
-    <!-- Add New Job button -->
-    <button class="add-job-btn" (click)="addJob()">
-      <div class="add-job-icon">
-        <lucide-angular [img]="PlusIcon" [size]="14"></lucide-angular>
-      </div>
-      <span>Add New Job</span>
-    </button>
+    @if (jobs.length === 0) {
+    <p class="jobs-empty-hint">{{ 'newLog.emptyHint' | translate }}</p>
+    }
 
     <!-- Job Cards -->
     @for (job of jobs; track job.id; let i = $index) {
-    <div class="job-card">
+    <div #jobCard class="job-card">
       <!-- Job Title Row -->
       <div class="job-title-row">
         <app-autocomplete
           class="job-title-autocomplete"
-          [placeholder]="'Search job type...'"
+          [placeholder]="'newLog.searchJob' | translate"
           [searchFn]="searchJobsWithCache"
           [ngModel]="job.title"
           (ngModelChange)="job.title = $event"
           (optionSelected)="onJobSelected(i, $event)"
         ></app-autocomplete>
+        @if (job.icon) {
+        <lucide-angular
+          [img]="getJobIcon(job.icon)"
+          [size]="17"
+          class="job-icon-display"
+        ></lucide-angular>
+        }
         <div class="job-actions">
-          <button class="action-btn">
-            <lucide-angular [img]="PencilIcon" [size]="13"></lucide-angular>
-          </button>
           <button class="action-btn" (click)="deleteJob(i)">
             <lucide-angular [img]="Trash2Icon" [size]="16"></lucide-angular>
           </button>
@@ -109,25 +151,48 @@
           {{ getTypeLabel(type) }}
         </span>
         }
-        <button class="add-tag-btn">
-          <lucide-angular [img]="TagsIcon" [size]="12"></lucide-angular>
-          <span>Add Tag</span>
-        </button>
+        <div class="tag-selector">
+          <button class="add-tag-btn" (click)="toggleTagDropdown(i)">
+            <lucide-angular [img]="TagsIcon" [size]="12"></lucide-angular>
+            <span>{{ 'newLog.addTag' | translate }}</span>
+          </button>
+          @if (tagDropdownJobIndex === i) {
+          <div class="tag-dropdown-overlay" (click)="closeTagDropdown()"></div>
+          <div class="tag-dropdown">
+            @for (type of availableTypes; track type) {
+            <div
+              class="tag-option"
+              [ngClass]="getTypeClass(type)"
+              (click)="addTagToJob(i, type)"
+            >
+              {{ getTypeLabel(type) }}
+            </div>
+            }
+          </div>
+          }
+        </div>
       </div>
 
       <!-- Description -->
       <div class="field-section">
-        <label class="field-label">Description</label>
-        <div class="text-field">{{ job.description }}</div>
+        <label class="field-label"
+          >{{ 'newLog.description' | translate }}</label
+        >
+        <textarea
+          class="description-field"
+          [(ngModel)]="job.description"
+          [placeholder]="'newLog.description' | translate"
+          rows="2"
+        ></textarea>
       </div>
 
       <!-- Items -->
       <div class="field-section">
         <div class="items-label-row">
-          <label class="field-label">Items</label>
+          <label class="field-label">{{ 'newLog.items' | translate }}</label>
           <button class="add-item-btn" (click)="openAddItemPopup(i)">
             <lucide-angular [img]="CirclePlusIcon" [size]="12"></lucide-angular>
-            <span>Add Item</span>
+            <span>{{ 'newLog.addItem' | translate }}</span>
           </button>
         </div>
 
@@ -136,9 +201,9 @@
         <div class="items-table">
           <div class="table-header">
             <span class="col-name"></span>
-            <span class="col-qty">Qty</span>
-            <span class="col-unit">Unit Cost</span>
-            <span class="col-sub">Subtotal</span>
+            <span class="col-qty">{{ 'newLog.qty' | translate }}</span>
+            <span class="col-unit">{{ 'newLog.unitCost' | translate }}</span>
+            <span class="col-sub">{{ 'newLog.subtotal' | translate }}</span>
           </div>
           @for (item of job.items; track item.name) {
           <div class="table-row">
@@ -149,7 +214,7 @@
           </div>
           }
           <div class="table-total">
-            <span>Total:</span>
+            <span>{{ 'newLog.total' | translate }}:</span>
             <span>${{ getJobTotal(job) }}</span>
           </div>
         </div>
@@ -158,17 +223,28 @@
 
       <!-- Service Cost -->
       <div class="field-section">
-        <label class="field-label">Service</label>
+        <label class="field-label">{{ 'newLog.service' | translate }}</label>
         <div class="service-fields">
           <div class="small-field">
-            <label class="tiny-label">Cost</label>
-            <div class="value-box">${{ job.serviceCost }}</div>
-          </div>
-          <div class="small-field">
-            <label class="tiny-label">Qty</label>
-            <div class="value-box">-</div>
+            <label class="tiny-label">{{ 'newLog.cost' | translate }}</label>
+            <div class="value-box-wrapper">
+              <span class="currency-prefix">$</span>
+              <input
+                type="number"
+                class="service-cost-input"
+                [(ngModel)]="job.serviceCost"
+                placeholder="0"
+                min="0"
+              />
+            </div>
           </div>
         </div>
+      </div>
+
+      <!-- Job Total (bottom right) -->
+      <div class="job-total-row">
+        <span class="job-total-label">{{ 'newLog.total' | translate }}:</span>
+        <span class="job-total-value">${{ getFullJobTotal(job) }}</span>
       </div>
     </div>
     }
@@ -176,14 +252,22 @@
 
   <!-- Save Button -->
   <div class="save-section">
-    <app-button variant="primary" [fullWidth]="true" (clicked)="saveLog()">
-      Save
+    @if (saveErrorKey) {
+    <div class="save-error" role="alert">{{ saveErrorKey | translate }}</div>
+    }
+    <app-button
+      variant="primary"
+      [fullWidth]="true"
+      [disabled]="!canSave()"
+      (clicked)="saveLog()"
+    >
+      {{ 'newLog.save' | translate }}
     </app-button>
   </div>
 </div>
 
 <!-- ========================================================================= -->
-<!-- Add Item Popup (Bottom Sheet) — Figma: "New Log - Item" overlay           -->
+<!-- Add Item Popup (Bottom Sheet)                                             -->
 <!-- ========================================================================= -->
 @if (showAddItemPopup) {
 <div class="popup-overlay" (click)="closeAddItemPopup()">
@@ -192,23 +276,23 @@
     <div class="popup-handle"></div>
 
     <!-- Title -->
-    <h2 class="popup-title">Add Item</h2>
+    <h2 class="popup-title">{{ 'newLog.addItem' | translate }}</h2>
 
     <!-- Description Field -->
     <div class="popup-field">
-      <label class="popup-label">Description</label>
+      <label class="popup-label">{{ 'newLog.description' | translate }}</label>
       <input
         type="text"
         class="popup-input popup-input--wide"
         [(ngModel)]="newItemDescription"
-        placeholder="Item description"
+        [placeholder]="'newLog.itemDescription' | translate"
       />
     </div>
 
     <!-- Quantity + Unit Cost Fields -->
     <div class="popup-row">
       <div class="popup-field">
-        <label class="popup-label">Quantity</label>
+        <label class="popup-label">{{ 'newLog.quantity' | translate }}</label>
         <input
           type="number"
           class="popup-input popup-input--short"
@@ -217,7 +301,7 @@
         />
       </div>
       <div class="popup-field">
-        <label class="popup-label">Unit Cost</label>
+        <label class="popup-label">{{ 'newLog.unitCost' | translate }}</label>
         <input
           type="number"
           class="popup-input popup-input--medium"
@@ -234,7 +318,7 @@
         [fullWidth]="true"
         (clicked)="confirmAddItem()"
       >
-        Add
+        {{ 'common.add' | translate }}
       </app-button>
     </div>
   </div>

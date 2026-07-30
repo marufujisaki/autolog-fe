@@ -52,25 +52,44 @@
 }
 
 // ---------------------------------------------------------------------------
-// Color Picker
+// Card Color Selector
 // ---------------------------------------------------------------------------
 
-.color-picker {
+.card-color-section {
+  margin-top: t.$space-3;
+}
+
+.card-color-label {
+  font-size: 1rem;
+  font-weight: t.$font-weight-semibold;
+  color: t.$color-text-secondary;
+  display: block;
+  margin-bottom: t.$space-2;
+}
+
+.card-color-picker {
   display: flex;
   align-items: center;
   gap: t.$space-3;
-  padding: t.$space-4 0;
 }
 
-.color-dot {
-  width: 28px;
-  height: 28px;
+.card-color-dot {
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   cursor: pointer;
-  transition: transform t.$transition-duration-fast t.$transition-easing;
+  border: 3px solid transparent;
+  transition:
+    transform t.$transition-duration-fast t.$transition-easing,
+    border-color t.$transition-duration-fast t.$transition-easing;
 
   &:hover {
-    transform: scale(1.2);
+    transform: scale(1.15);
+  }
+
+  &.selected {
+    border-color: t.$color-text-primary;
+    transform: scale(1.15);
   }
 }
 

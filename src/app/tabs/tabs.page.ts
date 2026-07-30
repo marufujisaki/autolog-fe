@@ -6,11 +6,13 @@ import {
   CarFrontIcon,
   PlusIcon,
   UserIcon,
+  CarIcon,
+  WrenchIcon,
 } from 'lucide-angular';
 
 /**
  * TabsPage — Main shell with custom bottom navigation bar (Figma design).
- * Navigation: Vehicles | + (Add) | Profile
+ * Navigation: Vehicles | + (Add Menu) | Profile
  */
 @Component({
   selector: 'app-tabs',
@@ -25,13 +27,31 @@ export class TabsPage {
   readonly CarFrontIcon = CarFrontIcon;
   readonly PlusIcon = PlusIcon;
   readonly UserIcon = UserIcon;
+  readonly CarIcon = CarIcon;
+  readonly WrenchIcon = WrenchIcon;
+
+  fabMenuOpen = false;
 
   navigateToVehicles(): void {
     void this.router.navigate(['/tabs/vehicles']);
   }
 
-  navigateToAdd(): void {
+  toggleFabMenu(): void {
+    this.fabMenuOpen = !this.fabMenuOpen;
+  }
+
+  closeFabMenu(): void {
+    this.fabMenuOpen = false;
+  }
+
+  openAddVehicle(): void {
+    this.fabMenuOpen = false;
     void this.router.navigate(['/tabs/add-vehicle']);
+  }
+
+  openNewLog(): void {
+    this.fabMenuOpen = false;
+    void this.router.navigate(['/tabs/new-log']);
   }
 
   navigateToProfile(): void {

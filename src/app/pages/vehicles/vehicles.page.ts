@@ -123,7 +123,7 @@ export class VehiclesPage implements OnInit, OnDestroy {
         error: (error) => {
           console.error('Error loading vehicles:', error);
           this.isLoading = false;
-          this.showToast('ERROR_LOADING_VEHICLES');
+          this.showToast('errors.loadVehicles');
         },
       });
   }
@@ -150,7 +150,7 @@ export class VehiclesPage implements OnInit, OnDestroy {
    */
   submitCreateVehicle(): void {
     if (!this.createVehicleForm.valid) {
-      this.showToast('FORM_VALIDATION_ERROR');
+      this.showToast('errors.formInvalid');
       return;
     }
 
@@ -176,11 +176,11 @@ export class VehiclesPage implements OnInit, OnDestroy {
         next: (vehicle) => {
           this.vehicles.push(vehicle);
           this.closeCreateModal();
-          this.showToast('VEHICLE_CREATED_SUCCESS');
+          this.showToast('vehicles.createSuccess');
         },
         error: (error) => {
           console.error('Error creating vehicle:', error);
-          this.showToast('ERROR_CREATING_VEHICLE');
+          this.showToast('errors.createVehicle');
         },
       });
   }
@@ -213,19 +213,19 @@ export class VehiclesPage implements OnInit, OnDestroy {
     }
 
     if (control.errors['required']) {
-      return 'FIELD_REQUIRED';
+      return 'validation.required';
     }
     if (control.errors['maxlength']) {
-      return `MAX_LENGTH_${control.errors['maxlength'].requiredLength}`;
+      return 'errors.maxLength';
     }
     if (control.errors['min']) {
-      return `MIN_VALUE_${control.errors['min'].min}`;
+      return 'errors.minValue';
     }
     if (control.errors['max']) {
-      return `MAX_VALUE_${control.errors['max'].max}`;
+      return 'errors.maxValue';
     }
 
-    return 'INVALID_FIELD';
+    return 'errors.invalidField';
   }
 
   /**

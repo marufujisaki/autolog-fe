@@ -21,6 +21,11 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'new-log',
+        loadComponent: () =>
+          import('../pages/new-log/new-log.page').then((m) => m.NewLogPage),
+      },
+      {
         path: 'profile',
         loadComponent: () =>
           import('../pages/profile/profile.page').then((m) => m.ProfilePage),

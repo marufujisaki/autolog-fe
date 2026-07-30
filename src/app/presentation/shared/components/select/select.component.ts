@@ -1,6 +1,7 @@
 import { ChangeDetectorRef, Component, Input, forwardRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { IonSelect, IonSelectOption } from '@ionic/angular/standalone';
 
 /**
  * Option object for SelectComponent.
@@ -16,18 +17,15 @@ let nextSelectId = 0;
 /**
  * Design System select component.
  *
- * Renders a native `<select>` element styled exclusively with SCSS design
- * tokens (see `presentation/shared/styles/_tokens.scss`). No third-party UI
- * library (e.g. Ionic's `ion-select`) is used for visual rendering, per
- * Requirements 12.3 and 12.5.
+ * Uses ion-select internally for a better native dropdown experience,
+ * wrapped in the app's design token styling.
  *
- * Implements `ControlValueAccessor` so it can be used directly with Angular
- * reactive forms (`formControlName`) or `ngModel`.
+ * Implements `ControlValueAccessor` for reactive forms and ngModel.
  */
 @Component({
   selector: 'app-select',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, IonSelect, IonSelectOption],
   templateUrl: './select.component.html',
   styleUrls: ['./select.component.scss'],
   providers: [
@@ -65,9 +63,12 @@ export class SelectComponent implements ControlValueAccessor {
 
   constructor(private readonly changeDetectorRef: ChangeDetectorRef) {}
 
-  onSelectionChange(rawValue: string | number): void {
-    this.value = rawValue;
-    this.onChange(this.value);
+  onSelectionChange(event: any): void {
+    const newValue = event?.detail?.value;
+    if (newValue !== undefined) {
+      this.value = newValue;
+      this.onChange(this.value);
+    }
   }
 
   onBlur(): void {

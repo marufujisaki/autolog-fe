@@ -1,21 +1,25 @@
 <div class="detail-page">
-  <!-- Header -->
   <header class="page-header">
     <button class="back-btn" (click)="goBack()" aria-label="Go back">
       <lucide-angular [img]="ChevronLeftIcon" [size]="24"></lucide-angular>
     </button>
     <h1 class="header-title">AutoLog</h1>
-    <button class="edit-btn" aria-label="Edit log">
+    <button class="edit-btn" aria-label="Edit log" (click)="editLog()">
       <lucide-angular [img]="PencilIcon" [size]="20"></lucide-angular>
     </button>
   </header>
 
-  @if (log) {
-  <!-- Vehicle Info -->
-  <div class="vehicle-info">
+  @if (isLoading) {
+  <div class="loading">
+    <p>{{ 'common.loading' | translate }}</p>
+  </div>
+  } @if (!isLoading && log && vehicle) {
+  <section class="vehicle-info" aria-label="Maintenance log summary">
     <div class="info-row">
       <lucide-angular [img]="CarFrontIcon" [size]="12"></lucide-angular>
-      <span class="info-label">Toyota Corolla 2019</span>
+      <span class="info-label"
+        >{{ vehicle.brand }} {{ vehicle.model }} {{ vehicle.year }}</span
+      >
     </div>
     <div class="info-row">
       <lucide-angular [img]="GaugeIcon" [size]="12"></lucide-angular>
@@ -23,15 +27,17 @@
     </div>
     <div class="total-cost">
       <lucide-angular [img]="CircleDollarSignIcon" [size]="17"></lucide-angular>
-      <span class="cost-text">${{ totalCost }} Total</span>
+      <span class="cost-text"
+        >${{ totalCost | number: '1.0-2' }} {{ 'newLog.total' | translate
+        }}</span
+      >
     </div>
-  </div>
+  </section>
 
-  <!-- Mechanic + Date Row -->
   <div class="meta-row">
     <div class="meta-item">
       <lucide-angular [img]="UserRoundIcon" [size]="12"></lucide-angular>
-      <span>{{ log.mechanicName || 'N/A' }}</span>
+      <span>{{ log.mechanicName || ('newLog.mechanic' | translate) }}</span>
     </div>
     <div class="meta-item">
       <lucide-angular [img]="CalendarIcon" [size]="12"></lucide-angular>
@@ -41,47 +47,64 @@
 
   <div class="divider"></div>
 
-  <!-- Jobs List -->
   @for (job of sortedJobs; track job.id; let i = $index) {
-  <div class="job-section">
-    <!-- Job Header -->
+  <section class="job-section">
     <div class="job-header">
       <lucide-angular [img]="getJobIcon(job)" [size]="15"></lucide-angular>
-      <h3 class="job-title">Job {{ i + 1 }} - {{ job.title }}</h3>
+      <h2 class="job-title">
+        {{ 'maintenance.job' | translate }} {{ i + 1 }} - {{ job.title }}
+      </h2>
     </div>
 
-    <!-- Labels -->
+    @if (job.maintenanceTypes.length > 0) {
     <div class="job-labels">
       @for (type of job.maintenanceTypes; track type) {
       <span class="label" [ngClass]="getTypeClass(type)">
-        {{ getTypeLabel(type) }}
+        {{ ('maintenance.types.' + type) | translate }}
       </span>
       }
     </div>
-
-    <!-- Description -->
-    @if (job.description) {
+    } @if (job.description) {
     <p class="job-description">{{ job.description }}</p>
+    } @if (job.items.length > 0 || job.cost) {
+    <div class="items-header">
+      <span class="items-spacer"></span>
+      <span>{{ 'newLog.qty' | translate }}</span>
+      <span>{{ 'newLog.unitCost' | translate }}</span>
+      <span>{{ 'newLog.subtotal' | translate }}</span>
+    </div>
+
+    <div class="items-list">
+      @for (item of job.items; track item.id || item.name) {
+      <div class="item-row">
+        <span class="item-name">{{ item.name }}</span>
+        <span>{{ item.quantity }}</span>
+        <span>${{ item.unitCost | number: '1.0-2' }}</span>
+        <span>${{ item.quantity * item.unitCost | number: '1.0-2' }}</span>
+      </div>
+      } @if (job.cost) {
+      <div class="item-row service-row">
+        <span class="item-name">{{ 'newLog.service' | translate }}</span>
+        <span>1</span>
+        <span>${{ job.cost | number: '1.0-2' }}</span>
+        <span>${{ job.cost | number: '1.0-2' }}</span>
+      </div>
+      }
+    </div>
     }
 
-    <!-- Items Table Header -->
-    <div class="items-header">
-      <span class="col-qty">Qty</span>
-      <span class="col-unit">Unit Cost</span>
-      <span class="col-sub">Subtotal</span>
-    </div>
-
-    <!-- Job Total -->
     <div class="job-total">
-      <span class="total-label">Total Job {{ i + 1 }}:</span>
-      <span class="total-value">${{ job.cost || 0 }}</span>
+      <span class="total-label"
+        >{{ 'maintenance.totalJob' | translate: { number: i + 1 } }}</span
+      >
+      <span class="total-value">${{ getJobTotal(job) | number: '1.0-2' }}</span>
     </div>
-  </div>
+  </section>
 
   <div class="divider"></div>
-  } } @if (isLoading) {
+  } } @if (!isLoading && (!log || !vehicle)) {
   <div class="loading">
-    <p>Loading...</p>
+    <p>{{ 'errors.loadLog' | translate }}</p>
   </div>
   }
 </div>

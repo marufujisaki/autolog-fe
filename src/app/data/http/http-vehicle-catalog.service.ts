@@ -12,7 +12,7 @@ import { environment } from '../../../environments/environment';
 @Injectable({ providedIn: 'root' })
 export class HttpVehicleCatalogService extends VehicleCatalogService {
   private http = inject(HttpClient);
-  private baseUrl = `${environment.apiUrl}/api/v1/catalog`;
+  private baseUrl = `${environment.apiUrl}/v1/catalog`;
 
   searchMakes(query: string): Observable<CatalogMake[]> {
     const params = new HttpParams().set('q', query);

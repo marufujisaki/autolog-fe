@@ -76,6 +76,6 @@ export class ServicesPage implements OnInit {
   }
 
   viewLog(logId: string): void {
-    void this.router.navigate(['/vehicles', 'default', 'logs', logId]);
+    void this.router.navigate(['/log', logId]);
   }
 }

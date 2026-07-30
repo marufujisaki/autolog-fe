@@ -1,23 +1,25 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
-import { ButtonComponent } from '../../../presentation/shared/components/button/button.component';
+import { IonContent, IonGrid, IonRow, IonCol } from '@ionic/angular/standalone';
 import {
   LucideAngularModule,
   UserRoundIcon,
   HandshakeIcon,
   WrenchIcon,
 } from 'lucide-angular';
+import { TranslatePipe } from '@ngx-translate/core';
+import { ButtonComponent } from '../../../presentation/shared/components/button/button.component';
 
 interface UserTypeOption {
   id: string;
-  title: string;
+  titleKey: string;
+  descriptionKey: string;
   icon: any;
-  description: string;
 }
 
 /**
- * WelcomeSelectionPage — Role selection screen (Figma: "Init" frame).
+ * WelcomeSelectionPage — Role selection screen.
  * Lets the user choose their role: Person, Client, or Mechanic.
  * Requirements: 1.1, 2.1
  */
@@ -26,7 +28,17 @@ interface UserTypeOption {
   templateUrl: './welcome-selection.page.html',
   styleUrls: ['./welcome-selection.page.scss'],
   standalone: true,
-  imports: [CommonModule, RouterModule, ButtonComponent, LucideAngularModule],
+  imports: [
+    CommonModule,
+    RouterModule,
+    IonContent,
+    IonGrid,
+    IonRow,
+    IonCol,
+    LucideAngularModule,
+    ButtonComponent,
+    TranslatePipe,
+  ],
 })
 export class WelcomeSelectionPage {
   private router = inject(Router);
@@ -36,21 +48,21 @@ export class WelcomeSelectionPage {
   userTypes: UserTypeOption[] = [
     {
       id: 'USUARIO',
-      title: 'Person',
+      titleKey: 'auth.roles.person',
+      descriptionKey: 'auth.roles.personDesc',
       icon: UserRoundIcon,
-      description: 'I do my own mechanic',
     },
     {
       id: 'CLIENTE',
-      title: 'Client',
+      titleKey: 'auth.roles.client',
+      descriptionKey: 'auth.roles.clientDesc',
       icon: HandshakeIcon,
-      description: 'Track my vehicle on taller',
     },
     {
       id: 'MECANICO',
-      title: 'Mechanic',
+      titleKey: 'auth.roles.mechanic',
+      descriptionKey: 'auth.roles.mechanicDesc',
       icon: WrenchIcon,
-      description: 'Manage clients & services',
     },
   ];
 

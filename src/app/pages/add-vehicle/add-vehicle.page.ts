@@ -46,7 +46,16 @@ export class AddVehiclePage {
     licensePlate: ['', [Validators.maxLength(10)]],
     color: ['', [Validators.maxLength(30)]],
     displayName: ['', [Validators.maxLength(50)]],
+    cardColor: ['#3B82F6'],
   });
+
+  readonly cardColorOptions = [
+    '#3B82F6',
+    '#EC4899',
+    '#22C55E',
+    '#F97316',
+    '#A855F7',
+  ];
 
   /** Search function passed to the Make autocomplete */
   searchMakes = (query: string): Observable<string[]> => {
@@ -98,6 +107,10 @@ export class AddVehiclePage {
     this.form.get('model')?.setValue('');
   }
 
+  selectCardColor(color: string): void {
+    this.form.get('cardColor')?.setValue(color);
+  }
+
   onSubmit(): void {
     if (!this.form.valid) return;
 
@@ -112,6 +125,10 @@ export class AddVehiclePage {
         licensePlate: formValue.licensePlate.trim(),
       }),
       ...(formValue.color && { color: formValue.color.trim() }),
+      cardColor: formValue.cardColor || '#3B82F6',
+      ...(formValue.displayName && {
+        displayName: formValue.displayName.trim(),
+      }),
     };
 
     this.vehicleService.createVehicle(data).subscribe({

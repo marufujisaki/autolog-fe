@@ -7,6 +7,7 @@ import {
   FormControl,
 } from '@angular/forms';
 import { Router } from '@angular/router';
+import { TranslatePipe } from '@ngx-translate/core';
 import { ButtonComponent } from '../../../presentation/shared/components/button/button.component';
 import { InputComponent } from '../../../presentation/shared/components/input/input.component';
 import { LucideAngularModule, ChevronLeftIcon } from 'lucide-angular';
@@ -25,6 +26,7 @@ import { LucideAngularModule, ChevronLeftIcon } from 'lucide-angular';
     ButtonComponent,
     InputComponent,
     LucideAngularModule,
+    TranslatePipe,
   ],
 })
 export class ResetPasswordPage {

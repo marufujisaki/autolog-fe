@@ -1,8 +1,12 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
+import { map, switchMap } from 'rxjs';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { MaintenanceLogService } from '../../core/ports/maintenance-log.port';
+import { VehicleService } from '../../core/ports/vehicle.port';
 import { MaintenanceLog } from '../../core/models/maintenance-log.model';
+import { Vehicle } from '../../core/models/vehicle.model';
 import { Job, MaintenanceType } from '../../core/models/job.model';
 import {
   LucideAngularModule,
@@ -41,19 +45,21 @@ import {
 
 /**
  * LogDetailPage — Maintenance log detail view (Figma: "Detail 2" frame).
- * Shows vehicle info, mechanic, date, and all jobs with items and costs.
+ * Shows the real vehicle, mileage at service, mechanic, date, jobs, items and costs.
  */
 @Component({
   selector: 'app-log-detail',
   templateUrl: './log-detail.page.html',
   styleUrls: ['./log-detail.page.scss'],
   standalone: true,
-  imports: [CommonModule, LucideAngularModule],
+  imports: [CommonModule, LucideAngularModule, TranslatePipe],
 })
 export class LogDetailPage implements OnInit {
-  private logService = inject(MaintenanceLogService);
-  private router = inject(Router);
-  private route = inject(ActivatedRoute);
+  private readonly logService = inject(MaintenanceLogService);
+  private readonly vehicleService = inject(VehicleService);
+  private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
+  private readonly translate = inject(TranslateService);
 
   readonly ChevronLeftIcon = ChevronLeftIcon;
   readonly PencilIcon = PencilIcon;
@@ -67,25 +73,60 @@ export class LogDetailPage implements OnInit {
   logId = '';
   vehicleId = '';
   log: MaintenanceLog | null = null;
+  vehicle: Vehicle | null = null;
   isLoading = true;
+  private hasEnteredDetail = false;
 
   ngOnInit(): void {
     this.logId = this.route.snapshot.paramMap.get('logId') || '';
-    this.vehicleId = this.route.snapshot.paramMap.get('vehicleId') || '';
-    this.loadLog();
+    this.loadDetail();
   }
 
-  private loadLog(): void {
+  /**
+   * Ionic may reuse this page when returning from the edit route, so ngOnInit
+   * is not guaranteed to run again. Reload on every subsequent page entry to
+   * show the persisted log instead of the cached pre-edit state.
+   */
+  ionViewWillEnter(): void {
+    if (this.hasEnteredDetail) {
+      this.logId = this.route.snapshot.paramMap.get('logId') || this.logId;
+      this.loadDetail();
+    }
+    this.hasEnteredDetail = true;
+  }
+
+  private loadDetail(): void {
+    if (!this.logId) {
+      this.isLoading = false;
+      return;
+    }
+
     this.isLoading = true;
-    this.logService.getLog(this.logId).subscribe({
-      next: (log) => {
-        this.log = log;
-        this.isLoading = false;
-      },
-      error: () => {
-        this.isLoading = false;
-      },
-    });
+    this.log = null;
+    this.vehicle = null;
+    this.logService
+      .getLog(this.logId)
+      .pipe(
+        switchMap((log) =>
+          this.vehicleService
+            .getVehicle(log.vehicleId)
+            .pipe(map((vehicle) => ({ log, vehicle }))),
+        ),
+      )
+      .subscribe({
+        next: ({ log, vehicle }) => {
+          this.log = log;
+          this.vehicleId = log.vehicleId;
+          this.vehicle = vehicle;
+          this.isLoading = false;
+        },
+        error: (error) => {
+          console.error('Error loading maintenance log detail:', error);
+          this.log = null;
+          this.vehicle = null;
+          this.isLoading = false;
+        },
+      });
   }
 
   get sortedJobs(): Job[] {
@@ -94,7 +135,21 @@ export class LogDetailPage implements OnInit {
   }
 
   get totalCost(): number {
-    return this.log?.totalCost || 0;
+    return this.sortedJobs.reduce(
+      (total, job) => total + this.getJobTotal(job),
+      0,
+    );
+  }
+
+  getJobItemsTotal(job: Job): number {
+    return job.items.reduce(
+      (total, item) => total + item.quantity * item.unitCost,
+      0,
+    );
+  }
+
+  getJobTotal(job: Job): number {
+    return (job.cost || 0) + this.getJobItemsTotal(job);
   }
 
   getTypeClass(type: MaintenanceType): string {
@@ -105,7 +160,6 @@ export class LogDetailPage implements OnInit {
     return type.charAt(0) + type.slice(1).toLowerCase();
   }
 
-  /** Resolve a Lucide icon name (kebab-case) to its icon data object */
   getJobIcon(job: Job): any {
     if (!job.icon) return Disc3Icon;
     const iconMap: Record<string, any> = {
@@ -158,14 +212,24 @@ export class LogDetailPage implements OnInit {
 
   formatDate(dateString: string): string {
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
+    const locale = this.translate.currentLang?.() === 'en' ? 'en-US' : 'es-ES';
+    return date.toLocaleDateString(locale, {
       month: 'short',
       day: 'numeric',
       year: 'numeric',
     });
   }
 
+  editLog(): void {
+    if (!this.logId) return;
+    void this.router.navigate(['/log', this.logId, 'edit']);
+  }
+
   goBack(): void {
-    void this.router.navigate(['/vehicles', this.vehicleId]);
+    if (this.vehicleId) {
+      void this.router.navigate(['/vehicles', this.vehicleId]);
+      return;
+    }
+    void this.router.navigate(['/tabs/vehicles']);
   }
 }

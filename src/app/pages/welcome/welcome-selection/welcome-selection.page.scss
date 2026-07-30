@@ -1,52 +1,31 @@
 @use "../../../presentation/shared/styles/tokens" as t;
-@use "../../../presentation/shared/styles/mixins" as m;
 
-.welcome-page {
+.center {
+  height: 100%;
   display: flex;
+  justify-content: center;
+  align-items: center;
   flex-direction: column;
-  min-height: 100vh;
-  background: t.$color-background;
-  padding: t.$space-6 t.$space-6 t.$space-7;
 }
 
-// ---------------------------------------------------------------------------
-// Header
-// ---------------------------------------------------------------------------
-
-.header {
-  padding-top: 80px;
+h2 {
   text-align: center;
-  margin-bottom: t.$space-9;
-}
-
-.app-title {
+  margin: 12px 0;
   font-family: t.$font-family-display;
   font-size: t.$font-size-4xl;
   font-weight: t.$font-weight-bold;
   color: t.$color-text-primary;
-  margin: 0 0 t.$space-2;
 }
 
-.text-primary {
+.text-blue {
   color: t.$color-primary;
 }
 
-.app-subtitle {
+.subtitle {
+  text-align: center;
+  margin-bottom: 40px;
   font-size: t.$font-size-md;
-  font-weight: t.$font-weight-regular;
   color: t.$color-text-secondary;
-  margin: 0;
-}
-
-// ---------------------------------------------------------------------------
-// Role Cards
-// ---------------------------------------------------------------------------
-
-.role-cards {
-  display: flex;
-  flex-direction: column;
-  gap: t.$space-4;
-  margin-bottom: auto;
 }
 
 .role-card {
@@ -58,8 +37,9 @@
   border-radius: t.$radius-md;
   box-shadow: t.$shadow-md;
   cursor: pointer;
-  transition: all t.$transition-duration-base t.$transition-easing;
+  margin-bottom: t.$space-4;
   border: 2px solid transparent;
+  transition: all t.$transition-duration-base t.$transition-easing;
 
   &:hover {
     transform: translateY(-1px);
@@ -82,55 +62,65 @@
   justify-content: center;
   flex-shrink: 0;
   color: t.$color-text-primary;
+
+  &.icon-selected {
+    color: t.$color-primary;
+  }
 }
 
 .role-info {
   display: flex;
   flex-direction: column;
   gap: 2px;
+
+  h4 {
+    font-size: t.$font-size-md;
+    font-weight: t.$font-weight-semibold;
+    color: t.$color-text-primary;
+    margin: 0;
+  }
+
+  p {
+    color: t.$color-text-secondary;
+    font-size: 9px;
+    font-weight: t.$font-weight-regular;
+    margin: 0;
+  }
 }
 
-.role-title {
-  font-size: t.$font-size-md;
-  font-weight: t.$font-weight-semibold;
-  color: t.$color-text-primary;
-  margin: 0;
+.button-row {
+  margin: 100px auto auto auto;
+  position: absolute;
+  bottom: 24px;
+  left: 0;
+  right: 0;
+
+  p {
+    text-align: center;
+    color: t.$color-text-body;
+    font-weight: t.$font-weight-medium;
+    font-size: t.$font-size-md;
+  }
+
+  .link {
+    color: t.$color-primary;
+    cursor: pointer;
+    font-weight: t.$font-weight-semibold;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
 }
 
-.role-description {
-  font-size: 9px;
-  font-weight: t.$font-weight-regular;
-  color: t.$color-text-secondary;
-  margin: 0;
+@media screen and (max-width: 575px) {
+  .button-row {
+    width: 80%;
+  }
 }
 
-// ---------------------------------------------------------------------------
-// Actions
-// ---------------------------------------------------------------------------
-
-.actions {
-  margin-top: t.$space-9;
-  padding: 0 t.$space-8;
-}
-
-// ---------------------------------------------------------------------------
-// Login Link
-// ---------------------------------------------------------------------------
-
-.login-link-text {
-  text-align: center;
-  font-size: t.$font-size-md;
-  font-weight: t.$font-weight-medium;
-  color: t.$color-text-body;
-  margin-top: t.$space-6;
-}
-
-.login-link {
-  color: t.$color-primary;
-  text-decoration: none;
-  font-weight: t.$font-weight-semibold;
-
-  &:hover {
-    text-decoration: underline;
+@media screen and (min-width: 576px) {
+  .button-row {
+    min-width: 300px;
   }
 }

@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
-import { ButtonComponent } from '../../../presentation/shared/components/button/button.component';
+import { IonContent, IonGrid, IonRow, IonCol } from '@ionic/angular/standalone';
 import {
   LucideAngularModule,
   ChevronLeftIcon,
@@ -10,15 +10,17 @@ import {
   MapPinIcon,
   BellIcon,
 } from 'lucide-angular';
+import { TranslatePipe } from '@ngx-translate/core';
+import { ButtonComponent } from '../../../presentation/shared/components/button/button.component';
 
 interface Feature {
-  title: string;
+  titleKey: string;
+  descriptionKey: string;
   icon: any;
-  description: string;
 }
 
 /**
- * WelcomeFeaturesPage — App features overview (Figma: "Personal 2" frame).
+ * WelcomeFeaturesPage — App features overview.
  * Shows the key features of AutoLog before registration.
  */
 @Component({
@@ -26,7 +28,17 @@ interface Feature {
   templateUrl: './welcome-features.page.html',
   styleUrls: ['./welcome-features.page.scss'],
   standalone: true,
-  imports: [CommonModule, RouterModule, ButtonComponent, LucideAngularModule],
+  imports: [
+    CommonModule,
+    RouterModule,
+    IonContent,
+    IonGrid,
+    IonRow,
+    IonCol,
+    LucideAngularModule,
+    ButtonComponent,
+    TranslatePipe,
+  ],
 })
 export class WelcomeFeaturesPage {
   private router = inject(Router);
@@ -35,33 +47,33 @@ export class WelcomeFeaturesPage {
 
   features: Feature[] = [
     {
-      title: 'Historial Mecánico Centralizado',
+      titleKey: 'auth.features.mechanicHistory',
       icon: WrenchIcon,
-      description:
-        'Registra y mantén un historial completo de todos los servicios y reparaciones de un solo vehículo particular.',
+      descriptionKey: 'auth.features.mechanicHistoryDesc',
     },
     {
-      title: 'Bóveda de Documentos Segura',
+      titleKey: 'auth.features.documentVault',
       icon: ShieldIcon,
-      description:
-        'Guarda de forma segura documentos importantes de tu vehículo (seguro, registro, facturas, etc.) en un único lugar de fácil acceso.',
+      descriptionKey: 'auth.features.documentVaultDesc',
     },
     {
-      title: 'Directorio de Profesionales',
+      titleKey: 'auth.features.professionalDirectory',
       icon: MapPinIcon,
-      description:
-        'Crea un catálogo de tus talleres de confianza o mecánicos favoritos para tener sus datos siempre a mano.',
+      descriptionKey: 'auth.features.professionalDirectoryDesc',
     },
     {
-      title: 'Recordatorios Inteligentes',
+      titleKey: 'auth.features.smartReminders',
       icon: BellIcon,
-      description:
-        'Recibe notificaciones sobre próximos servicios recomendados, como cambios de aceite, rotación de neumáticos o limpieza de inyectores.',
+      descriptionKey: 'auth.features.smartRemindersDesc',
     },
   ];
 
   navigateToSignUp(): void {
     void this.router.navigate(['/sign-up']);
+  }
+
+  navigateToLogin(): void {
+    void this.router.navigate(['/login']);
   }
 
   goBack(): void {

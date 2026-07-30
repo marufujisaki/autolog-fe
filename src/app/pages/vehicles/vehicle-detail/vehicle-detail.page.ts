@@ -1,35 +1,36 @@
 import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
-import {
-  FormsModule,
-  ReactiveFormsModule,
-  FormBuilder,
-  FormGroup,
-  Validators,
-} from '@angular/forms';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
-import { Vehicle, CreateVehicleData } from '../../../core/models/vehicle.model';
+import { Vehicle } from '../../../core/models/vehicle.model';
 import {
   MaintenanceLog,
   PaginatedResponse,
 } from '../../../core/models/maintenance-log.model';
+import { Job, MaintenanceType } from '../../../core/models/job.model';
 import { VehicleService } from '../../../core/ports/vehicle.port';
 import { MaintenanceLogService } from '../../../core/ports/maintenance-log.port';
-import { CardComponent } from '../../../presentation/shared/components/card/card.component';
 import { ButtonComponent } from '../../../presentation/shared/components/button/button.component';
-import { InputComponent } from '../../../presentation/shared/components/input/input.component';
-import {
-  SelectComponent,
-  SelectOption,
-} from '../../../presentation/shared/components/select/select.component';
-import { ModalComponent } from '../../../presentation/shared/components/modal/modal.component';
 import { LoadingComponent } from '../../../presentation/shared/components/loading/loading.component';
 import { EmptyStateComponent } from '../../../presentation/shared/components/empty-state/empty-state.component';
 import { ToastComponent } from '../../../presentation/shared/components/toast/toast.component';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import {
+  LucideAngularModule,
+  CalendarIcon,
+  CarFrontIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  CircleDollarSignIcon,
+  CircleIcon,
+  Disc3Icon,
+  DropletIcon,
+  GaugeIcon,
+  UserRoundIcon,
+  WrenchIcon,
+} from 'lucide-angular';
 
 /**
  * VehicleDetailPage displays a single vehicle's information and paginated maintenance logs.
@@ -43,17 +44,12 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
   standalone: true,
   imports: [
     CommonModule,
-    FormsModule,
-    ReactiveFormsModule,
-    CardComponent,
     ButtonComponent,
-    InputComponent,
-    SelectComponent,
-    ModalComponent,
     LoadingComponent,
     EmptyStateComponent,
     ToastComponent,
     TranslatePipe,
+    LucideAngularModule,
   ],
   templateUrl: './vehicle-detail.page.html',
   styleUrls: ['./vehicle-detail.page.scss'],
@@ -63,18 +59,30 @@ export class VehicleDetailPage implements OnInit, OnDestroy {
   private readonly maintenanceLogService = inject(MaintenanceLogService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
-  private readonly formBuilder = inject(FormBuilder);
   private readonly translate = inject(TranslateService);
+
+  readonly ChevronLeftIcon = ChevronLeftIcon;
+  readonly ChevronRightIcon = ChevronRightIcon;
+  readonly CarFrontIcon = CarFrontIcon;
+  readonly GaugeIcon = GaugeIcon;
+  readonly CircleDollarSignIcon = CircleDollarSignIcon;
+  readonly UserRoundIcon = UserRoundIcon;
+  readonly CalendarIcon = CalendarIcon;
+  private readonly iconMap: Record<string, any> = {
+    droplet: DropletIcon,
+    droplets: DropletIcon,
+    'disc-3': Disc3Icon,
+    wrench: WrenchIcon,
+    'circle-dot': CircleIcon,
+    circle: CircleIcon,
+  };
 
   vehicle: Vehicle | null = null;
   logs: MaintenanceLog[] = [];
   isLoadingVehicle = false;
   isLoadingLogs = false;
-  showEditModal = false;
   toastMessage = '';
   toastVisible = false;
-
-  editVehicleForm!: FormGroup;
 
   // Pagination
   currentPage = 0;
@@ -85,12 +93,7 @@ export class VehicleDetailPage implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
   private vehicleId: string = '';
 
-  readonly currentYear = new Date().getFullYear();
-  readonly minYear = 1886;
-  readonly maxYear = this.currentYear + 1;
-
   ngOnInit(): void {
-    this.initializeForm();
     this.route.paramMap.pipe(takeUntil(this.destroy$)).subscribe((params) => {
       this.vehicleId = params.get('id') || '';
       if (this.vehicleId) {
@@ -106,28 +109,6 @@ export class VehicleDetailPage implements OnInit, OnDestroy {
   }
 
   /**
-   * Initialize the edit vehicle form.
-   */
-  private initializeForm(): void {
-    this.editVehicleForm = this.formBuilder.group({
-      brand: ['', [Validators.required, Validators.maxLength(50)]],
-      model: ['', [Validators.required, Validators.maxLength(50)]],
-      year: [
-        '',
-        [
-          Validators.required,
-          Validators.min(this.minYear),
-          Validators.max(this.maxYear),
-        ],
-      ],
-      licensePlate: ['', Validators.maxLength(10)],
-      vin: ['', Validators.maxLength(17)],
-      color: ['', Validators.maxLength(30)],
-      currentMileage: ['', [Validators.min(0), Validators.max(9999999)]],
-    });
-  }
-
-  /**
    * Load vehicle details.
    */
   private loadVehicle(): void {
@@ -138,15 +119,14 @@ export class VehicleDetailPage implements OnInit, OnDestroy {
       .subscribe({
         next: (vehicle) => {
           this.vehicle = vehicle;
-          this.populateEditForm(vehicle);
           this.isLoadingVehicle = false;
         },
         error: (error) => {
           console.error('Error loading vehicle:', error);
           this.isLoadingVehicle = false;
-          this.showToast('ERROR_LOADING_VEHICLE');
+          this.showToast('errors.loadVehicle');
           // Navigate back to vehicles list if not found
-          setTimeout(() => this.router.navigate(['/vehicles']), 2000);
+          setTimeout(() => this.router.navigate(['/tabs/vehicles']), 2000);
         },
       });
   }
@@ -171,97 +151,129 @@ export class VehicleDetailPage implements OnInit, OnDestroy {
         error: (error) => {
           console.error('Error loading logs:', error);
           this.isLoadingLogs = false;
-          this.showToast('ERROR_LOADING_LOGS');
+          this.showToast('errors.loadLogs');
         },
       });
   }
 
-  /**
-   * Populate edit form with vehicle data.
-   */
-  private populateEditForm(vehicle: Vehicle): void {
-    this.editVehicleForm.patchValue({
-      brand: vehicle.brand,
-      model: vehicle.model,
-      year: vehicle.year,
-      licensePlate: vehicle.licensePlate || '',
-      vin: vehicle.vin || '',
-      color: vehicle.color || '',
-      currentMileage: vehicle.currentMileage || '',
-    });
+  get latestLog(): MaintenanceLog | null {
+    return this.logs.reduce<MaintenanceLog | null>((latest, log) => {
+      if (!latest) return log;
+
+      const logDate = this.parseDateOnly(log.serviceDate).getTime();
+      const latestDate = this.parseDateOnly(latest.serviceDate).getTime();
+      if (logDate > latestDate) return log;
+      if (logDate < latestDate) return latest;
+
+      return new Date(log.createdAt).getTime() >
+        new Date(latest.createdAt).getTime()
+        ? log
+        : latest;
+    }, null);
   }
 
-  /**
-   * Open the edit vehicle modal.
-   */
-  openEditModal(): void {
-    this.showEditModal = true;
-  }
-
-  /**
-   * Close the edit vehicle modal.
-   */
-  closeEditModal(): void {
-    this.showEditModal = false;
-    if (this.vehicle) {
-      this.populateEditForm(this.vehicle);
+  getLogTypes(log: MaintenanceLog): MaintenanceType[] {
+    const types: MaintenanceType[] = [];
+    for (const job of log.jobs || []) {
+      for (const type of job.maintenanceTypes || []) {
+        if (!types.includes(type)) {
+          types.push(type);
+        }
+      }
     }
+    return types;
   }
 
-  /**
-   * Submit the edit vehicle form.
-   */
-  submitEditVehicle(): void {
-    if (!this.editVehicleForm.valid || !this.vehicle) {
-      this.showToast('FORM_VALIDATION_ERROR');
-      return;
+  getLogTitle(log: MaintenanceLog): string {
+    return (log.jobs || [])
+      .map((job) => job.title.trim())
+      .filter((title) => title.length > 0)
+      .join('\n');
+  }
+
+  getLogDescription(log: MaintenanceLog): string {
+    return (log.jobs || [])
+      .map((job) => job.description?.trim() || '')
+      .filter((description) => description.length > 0)
+      .join(' ');
+  }
+
+  getVehicleLabel(): string {
+    if (!this.vehicle) {
+      return '';
     }
+    const baseLabel = `${this.vehicle.brand} ${this.vehicle.model} ${this.vehicle.year}`;
+    return this.vehicle.displayName
+      ? `${baseLabel} - ${this.vehicle.displayName}`
+      : baseLabel;
+  }
 
-    const formValue = this.editVehicleForm.value;
-    const vehicleData: CreateVehicleData = {
-      brand: formValue.brand.trim(),
-      model: formValue.model.trim(),
-      year: parseInt(formValue.year, 10),
-      ...(formValue.licensePlate && {
-        licensePlate: formValue.licensePlate.trim(),
-      }),
-      ...(formValue.vin && { vin: formValue.vin.trim() }),
-      ...(formValue.color && { color: formValue.color.trim() }),
-      ...(formValue.currentMileage && {
-        currentMileage: parseInt(formValue.currentMileage, 10),
-      }),
-    };
+  formatShortDate(dateString: string): string {
+    try {
+      const date = this.parseDateOnly(dateString);
+      if (Number.isNaN(date.getTime())) return dateString;
 
-    this.vehicleService
-      .updateVehicle(this.vehicle.id, vehicleData)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (updatedVehicle) => {
-          this.vehicle = updatedVehicle;
-          this.closeEditModal();
-          this.showToast('VEHICLE_UPDATED_SUCCESS');
-        },
-        error: (error) => {
-          console.error('Error updating vehicle:', error);
-          this.showToast('ERROR_UPDATING_VEHICLE');
-        },
+      const locale =
+        this.translate.currentLang?.() === 'en' ? 'en-US' : 'es-ES';
+      return date.toLocaleDateString(locale, {
+        month: 'short',
+        day: 'numeric',
       });
+    } catch {
+      return dateString;
+    }
   }
 
-  /**
-   * Navigate to log detail page.
-   */
+  /** Return jobs in their persisted display order. */
+  getSortedJobs(log: MaintenanceLog): Job[] {
+    return [...(log.jobs || [])].sort((a, b) => a.sortOrder - b.sortOrder);
+  }
+
+  /** Include the service charge and all item subtotals in the job total. */
+  getJobTotal(job: Job): number {
+    const itemsTotal = (job.items || []).reduce(
+      (total, item) => total + item.quantity * item.unitCost,
+      0,
+    );
+    return (job.cost || 0) + itemsTotal;
+  }
+
+  /** Sum the visible maintenance records for the vehicle summary. */
+  getTotalCost(): number {
+    return this.logs.reduce(
+      (total, log) =>
+        total +
+        (log.totalCost ??
+          (log.jobs || []).reduce(
+            (jobTotal, job) => jobTotal + this.getJobTotal(job),
+            0,
+          )),
+      0,
+    );
+  }
+
+  getTypeClass(type: MaintenanceType): string {
+    return `label-${type.toLowerCase()}`;
+  }
+
+  getTypeLabel(type: MaintenanceType): string {
+    return type.charAt(0) + type.slice(1).toLowerCase();
+  }
+
+  getJobIcon(job: Job): any {
+    return this.iconMap[job.icon || ''] || Disc3Icon;
+  }
+
+  /** Navigate to the selected maintenance record. */
   viewLogDetail(logId: string): void {
-    this.router.navigate(['/logs', logId]);
+    void this.router.navigate(['/log', logId]);
   }
 
   /**
    * Navigate to create log page.
    */
   createLog(): void {
-    this.router.navigate(['/logs/create'], {
-      queryParams: { vehicleId: this.vehicleId },
-    });
+    void this.router.navigate(['/vehicles', this.vehicleId, 'logs', 'create']);
   }
 
   /**
@@ -300,7 +312,7 @@ export class VehicleDetailPage implements OnInit, OnDestroy {
    * Navigate back to vehicles list.
    */
   goBack(): void {
-    this.router.navigate(['/vehicles']);
+    this.router.navigate(['/tabs/vehicles']);
   }
 
   /**
@@ -315,47 +327,17 @@ export class VehicleDetailPage implements OnInit, OnDestroy {
   }
 
   /**
-   * Get error message for a form field.
+   * Parse date-only service dates as local calendar dates. Using
+   * new Date('YYYY-MM-DD') interprets them as UTC and can show the previous
+   * day in time zones west of UTC.
    */
-  getFieldError(fieldName: string): string {
-    const control = this.editVehicleForm.get(fieldName);
-    if (!control || !control.errors) {
-      return '';
+  private parseDateOnly(dateString: string): Date {
+    const dateOnlyMatch = /^(\d{4})-(\d{2})-(\d{2})$/.exec(dateString);
+    if (dateOnlyMatch) {
+      const [, year, month, day] = dateOnlyMatch;
+      return new Date(Number(year), Number(month) - 1, Number(day));
     }
-
-    if (control.errors['required']) {
-      return 'FIELD_REQUIRED';
-    }
-    if (control.errors['maxlength']) {
-      return `MAX_LENGTH_${control.errors['maxlength'].requiredLength}`;
-    }
-    if (control.errors['min']) {
-      return `MIN_VALUE_${control.errors['min'].min}`;
-    }
-    if (control.errors['max']) {
-      return `MAX_VALUE_${control.errors['max'].max}`;
-    }
-
-    return 'INVALID_FIELD';
-  }
-
-  /**
-   * Check if a form field has an error and has been touched.
-   */
-  hasFieldError(fieldName: string): boolean {
-    const control = this.editVehicleForm.get(fieldName);
-    return !!(control && control.invalid && (control.dirty || control.touched));
-  }
-
-  /**
-   * Get year options for the year select dropdown.
-   */
-  getYearOptions(): SelectOption[] {
-    const options: SelectOption[] = [];
-    for (let i = this.maxYear; i >= this.minYear; i--) {
-      options.push({ value: i, label: i.toString() });
-    }
-    return options;
+    return new Date(dateString);
   }
 
   /**
@@ -363,7 +345,9 @@ export class VehicleDetailPage implements OnInit, OnDestroy {
    */
   formatDate(dateString: string): string {
     try {
-      const date = new Date(dateString);
+      const date = this.parseDateOnly(dateString);
+      if (Number.isNaN(date.getTime())) return dateString;
+
       const locale =
         this.translate.currentLang?.() === 'en' ? 'en-US' : 'es-ES';
       return date.toLocaleDateString(locale);

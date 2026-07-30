@@ -74,6 +74,18 @@ export const routes: Routes = [
     canActivate: [authGuard],
   },
   {
+    path: 'log/:logId/edit',
+    loadComponent: () =>
+      import('./pages/new-log/new-log.page').then((m) => m.NewLogPage),
+    canActivate: [authGuard],
+  },
+  {
+    path: 'log/:logId',
+    loadComponent: () =>
+      import('./pages/log-detail/log-detail.page').then((m) => m.LogDetailPage),
+    canActivate: [authGuard],
+  },
+  {
     path: 'profile',
     loadComponent: () =>
       import('./pages/profile/profile.page').then((m) => m.ProfilePage),

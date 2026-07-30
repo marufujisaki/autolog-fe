@@ -31,4 +31,8 @@ export class HttpVehicleService extends VehicleService {
   updateVehicle(id: string, data: CreateVehicleData): Observable<Vehicle> {
     return this.http.put<Vehicle>(`${this.baseUrl}/${id}`, data);
   }
+
+  deleteVehicle(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/${id}`);
+  }
 }

@@ -8,6 +8,8 @@ import {
   FormControl,
 } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
+import { IonContent, IonGrid, IonRow, IonCol } from '@ionic/angular/standalone';
+import { TranslatePipe } from '@ngx-translate/core';
 import { AuthService } from '../../core/ports/auth.port';
 import { ButtonComponent } from '../../presentation/shared/components/button/button.component';
 import { InputComponent } from '../../presentation/shared/components/input/input.component';
@@ -25,8 +27,13 @@ import { InputComponent } from '../../presentation/shared/components/input/input
     CommonModule,
     RouterModule,
     ReactiveFormsModule,
+    IonContent,
+    IonGrid,
+    IonRow,
+    IonCol,
     ButtonComponent,
     InputComponent,
+    TranslatePipe,
   ],
 })
 export class LoginPage implements OnInit {
@@ -58,12 +65,11 @@ export class LoginPage implements OnInit {
     this.authService.login(credentials).subscribe({
       next: () => {
         this.isLoading = false;
-        void this.router.navigate(['/tabs/tab1']);
+        void this.router.navigate(['/tabs/vehicles']);
       },
       error: (error) => {
         this.isLoading = false;
-        this.errorMessage =
-          error?.error?.message || 'Invalid email or password';
+        this.errorMessage = 'auth.loginError';
       },
     });
   }

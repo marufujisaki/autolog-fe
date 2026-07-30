@@ -1,6 +1,7 @@
 import { ChangeDetectorRef, Component, Input, forwardRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { LucideAngularModule, EyeIcon, EyeOffIcon } from 'lucide-angular';
 
 /**
  * Native `<input>` types supported by the Design System input component.
@@ -36,7 +37,7 @@ let nextInputId = 0;
 @Component({
   selector: 'app-input',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, LucideAngularModule],
   templateUrl: './input.component.html',
   styleUrls: ['./input.component.scss'],
   providers: [
@@ -84,6 +85,9 @@ export class InputComponent implements ControlValueAccessor {
 
   /** Toggles masked/plain text visibility for `type="password"`. */
   showPassword = false;
+
+  readonly EyeIcon = EyeIcon;
+  readonly EyeOffIcon = EyeOffIcon;
 
   private onChange: (value: string) => void = () => {};
   private onTouched: () => void = () => {};

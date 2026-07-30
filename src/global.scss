@@ -34,4 +34,17 @@
 
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
-@import '@ionic/angular/css/palettes/dark.system.css';
+@import "@ionic/angular/css/palettes/dark.system.css";
+
+// ---------------------------------------------------------------------------
+// Global typography: Inter as default, Montserrat only where explicitly set
+// ---------------------------------------------------------------------------
+html,
+body {
+  font-family: "Inter", Arial, Helvetica, sans-serif;
+}
+
+// Override Ionic's default font-family
+:root {
+  --ion-font-family: "Inter", Arial, Helvetica, sans-serif;
+}

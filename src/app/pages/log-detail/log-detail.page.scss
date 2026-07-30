@@ -1,9 +1,10 @@
 @use "../../presentation/shared/styles/tokens" as t;
 
 .detail-page {
-  padding: t.$space-5 t.$space-6;
-  background: t.$color-background;
   min-height: 100%;
+  padding: t.$space-5 t.$space-6 100px;
+  background: t.$color-background;
+  color: t.$color-text-primary;
 }
 
 // ---------------------------------------------------------------------------
@@ -14,31 +15,38 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: t.$space-6;
+  margin-bottom: 36px;
 }
 
 .back-btn,
 .edit-btn {
-  background: none;
-  border: none;
-  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 0;
+  background: transparent;
   color: t.$color-text-primary;
-  padding: t.$space-1;
+  cursor: pointer;
 }
 
 .header-title {
+  margin: 0;
+  color: t.$color-text-primary;
   font-family: t.$font-family-display;
   font-size: t.$font-size-4xl;
   font-weight: t.$font-weight-bold;
-  color: t.$color-text-primary;
-  margin: 0;
+  line-height: 1.2;
 }
 
 // ---------------------------------------------------------------------------
-// Vehicle Info
+// Vehicle information
 // ---------------------------------------------------------------------------
 
 .vehicle-info {
+  position: relative;
   margin-bottom: t.$space-4;
 }
 
@@ -48,36 +56,46 @@
   gap: t.$space-2;
   margin-bottom: t.$space-2;
 
+  lucide-angular {
+    display: inline-flex;
+    color: t.$color-text-primary;
+  }
+
   .info-label {
+    color: t.$color-primary;
     font-size: t.$font-size-base;
     font-weight: t.$font-weight-bold;
-    color: t.$color-primary;
   }
 
   .info-value {
+    color: #111827;
     font-size: t.$font-size-base;
     font-weight: t.$font-weight-medium;
-    color: #111827;
   }
 }
 
 .total-cost {
+  position: absolute;
+  top: 0;
+  right: 0;
   display: flex;
   align-items: center;
   gap: t.$space-2;
-  position: absolute;
-  right: t.$space-6;
-  top: 90px;
+
+  lucide-angular {
+    display: inline-flex;
+    color: t.$color-text-primary;
+  }
 
   .cost-text {
+    color: #111827;
     font-size: t.$font-size-base;
     font-weight: t.$font-weight-bold;
-    color: #111827;
   }
 }
 
 // ---------------------------------------------------------------------------
-// Meta Row
+// Mechanic/date metadata and separators
 // ---------------------------------------------------------------------------
 
 .meta-row {
@@ -91,22 +109,23 @@
   display: flex;
   align-items: center;
   gap: t.$space-1;
-  font-size: t.$font-size-sm;
   color: #9ca3af;
-}
+  font-size: t.$font-size-sm;
+  white-space: nowrap;
 
-// ---------------------------------------------------------------------------
-// Divider
-// ---------------------------------------------------------------------------
+  lucide-angular {
+    display: inline-flex;
+  }
+}
 
 .divider {
   height: 1px;
-  background: t.$color-border-light;
   margin: t.$space-4 0;
+  background: t.$color-border-light;
 }
 
 // ---------------------------------------------------------------------------
-// Job Section
+// Job details
 // ---------------------------------------------------------------------------
 
 .job-section {
@@ -115,30 +134,43 @@
 
 .job-header {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: t.$space-2;
   margin-bottom: t.$space-2;
+
+  lucide-angular {
+    display: inline-flex;
+    flex: 0 0 auto;
+    margin-top: 2px;
+    color: t.$color-text-primary;
+  }
 }
 
 .job-title {
+  margin: 0;
+  color: t.$color-text-primary;
   font-size: t.$font-size-lg;
   font-weight: t.$font-weight-semibold;
-  color: t.$color-text-primary;
-  margin: 0;
+  line-height: 1.35;
 }
 
 .job-labels {
   display: flex;
+  flex-wrap: wrap;
   gap: t.$space-2;
   margin-bottom: t.$space-2;
 }
 
 .label {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  min-height: 22px;
   padding: 5px 10px;
   border-radius: t.$radius-xs;
+  font-family: t.$font-family-display;
   font-size: t.$font-size-xs;
   font-weight: t.$font-weight-semibold;
+  line-height: 1;
   text-transform: uppercase;
 }
 
@@ -168,31 +200,49 @@
 }
 
 .job-description {
-  font-size: 11px;
-  color: #6b7280;
   margin: 0 0 t.$space-3;
+  color: #6b7280;
+  font-size: 11px;
   line-height: 1.5;
 }
 
-// ---------------------------------------------------------------------------
-// Items Table
-// ---------------------------------------------------------------------------
-
-.items-header {
-  display: flex;
-  justify-content: flex-end;
-  gap: t.$space-7;
-  font-size: t.$font-size-xs;
-  font-weight: t.$font-weight-semibold;
-  color: #999999;
-  margin-bottom: t.$space-2;
+.items-header,
+.item-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 32px 58px 58px;
+  align-items: center;
+  column-gap: t.$space-2;
 }
 
-.col-qty,
-.col-unit,
-.col-sub {
+.items-header {
+  margin-bottom: t.$space-2;
+  color: #999999;
+  font-size: t.$font-size-xs;
+  font-weight: t.$font-weight-semibold;
   text-align: right;
-  min-width: 40px;
+
+  .items-spacer {
+    min-width: 0;
+  }
+}
+
+.item-row {
+  min-height: 18px;
+  color: #111827;
+  font-size: t.$font-size-sm;
+  text-align: right;
+
+  .item-name {
+    overflow: hidden;
+    color: #838383;
+    text-align: left;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.service-row {
+  margin-top: t.$space-1;
 }
 
 .job-total {
@@ -200,22 +250,19 @@
   justify-content: flex-end;
   gap: t.$space-2;
   margin-top: t.$space-3;
-}
-
-.total-label {
+  color: t.$color-text-primary;
   font-size: t.$font-size-base;
   font-weight: t.$font-weight-semibold;
-  color: t.$color-text-primary;
 }
 
+.total-label,
 .total-value {
   font-size: t.$font-size-base;
   font-weight: t.$font-weight-semibold;
-  color: t.$color-text-primary;
 }
 
 // ---------------------------------------------------------------------------
-// Loading
+// Loading/error state
 // ---------------------------------------------------------------------------
 
 .loading {
@@ -224,4 +271,26 @@
   justify-content: center;
   padding: t.$space-9;
   color: t.$color-text-secondary;
+}
+
+@media (max-width: 380px) {
+  .detail-page {
+    padding-right: t.$space-4;
+    padding-left: t.$space-4;
+  }
+
+  .meta-row {
+    gap: t.$space-3;
+  }
+
+  .items-header,
+  .item-row {
+    grid-template-columns: minmax(0, 1fr) 26px 52px 52px;
+    column-gap: 4px;
+  }
+
+  .total-cost {
+    position: static;
+    margin-top: t.$space-3;
+  }
 }

@@ -1,256 +1,300 @@
-@import "../../../presentation/shared/styles/tokens";
-@import "../../../presentation/shared/styles/mixins";
+@use "../../../presentation/shared/styles/tokens" as t;
 
-.vehicle-detail-container {
+.vehicle-detail-page {
+  min-height: 100%;
+  padding: t.$space-5 t.$space-6 100px;
+  background: t.$color-background;
+  color: t.$color-text-primary;
+}
+
+// ---------------------------------------------------------------------------
+// Header and vehicle information
+// ---------------------------------------------------------------------------
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 36px;
+}
+
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: t.$color-text-primary;
+  cursor: pointer;
+}
+
+.header-title {
+  margin: 0;
+  font-family: t.$font-family-display;
+  font-size: t.$font-size-4xl;
+  font-weight: t.$font-weight-bold;
+  line-height: 1.2;
+
+  span {
+    color: t.$color-primary;
+  }
+}
+
+.vehicle-summary {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: t.$space-4;
+  margin: 0 0 t.$space-4;
+  padding: 0 t.$space-1;
+}
+
+.summary-info {
   display: flex;
   flex-direction: column;
-  min-height: 100%;
-  background-color: var(--color-background);
-  padding: $space-4;
-  gap: $space-5;
+  gap: t.$space-2;
+}
 
-  .vehicle-detail-header {
-    display: flex;
-    align-items: center;
-    gap: $space-4;
-    margin-bottom: $space-4;
+.summary-row,
+.summary-total {
+  display: flex;
+  align-items: center;
+  gap: t.$space-2;
 
-    .back-button {
-      background: none;
-      border: none;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: $space-1;
-      font-size: $font-size-base;
-      color: var(--color-primary);
-      padding: 0;
-      margin: 0;
+  lucide-angular {
+    display: inline-flex;
+    color: t.$color-text-primary;
+  }
+}
 
-      .back-icon {
-        font-size: $font-size-lg;
-      }
+.summary-row {
+  font-size: t.$font-size-base;
 
-      &:hover {
-        opacity: 0.8;
-      }
-    }
-
-    h1 {
-      margin: 0;
-      flex: 1;
-      font-size: $font-size-lg;
-      font-weight: $font-weight-bold;
-      color: var(--color-text-primary);
-    }
-
-    .header-spacer {
-      width: $space-5;
-    }
+  &--vehicle {
+    color: t.$color-primary;
+    font-weight: t.$font-weight-bold;
   }
 
-  .vehicle-details-card {
-    app-card {
-      .vehicle-info-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        gap: $space-4;
-        margin-bottom: $space-5;
+  &--mileage {
+    color: #111827;
+    font-weight: t.$font-weight-medium;
+  }
+}
 
-        .vehicle-title-section {
-          flex: 1;
+.summary-total {
+  margin-top: 1px;
+  color: #111827;
+  font-size: t.$font-size-base;
+  font-weight: t.$font-weight-bold;
+  white-space: nowrap;
+}
 
-          .vehicle-title {
-            margin: 0;
-            font-size: $font-size-base;
-            font-weight: $font-weight-bold;
-            color: var(--color-text-primary);
-          }
+.last-maintenance {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: t.$space-2;
+  margin: 0 0 t.$space-6;
+  padding: 0 t.$space-1;
+  color: #6b7280;
+  font-size: t.$font-size-sm;
+}
 
-          .vehicle-year {
-            margin: $space-1 0 0 0;
-            font-size: $font-size-sm;
-            color: var(--color-text-secondary);
-          }
-        }
+.last-maintenance-label {
+  font-weight: t.$font-weight-semibold;
+}
 
-        app-button {
-          flex-shrink: 0;
-        }
-      }
+.last-maintenance-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: t.$space-1;
+  white-space: nowrap;
 
-      .vehicle-info-grid {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: $space-4;
+  lucide-angular {
+    display: inline-flex;
+  }
+}
 
-        @media (max-width: 600px) {
-          grid-template-columns: 1fr;
-        }
+// ---------------------------------------------------------------------------
+// Services-style maintenance history cards
+// ---------------------------------------------------------------------------
 
-        .info-item {
-          display: flex;
-          flex-direction: column;
-          gap: $space-1;
+.maintenance-history {
+  display: flex;
+  flex-direction: column;
+}
 
-          .label {
-            font-size: $font-size-xs;
-            color: var(--color-text-secondary);
-            font-weight: $font-weight-medium;
-          }
+.history-title {
+  margin: 0 0 t.$space-3;
+  color: t.$color-text-primary;
+  font-size: t.$font-size-3xl;
+  font-weight: t.$font-weight-semibold;
+  line-height: 1.25;
+}
 
-          .value {
-            font-size: $font-size-base;
-            color: var(--color-text-primary);
-            word-break: break-word;
-          }
-        }
-      }
-    }
+.logs-list {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.service-card {
+  display: flex;
+  flex-direction: column;
+  min-height: 142px;
+  padding: t.$space-3;
+  border-radius: t.$radius-xl;
+  background: #f9fafb;
+  cursor: pointer;
+  transition:
+    box-shadow t.$transition-duration-base t.$transition-easing,
+    transform t.$transition-duration-base t.$transition-easing;
+
+  &:hover,
+  &:focus-visible {
+    outline: none;
+    box-shadow: t.$shadow-card;
+    transform: translateY(-1px);
+  }
+}
+
+.service-card-top {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  min-height: 22px;
+}
+
+.service-date {
+  flex: 0 0 auto;
+  color: #323232;
+  font-size: t.$font-size-base;
+  font-weight: t.$font-weight-medium;
+}
+
+.service-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: t.$space-2;
+}
+
+.service-tag {
+  display: inline-flex;
+  align-items: center;
+  min-height: 22px;
+  padding: 5px 10px;
+  border-radius: t.$radius-full;
+  color: #ffffff;
+  font-family: t.$font-family-display;
+  font-size: t.$font-size-xs;
+  font-weight: t.$font-weight-semibold;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.label-replacement {
+  background: #bc96ff;
+}
+
+.label-service {
+  background: #62a9f3;
+}
+
+.label-repair {
+  background: #f8c190;
+}
+
+.label-consumable {
+  background: #84d3b3;
+}
+
+.label-inspection {
+  background: t.$color-primary;
+}
+
+.service-title {
+  margin: t.$space-2 0 0;
+  color: #000000;
+  font-size: t.$font-size-lg;
+  font-weight: t.$font-weight-semibold;
+  line-height: 1.35;
+  white-space: pre-line;
+}
+
+.service-description {
+  margin: t.$space-2 0 0;
+  color: #6b7280;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.service-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: t.$space-3;
+  margin-top: auto;
+  padding-top: t.$space-2;
+  border-top: 1px solid #f3f3f8;
+}
+
+.service-vehicle {
+  overflow: hidden;
+  color: #6b7280;
+  font-size: 11px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.service-chevron {
+  flex: 0 0 auto;
+  color: t.$color-text-primary;
+}
+
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: t.$space-5;
+
+  .page-info {
+    flex: 1;
+    min-width: 60px;
+    color: t.$color-text-secondary;
+    font-size: t.$font-size-sm;
+    text-align: center;
   }
 
-  .logs-section {
-    display: flex;
-    flex-direction: column;
-    gap: $space-4;
+  app-button {
+    flex: 0 0 auto;
+    max-width: none;
+  }
+}
 
-    .logs-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: $space-4;
+// ---------------------------------------------------------------------------
+// Feedback
+// ---------------------------------------------------------------------------
 
-      h3 {
-        margin: 0;
-        font-size: $font-size-base;
-        font-weight: $font-weight-bold;
-        color: var(--color-text-primary);
-      }
+.toast {
+  position: fixed;
+  right: t.$space-4;
+  bottom: t.$space-4;
+  left: t.$space-4;
+  z-index: 1000;
+}
 
-      app-button {
-        flex-shrink: 0;
-      }
-    }
-
-    .logs-list {
-      display: flex;
-      flex-direction: column;
-      gap: $space-4;
-
-      .log-card {
-        cursor: pointer;
-        transition:
-          box-shadow 0.3s ease,
-          transform 0.3s ease;
-
-        &:hover {
-          @include elevation("md");
-        }
-
-        .log-card-content {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          gap: $space-4;
-          padding: $space-4 0;
-
-          .log-info {
-            flex: 1;
-
-            .log-date {
-              margin: 0;
-              font-size: $font-size-base;
-              font-weight: $font-weight-bold;
-              color: var(--color-text-primary);
-            }
-
-            .log-cost,
-            .log-jobs-count,
-            .log-photos-count {
-              margin: $space-1 0;
-              font-size: $font-size-sm;
-              color: var(--color-text-secondary);
-            }
-          }
-
-          .log-arrow {
-            flex-shrink: 0;
-
-            .arrow-icon {
-              color: var(--color-text-secondary);
-              font-size: $font-size-base;
-            }
-          }
-        }
-      }
-    }
-
-    .pagination-controls {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: $space-4;
-      margin-top: $space-4;
-
-      .page-info {
-        font-size: $font-size-sm;
-        color: var(--color-text-secondary);
-        min-width: 60px;
-        text-align: center;
-      }
-
-      app-button {
-        flex: 1;
-
-        &[disabled] {
-          opacity: 0.5;
-          cursor: not-allowed;
-        }
-      }
-    }
+@media (max-width: 380px) {
+  .vehicle-detail-page {
+    padding-right: t.$space-4;
+    padding-left: t.$space-4;
   }
 
-  .edit-vehicle-form {
-    display: flex;
-    flex-direction: column;
-    gap: $space-4;
-
-    .form-group {
-      display: flex;
-      flex-direction: column;
-      gap: $space-1;
-
-      app-input,
-      app-select {
-        &.error {
-          --input-border-color: var(--color-error);
-        }
-      }
-
-      .error-message {
-        margin: 0;
-        font-size: $font-size-xs;
-        color: var(--color-error);
-      }
-    }
-
-    .form-actions {
-      display: flex;
-      gap: $space-4;
-      margin-top: $space-4;
-
-      app-button {
-        flex: 1;
-      }
-    }
-  }
-
-  .toast {
-    position: fixed;
-    bottom: $space-4;
-    left: $space-4;
-    right: $space-4;
-    z-index: 1000;
+  .service-card-top {
+    align-items: flex-start;
+    gap: t.$space-2;
   }
 }

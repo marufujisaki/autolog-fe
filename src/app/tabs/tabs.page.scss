@@ -75,4 +75,63 @@
   align-items: center;
   justify-content: center;
   color: t.$color-on-primary;
+  transition: transform t.$transition-duration-base t.$transition-easing;
+
+  &.active {
+    transform: rotate(45deg);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// FAB Menu (Overlay + Options)
+// ---------------------------------------------------------------------------
+
+.fab-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.2);
+  z-index: 90;
+}
+
+.fab-options {
+  position: fixed;
+  bottom: 130px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 36px;
+  z-index: 110;
+}
+
+.fab-option {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: t.$color-text-primary;
+  box-shadow: 0 1px 4px 0 rgba(58, 134, 255, 1);
+  transition:
+    transform t.$transition-duration-fast t.$transition-easing,
+    background t.$transition-duration-fast t.$transition-easing,
+    color t.$transition-duration-fast t.$transition-easing;
+
+  &:hover {
+    transform: scale(1.08);
+    background: t.$color-primary;
+    color: #ffffff;
+  }
+
+  &:active {
+    transform: scale(0.95);
+    background: t.$color-primary;
+    color: #ffffff;
+  }
 }

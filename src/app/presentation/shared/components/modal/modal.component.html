@@ -1,5 +1,7 @@
 <div
   class="app-modal"
+  [class.open]="isOpen"
+  [class.app-modal--bottom-sheet]="variant === 'bottom-sheet'"
   *ngIf="isOpen"
   role="dialog"
   [attr.aria-modal]="true"
@@ -9,8 +11,14 @@
 
   <div class="app-modal__container">
     <div class="app-modal__header" *ngIf="title">
+      <div
+        *ngIf="variant === 'bottom-sheet'"
+        class="app-modal__handle"
+        aria-hidden="true"
+      ></div>
       <h2 class="app-modal__title" [id]="modalTitleId">{{ title }}</h2>
       <button
+        *ngIf="variant !== 'bottom-sheet'"
         type="button"
         class="app-modal__close"
         aria-label="Close modal"

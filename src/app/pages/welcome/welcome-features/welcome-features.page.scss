@@ -1,70 +1,54 @@
 @use "../../../presentation/shared/styles/tokens" as t;
-@use "../../../presentation/shared/styles/mixins" as m;
 
-.features-page {
+.center {
+  height: 100%;
   display: flex;
+  align-items: center;
   flex-direction: column;
-  min-height: 100vh;
-  background: t.$color-background;
-  padding: t.$space-4 t.$space-7 t.$space-7;
 }
 
-// ---------------------------------------------------------------------------
-// Back Button
-// ---------------------------------------------------------------------------
+.features-grid {
+  margin-top: 60px;
+}
 
-.back-btn {
-  background: none;
-  border: none;
+.back-button {
+  position: absolute;
+  top: t.$space-4;
+  left: t.$space-4;
   cursor: pointer;
-  padding: t.$space-2;
   color: t.$color-text-primary;
-  align-self: flex-start;
-  margin-bottom: t.$space-6;
+  z-index: 10;
 
   &:hover {
     color: t.$color-primary;
   }
 }
 
-// ---------------------------------------------------------------------------
-// Header
-// ---------------------------------------------------------------------------
-
-.header {
+h2 {
   text-align: center;
-  margin-bottom: t.$space-7;
-}
-
-.page-title {
+  margin: 12px 0;
   font-family: t.$font-family-display;
   font-size: t.$font-size-4xl;
   font-weight: t.$font-weight-bold;
   color: t.$color-text-primary;
-  margin: 0 0 t.$space-2;
 }
 
-.text-primary {
+.text-blue {
   color: t.$color-primary;
 }
 
-.page-subtitle {
+.subtitle {
+  text-align: center;
   font-size: t.$font-size-base;
-  font-weight: t.$font-weight-regular;
+  margin-bottom: 40px;
   color: t.$color-text-secondary;
-  margin: 0;
-  line-height: t.$line-height-relaxed;
 }
 
-// ---------------------------------------------------------------------------
-// Feature Cards
-// ---------------------------------------------------------------------------
-
-.feature-list {
+.card-list {
+  margin: 0 1.5rem;
   display: flex;
   flex-direction: column;
   gap: t.$space-4;
-  flex: 1;
 }
 
 .feature-card {
@@ -75,6 +59,7 @@
   background: t.$color-surface;
   border-radius: t.$radius-md;
   box-shadow: t.$shadow-md;
+  cursor: pointer;
 }
 
 .feature-icon {
@@ -86,35 +71,62 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: t.$color-text-primary;
+  color: t.$color-primary;
 }
 
 .feature-content {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 2px;
+
+  h4 {
+    font-size: t.$font-size-md;
+    font-weight: t.$font-weight-semibold;
+    color: t.$color-text-primary;
+    margin: 0;
+  }
+
+  p {
+    color: t.$color-text-secondary;
+    font-size: 9px;
+    font-weight: t.$font-weight-regular;
+    margin: 0;
+  }
 }
 
-.feature-title {
-  font-size: t.$font-size-md;
-  font-weight: t.$font-weight-semibold;
-  color: t.$color-text-primary;
-  margin: 0;
+.button-row {
+  margin: 100px auto auto auto;
+  position: absolute;
+  bottom: 24px;
+  left: 0;
+  right: 0;
+
+  p {
+    text-align: center;
+    color: t.$color-text-body;
+    font-weight: t.$font-weight-medium;
+    font-size: t.$font-size-md;
+  }
+
+  .link {
+    color: t.$color-primary;
+    cursor: pointer;
+    font-weight: t.$font-weight-semibold;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
 }
 
-.feature-description {
-  font-size: 9px;
-  font-weight: t.$font-weight-regular;
-  color: t.$color-text-secondary;
-  margin: 0;
-  line-height: 1.4;
+@media screen and (max-width: 575px) {
+  .button-row {
+    width: 80%;
+  }
 }
 
-// ---------------------------------------------------------------------------
-// Actions
-// ---------------------------------------------------------------------------
-
-.actions {
-  margin-top: t.$space-8;
-  padding: 0 t.$space-6;
+@media screen and (min-width: 576px) {
+  .button-row {
+    min-width: 300px;
+  }
 }

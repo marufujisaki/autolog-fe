@@ -1,11 +1,5 @@
 /**
  * HTTP implementation of the MaintenanceLogService port (Requirement 11.2, 11.4).
- *
- * Note on getLog: the backend's MaintenanceLogController does not currently
- * expose a GET /api/logs/{logId} endpoint (only list-by-vehicle, create,
- * delete, addJob and removeJob). This method targets that path anyway to
- * satisfy the abstract port's contract; it should start working once the
- * corresponding endpoint is added to the backend.
  */
 
 import { HttpClient, HttpParams } from '@angular/common/http';
@@ -51,6 +45,10 @@ export class HttpMaintenanceLogService extends MaintenanceLogService {
       `${environment.apiUrl}/vehicles/${vehicleId}/logs`,
       data,
     );
+  }
+
+  updateLog(logId: string, data: CreateLogData): Observable<MaintenanceLog> {
+    return this.http.put<MaintenanceLog>(`${this.logsUrl}/${logId}`, data);
   }
 
   deleteLog(logId: string): Observable<void> {

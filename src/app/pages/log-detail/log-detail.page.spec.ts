@@ -3,13 +3,16 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { of, throwError } from 'rxjs';
 
 import { LogDetailPage } from './log-detail.page';
+import { TranslateService, provideTranslateService } from '@ngx-translate/core';
 import { MaintenanceLogService } from '../../core/ports/maintenance-log.port';
+import { VehicleService } from '../../core/ports/vehicle.port';
 import { MaintenanceType } from '../../core/models/job.model';
 
 describe('LogDetailPage', () => {
   let component: LogDetailPage;
   let fixture: ComponentFixture<LogDetailPage>;
   let mockLogService: jasmine.SpyObj<MaintenanceLogService>;
+  let mockVehicleService: jasmine.SpyObj<VehicleService>;
   let mockRouter: jasmine.SpyObj<Router>;
 
   const mockLog = {
@@ -27,6 +30,7 @@ describe('LogDetailPage', () => {
         description: 'Regular oil change',
         cost: 50,
         maintenanceTypes: [MaintenanceType.SERVICE],
+        items: [],
         sortOrder: 1,
       },
       {
@@ -36,6 +40,7 @@ describe('LogDetailPage', () => {
         description: 'Replaced front brake pads',
         cost: 50,
         maintenanceTypes: [MaintenanceType.REPLACEMENT],
+        items: [],
         sortOrder: 2,
       },
     ],
@@ -48,6 +53,7 @@ describe('LogDetailPage', () => {
       'getLog',
       'deleteLog',
     ]);
+    mockVehicleService = jasmine.createSpyObj('VehicleService', ['getVehicle']);
     mockRouter = jasmine.createSpyObj('Router', ['navigate']);
 
     const mockActivatedRoute = {
@@ -55,7 +61,6 @@ describe('LogDetailPage', () => {
         paramMap: {
           get: (key: string) => {
             if (key === 'logId') return 'log-123';
-            if (key === 'vehicleId') return 'vehicle-123';
             return null;
           },
         },
@@ -63,16 +68,27 @@ describe('LogDetailPage', () => {
     };
 
     mockLogService.getLog.and.returnValue(of(mockLog));
+    mockVehicleService.getVehicle.and.returnValue(
+      of({
+        id: 'vehicle-123',
+        brand: 'Toyota',
+        model: 'Corolla',
+        year: 2020,
+      } as any),
+    );
 
     await TestBed.configureTestingModule({
       imports: [LogDetailPage],
       providers: [
         { provide: MaintenanceLogService, useValue: mockLogService },
+        { provide: VehicleService, useValue: mockVehicleService },
+        provideTranslateService(),
         { provide: Router, useValue: mockRouter },
         { provide: ActivatedRoute, useValue: mockActivatedRoute },
       ],
     }).compileComponents();
 
+    TestBed.inject(TranslateService).use('en');
     fixture = TestBed.createComponent(LogDetailPage);
     component = fixture.componentInstance;
   });

@@ -22,6 +22,7 @@ import {
   provideIonicAngular,
 } from '@ionic/angular/standalone';
 import { provideTranslateHttpLoader } from '@ngx-translate/http-loader';
+import { provideTranslateService } from '@ngx-translate/core';
 
 import { routes } from './app.routes';
 
@@ -77,7 +78,8 @@ export function getAppProviders(): ApplicationConfig['providers'] {
     // HTTP client with JWT interceptor (Requirement 2.3)
     provideHttpClient(withInterceptors([jwtInterceptor])),
 
-    // Translation services (from 9.1, configured in main.ts)
+    // Translation services
+    provideTranslateService(),
     provideTranslateHttpLoader({
       prefix: './assets/i18n/',
       suffix: '.json',

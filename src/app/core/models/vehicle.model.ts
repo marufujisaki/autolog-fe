@@ -14,6 +14,8 @@ export interface Vehicle {
   color?: string;
   currentMileage?: number;
   photoUrl?: string;
+  cardColor?: string;
+  displayName?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -27,4 +29,6 @@ export interface CreateVehicleData {
   vin?: string;
   color?: string;
   currentMileage?: number;
+  cardColor?: string;
+  displayName?: string;
 }

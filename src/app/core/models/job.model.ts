@@ -11,6 +11,16 @@ export enum MaintenanceType {
   INSPECTION = 'INSPECTION',
 }
 
+/** A line item within a job (e.g. "Oil Filter" qty 1 $40). */
+export interface JobItem {
+  id?: string;
+  jobId?: string;
+  name: string;
+  quantity: number;
+  unitCost: number;
+  sortOrder?: number;
+}
+
 /** An individual task performed during a maintenance log visit. */
 export interface Job {
   id: string;
@@ -21,6 +31,7 @@ export interface Job {
   cost?: number;
   maintenanceTypes: MaintenanceType[];
   sortOrder: number;
+  items: JobItem[];
 }
 
 /** Data submitted when adding a job to a maintenance log. */
@@ -30,4 +41,12 @@ export interface CreateJobData {
   description?: string;
   cost?: number;
   maintenanceTypes: MaintenanceType[];
+  items?: JobItemData[];
+}
+
+/** Data submitted when adding an item to a job. */
+export interface JobItemData {
+  name: string;
+  quantity: number;
+  unitCost: number;
 }

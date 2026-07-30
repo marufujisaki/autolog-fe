@@ -30,6 +30,9 @@ export class ModalComponent {
   /** Optional title rendered in the modal header. */
   @Input() title?: string;
 
+  /** Visual layout variant used by bottom-sheet forms from the design system. */
+  @Input() variant: 'default' | 'bottom-sheet' = 'default';
+
   /** Unique ID for linking aria-labelledby to the title element. */
   readonly modalTitleId = `app-modal-title-${ModalComponent.nextId++}`;
 

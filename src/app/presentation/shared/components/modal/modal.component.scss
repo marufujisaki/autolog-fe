@@ -24,6 +24,56 @@
     display: flex;
   }
 
+  &.app-modal--bottom-sheet {
+    align-items: flex-start;
+    box-sizing: border-box;
+    padding: 0 17px;
+
+    .app-modal__container {
+      width: min(356px, 100%);
+      height: min(692px, calc(100vh - 76px));
+      max-width: none;
+      max-height: calc(100vh - 76px);
+      margin: 76px auto 0;
+      border-radius: tokens.$radius-5xl;
+    }
+
+    .app-modal__header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      flex: 0 0 auto;
+      padding: 26px 24px 11px;
+      border-bottom: 0;
+    }
+
+    .app-modal__handle {
+      width: 61px;
+      height: 5px;
+      margin: 0 auto 19px;
+      border-radius: 133px;
+      background: #f5f5fc;
+    }
+
+    .app-modal__title {
+      margin: 0;
+      color: #303030;
+      font-family: tokens.$font-family-base;
+      font-size: tokens.$font-size-xl;
+      font-weight: tokens.$font-weight-bold;
+      line-height: 22px;
+      text-align: center;
+    }
+
+    .app-modal__body {
+      flex: 1;
+      min-height: 0;
+      padding: 0 24px 24px;
+      overflow-y: auto;
+    }
+  }
+
   &__backdrop {
     position: fixed;
     top: 0;

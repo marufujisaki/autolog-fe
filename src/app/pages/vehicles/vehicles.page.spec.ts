@@ -108,7 +108,7 @@ describe('VehiclesPage', () => {
       fixture.detectChanges();
 
       expect(component.isLoading).toBeFalse();
-      expect(component.toastMessage).toBe('ERROR_LOADING_VEHICLES');
+      expect(component.toastMessage).toBe('errors.loadVehicles');
       expect(component.toastVisible).toBeTrue();
     });
   });
@@ -221,7 +221,7 @@ describe('VehiclesPage', () => {
       component.submitCreateVehicle();
 
       expect(vehicleService.createVehicle).not.toHaveBeenCalled();
-      expect(component.toastMessage).toBe('FORM_VALIDATION_ERROR');
+      expect(component.toastMessage).toBe('errors.formInvalid');
     });
 
     it('should handle error when creating vehicle', () => {
@@ -236,7 +236,7 @@ describe('VehiclesPage', () => {
 
       component.submitCreateVehicle();
 
-      expect(component.toastMessage).toBe('ERROR_CREATING_VEHICLE');
+      expect(component.toastMessage).toBe('errors.createVehicle');
       expect(component.toastVisible).toBeTrue();
     });
   });
@@ -266,7 +266,7 @@ describe('VehiclesPage', () => {
 
       const errorMsg = component.getFieldError('brand');
 
-      expect(errorMsg).toBe('FIELD_REQUIRED');
+      expect(errorMsg).toBe('validation.required');
     });
 
     it('should identify field errors correctly', () => {

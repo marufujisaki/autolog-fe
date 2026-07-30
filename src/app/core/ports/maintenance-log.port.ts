@@ -22,6 +22,10 @@ export abstract class MaintenanceLogService {
     vehicleId: string,
     data: CreateLogData,
   ): Observable<MaintenanceLog>;
+  abstract updateLog(
+    logId: string,
+    data: CreateLogData,
+  ): Observable<MaintenanceLog>;
   abstract deleteLog(logId: string): Observable<void>;
   abstract addJob(logId: string, data: CreateJobData): Observable<Job>;
   abstract removeJob(logId: string, jobId: string): Observable<void>;

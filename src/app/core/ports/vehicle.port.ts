@@ -14,4 +14,5 @@ export abstract class VehicleService {
     id: string,
     data: CreateVehicleData,
   ): Observable<Vehicle>;
+  abstract deleteVehicle(id: string): Observable<void>;
 }

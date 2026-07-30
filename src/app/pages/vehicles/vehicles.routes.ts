@@ -24,11 +24,6 @@ export const vehiclesRoutes: Routes = [
       import('../new-log/new-log.page').then((m) => m.NewLogPage),
   },
   {
-    path: ':vehicleId/logs/:logId',
-    loadComponent: () =>
-      import('../log-detail/log-detail.page').then((m) => m.LogDetailPage),
-  },
-  {
     path: ':id',
     component: VehicleDetailPage,
   },

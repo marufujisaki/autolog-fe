@@ -215,15 +215,10 @@ export class LogCreatePage implements OnInit {
       }
 
       // Navigate to log detail or vehicle detail
-      this.router.navigate([
-        '/vehicles',
-        this.vehicleId,
-        'logs',
-        createdLog.id,
-      ]);
+      this.router.navigate(['/log', createdLog.id]);
     } catch (error: any) {
       console.error('Error creating log:', error);
-      this.formErrors['general'] = error.message || 'Error creating log';
+      this.formErrors['general'] = 'creationFailed';
     } finally {
       this.isLoading = false;
     }

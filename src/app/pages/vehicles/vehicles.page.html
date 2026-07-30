@@ -12,23 +12,24 @@
   </header>
 
   <!-- Loading state -->
-  <app-loading
-    *ngIf="isLoading"
-    [text]="'LOADING_VEHICLES' | translate"
-  ></app-loading>
+  @if (isLoading) {
+  <app-loading [text]="'LOADING_VEHICLES' | translate"></app-loading>
+  }
 
   <!-- Empty state -->
+  @if (!isLoading && vehicles.length === 0) {
   <app-empty-state
-    *ngIf="!isLoading && vehicles.length === 0"
     [title]="'NO_VEHICLES' | translate"
     [description]="'NO_VEHICLES_MESSAGE' | translate"
     [icon]="'car'"
   ></app-empty-state>
+  }
 
   <!-- Vehicles list -->
-  <div class="vehicles-list" *ngIf="!isLoading && vehicles.length > 0">
+  @if (!isLoading && vehicles.length > 0) {
+  <div class="vehicles-list">
+    @for (vehicle of vehicles; track vehicle.id) {
     <app-card
-      *ngFor="let vehicle of vehicles"
       variant="outlined"
       class="vehicle-card"
       (click)="viewVehicleDetail(vehicle.id)"
@@ -37,30 +38,32 @@
         <div class="vehicle-info">
           <h3 class="vehicle-title">{{ vehicle.brand }} {{ vehicle.model }}</h3>
           <p class="vehicle-year">{{ vehicle.year }}</p>
-          <div class="vehicle-details" *ngIf="vehicle.licensePlate">
+          @if (vehicle.licensePlate) {
+          <div class="vehicle-details">
             <span class="detail-label">{{ 'LICENSE_PLATE' | translate }}:</span>
             <span class="detail-value">{{ vehicle.licensePlate }}</span>
           </div>
-          <div
-            class="vehicle-details"
-            *ngIf="vehicle.currentMileage !== undefined"
-          >
+          } @if (vehicle.currentMileage !== undefined) {
+          <div class="vehicle-details">
             <span class="detail-label">{{ 'MILEAGE' | translate }}:</span>
             <span class="detail-value"
               >{{ vehicle.currentMileage | number }} km</span
             >
           </div>
+          }
         </div>
         <div class="vehicle-arrow">
           <span class="arrow-icon">&gt;</span>
         </div>
       </div>
     </app-card>
+    }
   </div>
+  }
 
   <!-- Create vehicle modal -->
+  @if (showCreateModal) {
   <app-modal
-    *ngIf="showCreateModal"
     [title]="'CREATE_VEHICLE' | translate"
     (onClose)="closeCreateModal()"
   >
@@ -73,9 +76,9 @@
           formControlName="brand"
           [class.error]="hasFieldError('brand')"
         ></app-input>
-        <p class="error-message" *ngIf="hasFieldError('brand')">
-          {{ getFieldError('brand') | translate }}
-        </p>
+        @if (hasFieldError('brand')) {
+        <p class="error-message">{{ getFieldError('brand') | translate }}</p>
+        }
       </div>
 
       <!-- Model input -->
@@ -86,9 +89,9 @@
           formControlName="model"
           [class.error]="hasFieldError('model')"
         ></app-input>
-        <p class="error-message" *ngIf="hasFieldError('model')">
-          {{ getFieldError('model') | translate }}
-        </p>
+        @if (hasFieldError('model')) {
+        <p class="error-message">{{ getFieldError('model') | translate }}</p>
+        }
       </div>
 
       <!-- Year select -->
@@ -100,9 +103,9 @@
           formControlName="year"
           [class.error]="hasFieldError('year')"
         ></app-select>
-        <p class="error-message" *ngIf="hasFieldError('year')">
-          {{ getFieldError('year') | translate }}
-        </p>
+        @if (hasFieldError('year')) {
+        <p class="error-message">{{ getFieldError('year') | translate }}</p>
+        }
       </div>
 
       <!-- License plate input (optional) -->
@@ -156,11 +159,10 @@
       </div>
     </form>
   </app-modal>
+  }
 
   <!-- Toast notification -->
-  <app-toast
-    *ngIf="toastVisible"
-    [message]="toastMessage | translate"
-    class="toast"
-  ></app-toast>
+  @if (toastVisible) {
+  <app-toast [message]="toastMessage | translate" class="toast"></app-toast>
+  }
 </div>

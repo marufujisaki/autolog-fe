@@ -3,25 +3,27 @@
     label
   }}</label>
 
-  <select
-    class="app-select__control"
-    [id]="selectId"
-    [disabled]="disabled"
-    [attr.placeholder]="placeholder"
-    [attr.aria-invalid]="errorMessage ? true : null"
-    [attr.aria-describedby]="errorMessage ? selectId + '-error' : null"
-    (change)="onSelectionChange($any($event.target).value)"
-    (blur)="onBlur()"
-  >
-    <option
-      *ngFor="let opt of options"
-      [value]="opt.value"
-      [disabled]="opt.disabled || false"
-      [selected]="opt.value.toString() === value?.toString()"
+  <div class="app-select__field">
+    <ion-select
+      [id]="selectId"
+      [value]="value"
+      [disabled]="disabled"
+      [placeholder]="placeholder"
+      interface="action-sheet"
+      [attr.aria-invalid]="errorMessage ? true : null"
+      [attr.aria-describedby]="errorMessage ? selectId + '-error' : null"
+      (ionChange)="onSelectionChange($event)"
+      (ionBlur)="onBlur()"
     >
-      {{ opt.label }}
-    </option>
-  </select>
+      <ion-select-option
+        *ngFor="let opt of options"
+        [value]="opt.value"
+        [disabled]="opt.disabled || false"
+      >
+        {{ opt.label }}
+      </ion-select-option>
+    </ion-select>
+  </div>
 
   <p
     *ngIf="errorMessage"

@@ -40,7 +40,10 @@
       [attr.aria-label]="showPassword ? 'Hide password' : 'Show password'"
       (click)="togglePasswordVisibility()"
     >
-      {{ showPassword ? "🙈" : "👁" }}
+      <lucide-angular
+        [img]="showPassword ? EyeOffIcon : EyeIcon"
+        [size]="20"
+      ></lucide-angular>
     </button>
   </div>
 

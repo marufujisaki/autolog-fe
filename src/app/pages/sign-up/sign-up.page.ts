@@ -5,16 +5,16 @@ import {
   FormGroup,
   ReactiveFormsModule,
   Validators,
-  AbstractControl,
   FormControl,
 } from '@angular/forms';
 import { Router, RouterModule, ActivatedRoute } from '@angular/router';
+import { IonContent, IonGrid, IonRow, IonCol } from '@ionic/angular/standalone';
+import { TranslatePipe } from '@ngx-translate/core';
 import { AuthService } from '../../core/ports/auth.port';
 import { ButtonComponent } from '../../presentation/shared/components/button/button.component';
 import { InputComponent } from '../../presentation/shared/components/input/input.component';
 import { SelectComponent } from '../../presentation/shared/components/select/select.component';
 import { LoadingComponent } from '../../presentation/shared/components/loading/loading.component';
-import { UserType } from '../../core/models/user.model';
 
 /**
  * SignUpPage - User registration page.
@@ -30,10 +30,15 @@ import { UserType } from '../../core/models/user.model';
     CommonModule,
     RouterModule,
     ReactiveFormsModule,
+    IonContent,
+    IonGrid,
+    IonRow,
+    IonCol,
     ButtonComponent,
     InputComponent,
     SelectComponent,
     LoadingComponent,
+    TranslatePipe,
   ],
 })
 export class SignUpPage implements OnInit {
@@ -126,12 +131,12 @@ export class SignUpPage implements OnInit {
 
   onSubmit(): void {
     if (!this.signUpForm.valid) {
-      this.errorMessage = 'Por favor completa todos los campos correctamente';
+      this.errorMessage = 'auth.completeForm';
       return;
     }
 
     if (this.passwordControl?.value !== this.confirmPasswordControl?.value) {
-      this.errorMessage = 'Las contraseñas no coinciden';
+      this.errorMessage = 'auth.passwordMismatch';
       return;
     }
 
@@ -154,17 +159,14 @@ export class SignUpPage implements OnInit {
     this.authService.register(registerData).subscribe({
       next: () => {
         this.isLoading = false;
-        void this.router.navigate(['/tabs/tab1']);
+        void this.router.navigate(['/tabs/vehicles']);
       },
       error: (error) => {
         this.isLoading = false;
         if (error?.error?.message?.includes('email')) {
-          this.errorMessage =
-            'Este correo electrónico ya está registrado. Por favor intenta con otro.';
+          this.errorMessage = 'auth.emailAlreadyExists';
         } else {
-          this.errorMessage =
-            error?.error?.message ||
-            'Error al registrar. Por favor intenta de nuevo.';
+          this.errorMessage = 'errors.registrationFailed';
         }
       },
     });
