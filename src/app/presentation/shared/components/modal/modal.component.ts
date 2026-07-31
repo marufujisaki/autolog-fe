@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { SwipeToDismissDirective } from '../../directives/swipe-to-dismiss.directive';
 
 /**
  * Design System modal component.
@@ -14,7 +15,7 @@ import { CommonModule } from '@angular/common';
 @Component({
   selector: 'app-modal',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, SwipeToDismissDirective],
   templateUrl: './modal.component.html',
   styleUrls: ['./modal.component.scss'],
 })
@@ -30,8 +31,12 @@ export class ModalComponent {
   /** Optional title rendered in the modal header. */
   @Input() title?: string;
 
-  /** Visual layout variant used by bottom-sheet forms from the design system. */
-  @Input() variant: 'default' | 'bottom-sheet' = 'default';
+  /** Visual layout variant used by the design system modal. */
+  @Input() variant: 'default' | 'bottom-sheet' | 'confirmation-sheet' =
+    'default';
+
+  /** Shows the close button for layouts that normally omit it. */
+  @Input() showCloseButton = false;
 
   /** Unique ID for linking aria-labelledby to the title element. */
   readonly modalTitleId = `app-modal-title-${ModalComponent.nextId++}`;
@@ -41,6 +46,13 @@ export class ModalComponent {
    * the backdrop, close button, or cancel action).
    */
   @Output() closed = new EventEmitter<void>();
+
+  /** Sheet layouts can be dragged down from their header to close. */
+  get isSheet(): boolean {
+    return (
+      this.variant === 'bottom-sheet' || this.variant === 'confirmation-sheet'
+    );
+  }
 
   onBackdropClick(): void {
     this.closed.emit();

@@ -35,6 +35,7 @@ import { ShareService } from './core/ports/share.port';
 import { WorkshopService } from './core/ports/workshop.port';
 import { SecureStorageService } from './core/ports/secure-storage.port';
 import { VehicleCatalogService } from './core/ports/vehicle-catalog.port';
+import { MechanicService } from './core/ports/mechanic.port';
 
 // HTTP service implementations (from data/http)
 import { HttpAuthService } from './data/http/http-auth.service';
@@ -44,6 +45,7 @@ import { HttpPhotoService } from './data/http/http-photo.service';
 import { HttpShareService } from './data/http/http-share.service';
 import { HttpWorkshopService } from './data/http/http-workshop.service';
 import { HttpVehicleCatalogService } from './data/http/http-vehicle-catalog.service';
+import { HttpMechanicService } from './data/http/http-mechanic.service';
 
 // Storage implementations (from data/storage)
 import { CapacitorStorageService } from './data/storage/capacitor-storage.service';
@@ -108,5 +110,8 @@ export function getAppProviders(): ApplicationConfig['providers'] {
 
     // Service port bindings - Vehicle catalog (autocomplete)
     { provide: VehicleCatalogService, useClass: HttpVehicleCatalogService },
+
+    // Service port bindings - Mechanic directory
+    { provide: MechanicService, useClass: HttpMechanicService },
   ];
 }

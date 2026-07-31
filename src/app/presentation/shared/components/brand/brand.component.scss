@@ -1,0 +1,25 @@
+// =============================================================================
+// BrandComponent — Design System
+// Figma: "AutoLog" wordmark, Montserrat Bold 24px / 29px line height
+// =============================================================================
+
+@use "../../styles/tokens" as tokens;
+
+:host {
+  display: inline-flex;
+  align-items: center;
+}
+
+.app-brand {
+  margin: 0;
+  font-family: tokens.$font-family-display;
+  font-size: tokens.$font-size-4xl; // 24px
+  font-weight: tokens.$font-weight-bold;
+  line-height: 29px;
+  color: tokens.$color-text-primary; // #070707
+  white-space: nowrap;
+
+  &__accent {
+    color: tokens.$color-primary;
+  }
+}

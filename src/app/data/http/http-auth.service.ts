@@ -7,9 +7,9 @@
  * "current user" REST endpoint yet, so the `user$` state exposed here is
  * derived from the access token's claims (subject = userId, userType,
  * mechanicLevel) rather than a dedicated profile fetch. Fields that are not
- * present as JWT claims (email, firstName, lastName, preferredLanguage) are
- * populated with reasonable defaults and should be replaced once a "get
- * current user" endpoint is introduced.
+ * present as JWT claims (email, firstName, lastName, phone,
+ * preferredLanguage) start with placeholder values and are replaced as soon
+ * as `getProfile()` (GET /api/auth/me) resolves.
  */
 
 import { HttpClient } from '@angular/common/http';
@@ -26,6 +26,7 @@ import {
   LoginCredentials,
   MechanicLevel,
   RegisterData,
+  UpdateProfileData,
   User,
   UserType,
 } from '../../core/models/user.model';
@@ -108,11 +109,35 @@ export class HttpAuthService extends AuthService {
   }
 
   updatePreferredLanguage(language: string): Observable<void> {
-    return this.http.put<void>(`${this.baseUrl}/language`, { language });
+    return this.http
+      .put<void>(`${this.baseUrl}/language`, { language })
+      .pipe(tap(() => this.patchCurrentUser({ preferredLanguage: language })));
   }
 
   updateAllowSharing(allowSharing: boolean): Observable<void> {
-    return this.http.put<void>(`${this.baseUrl}/sharing`, { allowSharing });
+    return this.http
+      .put<void>(`${this.baseUrl}/sharing`, { allowSharing })
+      .pipe(tap(() => this.patchCurrentUser({ allowSharing })));
+  }
+
+  getProfile(): Observable<User> {
+    return this.http
+      .get<User>(`${this.baseUrl}/me`)
+      .pipe(tap((user) => this.userSubject.next(user)));
+  }
+
+  updateProfile(data: UpdateProfileData): Observable<User> {
+    return this.http
+      .put<User>(`${this.baseUrl}/profile`, data)
+      .pipe(tap((user) => this.userSubject.next(user)));
+  }
+
+  /** Keeps the in-memory user in sync after a partial preference update. */
+  private patchCurrentUser(changes: Partial<User>): void {
+    const current = this.userSubject.value;
+    if (current) {
+      this.userSubject.next({ ...current, ...changes });
+    }
   }
 
   private async restoreSession(): Promise<void> {

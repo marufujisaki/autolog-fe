@@ -1,0 +1,103 @@
+<div class="settings-page">
+  <!-- Header -->
+  <header class="page-header">
+    <button
+      type="button"
+      class="back-btn"
+      (click)="goBack()"
+      [attr.aria-label]="'common.back' | translate"
+    >
+      <lucide-angular [img]="ChevronLeftIcon" [size]="24"></lucide-angular>
+    </button>
+    <h1 class="header-title">{{ 'settings.title' | translate }}</h1>
+    <div class="header-spacer"></div>
+  </header>
+
+  <!-- Language -->
+  <section class="setting-block">
+    <div class="setting-heading">
+      <lucide-angular [img]="LanguagesIcon" [size]="20"></lucide-angular>
+      <div>
+        <h2 class="setting-title">{{ 'settings.language' | translate }}</h2>
+        <p class="setting-description">
+          {{ 'settings.languageDescription' | translate }}
+        </p>
+      </div>
+    </div>
+    <app-select
+      [options]="languageOptions"
+      [ngModel]="selectedLanguage"
+      (ngModelChange)="onLanguageChange($event)"
+    ></app-select>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- Vehicle sharing -->
+  @if (canManageSharing) {
+  <section class="setting-row">
+    <div class="setting-heading">
+      <lucide-angular [img]="Share2Icon" [size]="20"></lucide-angular>
+      <div>
+        <h2 class="setting-title">{{ 'settings.shareVehicles' | translate }}</h2>
+        <p class="setting-description">
+          {{ 'settings.shareVehiclesDescription' | translate }}
+        </p>
+      </div>
+    </div>
+    <label class="toggle-switch" [class.loading]="isSharingLoading">
+      <input
+        type="checkbox"
+        [checked]="allowSharing"
+        [disabled]="isSharingLoading"
+        [attr.aria-label]="'settings.shareVehicles' | translate"
+        (change)="onSharingToggle($any($event.target).checked)"
+      />
+      <span class="toggle-slider"></span>
+    </label>
+  </section>
+
+  <div class="divider"></div>
+  }
+
+  <!-- Linked devices (coming soon) -->
+  <section class="setting-row setting-row--disabled" aria-disabled="true">
+    <div class="setting-heading">
+      <lucide-angular
+        [img]="MonitorSmartphoneIcon"
+        [size]="20"
+      ></lucide-angular>
+      <div>
+        <h2 class="setting-title">{{ 'settings.linkedDevices' | translate }}</h2>
+        <p class="setting-description">
+          {{ 'settings.linkedDevicesDescription' | translate }}
+        </p>
+      </div>
+    </div>
+    <span class="badge">{{ 'settings.comingSoon' | translate }}</span>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- Theme (coming soon) -->
+  <section class="setting-row setting-row--disabled" aria-disabled="true">
+    <div class="setting-heading">
+      <lucide-angular [img]="SunMoonIcon" [size]="20"></lucide-angular>
+      <div>
+        <h2 class="setting-title">{{ 'settings.theme' | translate }}</h2>
+        <p class="setting-description">
+          {{ 'settings.themeDescription' | translate }}
+        </p>
+      </div>
+    </div>
+    <span class="badge">{{ 'settings.comingSoon' | translate }}</span>
+  </section>
+</div>
+
+<app-toast
+  class="toast"
+  [message]="toastMessage | translate"
+  [type]="toastType"
+  [isVisible]="toastVisible"
+  (dismissed)="toastVisible = false"
+></app-toast>

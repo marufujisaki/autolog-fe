@@ -24,15 +24,19 @@
     width: 100%;
   }
 
-  &--primary {
-    background-color: tokens.$color-primary;
-    color: tokens.$color-on-primary;
-    border-color: tokens.$color-primary;
+  &--primary,
+  &--secondary {
     border-radius: tokens.$radius-5xl;
     font-size: tokens.$font-size-2xl;
     font-weight: tokens.$font-weight-bold;
     padding: tokens.$space-4 tokens.$space-7;
     min-height: 55px;
+  }
+
+  &--primary {
+    background-color: tokens.$color-primary;
+    color: tokens.$color-on-primary;
+    border-color: tokens.$color-primary;
 
     &:hover:not(:disabled) {
       background-color: tokens.$color-primary-dark;
@@ -46,13 +50,13 @@
 
   &--secondary {
     background-color: tokens.$color-surface;
-    color: tokens.$color-secondary;
-    border-color: tokens.$color-secondary;
+    color: tokens.$color-primary;
+    border-color: tokens.$color-primary;
 
     &:hover:not(:disabled) {
-      background-color: tokens.$color-background;
-      border-color: tokens.$color-secondary-dark;
-      color: tokens.$color-secondary-dark;
+      background-color: tokens.$color-surface-alt;
+      border-color: tokens.$color-primary-dark;
+      color: tokens.$color-primary-dark;
     }
 
     &:active:not(:disabled) {

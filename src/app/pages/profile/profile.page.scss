@@ -7,84 +7,99 @@
 }
 
 // ---------------------------------------------------------------------------
-// Header
+// Header (brand + edit profile + logout)
 // ---------------------------------------------------------------------------
 
 .profile-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: t.$space-8;
+  margin-bottom: t.$space-7;
 }
 
-.app-brand {
-  font-family: t.$font-family-display;
-  font-size: t.$font-size-4xl;
-  font-weight: t.$font-weight-bold;
-  color: t.$color-text-primary;
-  margin: 0;
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: t.$space-3;
 }
 
-.logout-btn {
+.icon-btn {
   background: none;
   border: none;
   cursor: pointer;
   color: t.$color-text-primary;
   padding: t.$space-2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &--circle {
+    width: 47px;
+    height: 47px;
+    padding: 0;
+    border-radius: t.$radius-full;
+    background: t.$color-surface-alt;
+  }
 }
 
 // ---------------------------------------------------------------------------
-// User Info
+// User Info (Figma: name 26px SemiBold, email 16px Medium, avatar 50px)
 // ---------------------------------------------------------------------------
 
 .user-section {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
-  margin-bottom: t.$space-6;
+  gap: t.$space-4;
+  margin-bottom: t.$space-5;
 }
 
 .user-info {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: t.$space-1;
+  min-width: 0;
 }
 
 .user-name {
+  font-family: t.$font-family-base;
   font-size: 26px;
   font-weight: t.$font-weight-semibold;
+  line-height: 31px;
   color: t.$color-text-primary;
   margin: 0;
+  overflow-wrap: anywhere;
 }
 
 .user-email {
+  font-family: t.$font-family-base;
   font-size: t.$font-size-lg;
   font-weight: t.$font-weight-medium;
+  line-height: 19px;
   color: t.$color-text-primary;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.user-phone,
+.user-type {
+  font-family: t.$font-family-base;
+  font-size: t.$font-size-base;
+  font-weight: t.$font-weight-medium;
+  color: t.$color-text-secondary;
   margin: 0;
 }
 
 .user-avatar {
   width: 50px;
   height: 50px;
-  border-radius: 50%;
+  flex-shrink: 0;
+  border-radius: t.$radius-full;
   background: t.$color-border;
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-.edit-btn {
-  width: 47px;
-  height: 47px;
-  border-radius: 50%;
-  background: t.$color-surface-alt;
-  border: none;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: t.$color-text-primary;
+  color: t.$color-surface;
 }
 
 // ---------------------------------------------------------------------------
@@ -98,86 +113,35 @@
 }
 
 // ---------------------------------------------------------------------------
-// Sharing Toggle Section
+// Menu row (Settings entry with chevron)
 // ---------------------------------------------------------------------------
 
-.sharing-section {
+.menu-row {
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: t.$space-4;
   padding: t.$space-3 0;
-}
-
-.sharing-info {
-  flex: 1;
-}
-
-.sharing-title {
-  font-size: t.$font-size-lg;
-  font-weight: t.$font-weight-semibold;
-  color: t.$color-text-dark;
-  margin: 0 0 4px;
-}
-
-.sharing-description {
-  font-size: t.$font-size-base;
-  font-weight: t.$font-weight-regular;
-  color: t.$color-text-secondary;
-  margin: 0;
-  line-height: 1.4;
-}
-
-// Toggle switch
-.toggle-switch {
-  position: relative;
-  display: inline-block;
-  width: 48px;
-  height: 26px;
-  flex-shrink: 0;
-
-  input {
-    opacity: 0;
-    width: 0;
-    height: 0;
-
-    &:checked + .toggle-slider {
-      background-color: t.$color-primary;
-    }
-
-    &:checked + .toggle-slider::before {
-      transform: translateX(22px);
-    }
-
-    &:disabled + .toggle-slider {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-  }
-
-  &.loading {
-    opacity: 0.6;
-  }
-}
-
-.toggle-slider {
-  position: absolute;
+  background: none;
+  border: none;
   cursor: pointer;
-  inset: 0;
-  background-color: #ccc;
-  border-radius: 26px;
-  transition: background-color 0.2s ease;
+  text-align: left;
 
-  &::before {
-    content: "";
-    position: absolute;
-    height: 20px;
-    width: 20px;
-    left: 3px;
-    bottom: 3px;
-    background-color: white;
-    border-radius: 50%;
-    transition: transform 0.2s ease;
+  &__label {
+    font-family: t.$font-family-base;
+    font-size: t.$font-size-lg;
+    font-weight: t.$font-weight-semibold;
+    color: t.$color-text-dark;
+  }
+
+  &__chevron {
+    color: t.$color-text-secondary;
+  }
+
+  &:hover &__label,
+  &:focus-visible &__label {
+    color: t.$color-primary;
   }
 }
 
@@ -193,6 +157,7 @@
 }
 
 .section-title {
+  font-family: t.$font-family-base;
   font-size: t.$font-size-xl;
   font-weight: t.$font-weight-bold;
   color: t.$color-text-dark;
@@ -203,12 +168,14 @@
   display: flex;
   align-items: center;
   gap: t.$space-2;
-  padding: t.$space-2 t.$space-4;
+  height: 30px;
+  padding: 0 t.$space-4;
   background: t.$color-primary;
   color: t.$color-on-primary;
   border: none;
   border-radius: t.$radius-2xl;
   cursor: pointer;
+  font-family: t.$font-family-base;
   font-size: t.$font-size-base;
   font-weight: t.$font-weight-bold;
 
@@ -218,54 +185,84 @@
 }
 
 // ---------------------------------------------------------------------------
-// Mechanics List
+// Mechanics List (Figma: mechanic card 83px, radius 7, shadow-card)
 // ---------------------------------------------------------------------------
 
 .mechanics-list {
   display: flex;
   flex-direction: column;
-  gap: t.$space-4;
+  gap: t.$space-5;
 }
 
 .mechanic-card {
   display: flex;
   align-items: center;
-  gap: t.$space-4;
+  gap: t.$space-5;
+  min-height: 83px;
   padding: t.$space-4 t.$space-5;
   background: t.$color-surface;
   border-radius: t.$radius-sm;
-  box-shadow: t.$shadow-md;
+  box-shadow: t.$shadow-card;
 }
 
 .mechanic-icon {
   width: 40px;
   height: 40px;
-  border-radius: 50%;
-  background: t.$color-surface-alt;
+  flex-shrink: 0;
+  border-radius: t.$radius-full;
+  background: #f3f3f8;
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
   color: t.$color-text-primary;
 }
 
 .mechanic-info {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
+  min-width: 0;
 }
 
 .mechanic-name {
+  font-family: t.$font-family-base;
   font-size: t.$font-size-md;
   font-weight: t.$font-weight-semibold;
-  color: t.$color-text-primary;
+  color: #000000;
   margin: 0;
 }
 
 .mechanic-contact,
 .mechanic-phone {
+  font-family: t.$font-family-base;
   font-size: t.$font-size-base;
   font-weight: t.$font-weight-medium;
   color: t.$color-text-secondary;
+  margin: 2px 0 0;
+}
+
+// ---------------------------------------------------------------------------
+// Edit profile form + feedback
+// ---------------------------------------------------------------------------
+
+.profile-form {
+  display: flex;
+  flex-direction: column;
+  gap: t.$space-4;
+  padding-top: t.$space-2;
+}
+
+.form-error {
   margin: 0;
+  color: t.$color-error;
+  font-size: t.$font-size-base;
+}
+
+.form-actions {
+  margin-top: t.$space-3;
+}
+
+.toast {
+  position: fixed;
+  right: t.$space-4;
+  bottom: t.$space-4;
+  left: t.$space-4;
+  z-index: 1000;
 }

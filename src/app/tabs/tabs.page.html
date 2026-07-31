@@ -49,4 +49,26 @@
       <span class="nav-label">Profile</span>
     </button>
   </nav>
+
+  <!-- Full-screen modals (no route change, underlying page stays mounted) -->
+  @defer (when addVehicleModalOpen) { @if (addVehicleModalOpen) {
+  <div
+    class="page-modal"
+    role="dialog"
+    aria-modal="true"
+    aria-label="Add Vehicle"
+  >
+    <app-add-vehicle
+      [presentedAsModal]="true"
+      (dismissed)="closeAddVehicle()"
+    ></app-add-vehicle>
+  </div>
+  } } @defer (when newLogModalOpen) { @if (newLogModalOpen) {
+  <div class="page-modal" role="dialog" aria-modal="true" aria-label="New Log">
+    <app-new-log
+      [presentedAsModal]="true"
+      (dismissed)="closeNewLog()"
+    ></app-new-log>
+  </div>
+  } }
 </div>

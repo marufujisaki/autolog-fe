@@ -2,6 +2,7 @@
   class="app-modal"
   [class.open]="isOpen"
   [class.app-modal--bottom-sheet]="variant === 'bottom-sheet'"
+  [class.app-modal--confirmation-sheet]="variant === 'confirmation-sheet'"
   *ngIf="isOpen"
   role="dialog"
   [attr.aria-modal]="true"
@@ -9,16 +10,25 @@
 >
   <div class="app-modal__backdrop" (click)="onBackdropClick()"></div>
 
-  <div class="app-modal__container">
+  <div
+    class="app-modal__container"
+    appSwipeToDismiss
+    [swipeToDismissEnabled]="isSheet"
+    [swipeHandleSelector]="'.app-modal__header'"
+    (swipeDismissed)="onCloseClick()"
+  >
     <div class="app-modal__header" *ngIf="title">
       <div
-        *ngIf="variant === 'bottom-sheet'"
+        *ngIf="variant === 'bottom-sheet' || variant === 'confirmation-sheet'"
         class="app-modal__handle"
         aria-hidden="true"
       ></div>
       <h2 class="app-modal__title" [id]="modalTitleId">{{ title }}</h2>
       <button
-        *ngIf="variant !== 'bottom-sheet'"
+        *ngIf="
+          showCloseButton ||
+          (variant !== 'bottom-sheet' && variant !== 'confirmation-sheet')
+        "
         type="button"
         class="app-modal__close"
         aria-label="Close modal"

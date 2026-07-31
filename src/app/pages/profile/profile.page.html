@@ -1,72 +1,176 @@
 <div class="profile-page">
-  <!-- Header -->
+  <!-- Header: brand + edit profile + logout -->
   <header class="profile-header">
-    <h1 class="app-brand">AutoLog</h1>
-    <button class="logout-btn" (click)="logout()" aria-label="Log out">
-      <lucide-angular [img]="LogOutIcon" [size]="24"></lucide-angular>
-    </button>
+    <app-brand></app-brand>
+    <div class="header-actions">
+      <button
+        type="button"
+        class="icon-btn icon-btn--circle"
+        (click)="openEditProfile()"
+        [attr.aria-label]="'profile.editProfile' | translate"
+      >
+        <lucide-angular [img]="PencilIcon" [size]="20"></lucide-angular>
+      </button>
+      <button
+        type="button"
+        class="icon-btn"
+        (click)="logout()"
+        [attr.aria-label]="'profile.logout' | translate"
+      >
+        <lucide-angular [img]="LogOutIcon" [size]="24"></lucide-angular>
+      </button>
+    </div>
   </header>
 
   <!-- User Info -->
-  <div class="user-section">
+  <section class="user-section">
     <div class="user-info">
       <h2 class="user-name">{{ userName }}</h2>
       <p class="user-email">{{ userEmail }}</p>
+      @if (userPhone) {
+      <p class="user-phone">{{ userPhone }}</p>
+      }
+      <p class="user-type">{{ 'userTypes.' + userType | translate }}</p>
     </div>
-    <div class="user-avatar">
-      <button class="edit-btn" aria-label="Edit profile">
-        <lucide-angular [img]="PencilIcon" [size]="20"></lucide-angular>
-      </button>
+    <div class="user-avatar" aria-hidden="true">
+      <lucide-angular [img]="UserRoundIcon" [size]="24"></lucide-angular>
     </div>
-  </div>
+  </section>
 
   <div class="divider"></div>
 
-  <!-- Sharing Toggle (only for USUARIO type) -->
-  @if (isUsuario) {
-  <div class="sharing-section">
-    <div class="sharing-info">
-      <h3 class="sharing-title">Compartir vehículos</h3>
-      <p class="sharing-description">
-        Permite que un taller o mecánico registre logs de mantenimiento en tus
-        vehículos.
-      </p>
-    </div>
-    <label class="toggle-switch" [class.loading]="isSharingLoading">
-      <input
-        type="checkbox"
-        [checked]="allowSharing"
-        [disabled]="isSharingLoading"
-        (change)="onSharingToggle($any($event.target).checked)"
-      />
-      <span class="toggle-slider"></span>
-    </label>
-  </div>
+  <!-- Settings entry -->
+  <button type="button" class="menu-row" (click)="openSettings()">
+    <span class="menu-row__label">{{ 'settings.title' | translate }}</span>
+    <lucide-angular
+      class="menu-row__chevron"
+      [img]="ChevronRightIcon"
+      [size]="20"
+    ></lucide-angular>
+  </button>
 
   <div class="divider"></div>
-  }
 
   <!-- Mechanics Section -->
   <div class="section-header">
-    <h3 class="section-title">Mechanics</h3>
-    <button class="add-btn">
+    <h3 class="section-title">{{ 'profile.mechanics' | translate }}</h3>
+    <button type="button" class="add-btn" (click)="openAddMechanic()">
       <lucide-angular [img]="PlusIcon" [size]="15"></lucide-angular>
-      <span>Add</span>
+      <span>{{ 'common.add' | translate }}</span>
     </button>
   </div>
 
   <div class="mechanics-list">
-    @for (mechanic of mechanics; track mechanic.name) {
+    @for (mechanic of mechanics; track mechanic.id) {
     <div class="mechanic-card">
-      <div class="mechanic-icon">
+      <div class="mechanic-icon" aria-hidden="true">
         <lucide-angular [img]="WrenchIcon" [size]="24"></lucide-angular>
       </div>
       <div class="mechanic-info">
         <h4 class="mechanic-name">{{ mechanic.name }}</h4>
-        <p class="mechanic-contact">{{ mechanic.contact }}</p>
+        <p class="mechanic-contact">
+          {{ ('mechanics.source.' + mechanic.source) | translate }}
+        </p>
+        @if (mechanic.description) {
+        <p class="mechanic-contact">{{ mechanic.description }}</p>
+        } @if (mechanic.phone) {
         <p class="mechanic-phone">{{ mechanic.phone }}</p>
+        }
+      </div>
+      <div class="mechanic-actions">
+        <button type="button" (click)="openEditMechanic(mechanic)">
+          <lucide-angular [img]="PencilIcon" [size]="16"></lucide-angular>
+        </button>
+        <button type="button" (click)="deleteMechanic(mechanic)">
+          <lucide-angular [img]="Trash2Icon" [size]="16"></lucide-angular>
+        </button>
       </div>
     </div>
     }
   </div>
 </div>
+
+<!-- Edit profile modal -->
+<app-modal
+  [isOpen]="showEditProfileModal"
+  [variant]="'bottom-sheet'"
+  [showCloseButton]="true"
+  [title]="'profile.editProfile' | translate"
+  (closed)="closeEditProfile()"
+>
+  <form
+    class="profile-form"
+    [formGroup]="profileForm"
+    (ngSubmit)="saveProfile()"
+  >
+    <app-input
+      [formControl]="firstNameControl"
+      type="text"
+      [label]="'profile.firstName' | translate"
+      [errorMessage]="controlError(firstNameControl) | translate"
+    ></app-input>
+
+    <app-input
+      [formControl]="lastNameControl"
+      type="text"
+      [label]="'profile.lastName' | translate"
+      [errorMessage]="controlError(lastNameControl) | translate"
+    ></app-input>
+
+    <app-input
+      [formControl]="emailControl"
+      type="email"
+      [label]="'profile.email' | translate"
+      [errorMessage]="controlError(emailControl) | translate"
+    ></app-input>
+
+    <app-input
+      [formControl]="phoneControl"
+      type="tel"
+      [label]="'profile.phone' | translate"
+      placeholder="+58 412 000 0000"
+      [errorMessage]="controlError(phoneControl) | translate"
+    ></app-input>
+
+    <app-select
+      [formControl]="userTypeControl"
+      [label]="'profile.user_type' | translate"
+      [options]="userTypeOptions"
+    ></app-select>
+
+    @if (profileErrorKey) {
+    <p class="form-error" role="alert">{{ profileErrorKey | translate }}</p>
+    }
+
+    <div class="form-actions">
+      <app-button
+        variant="primary"
+        type="submit"
+        [fullWidth]="true"
+        [disabled]="profileForm.invalid || isSavingProfile"
+      >
+        {{ 'common.save' | translate }}
+      </app-button>
+    </div>
+  </form>
+</app-modal>
+
+<!-- Add mechanic modal (Figma: "Profile - Add mechanic") -->
+<app-add-mechanic-modal
+  [isOpen]="showAddMechanicModal"
+  [initialValue]="editingMechanic ? {
+    name: editingMechanic.name,
+    phone: editingMechanic.phone || '',
+    description: editingMechanic.description || ''
+  } : null"
+  (closed)="closeAddMechanic()"
+  (submitted)="onMechanicAdded($event)"
+></app-add-mechanic-modal>
+
+<app-toast
+  class="toast"
+  [message]="toastMessage | translate"
+  [type]="toastType"
+  [isVisible]="toastVisible"
+  (dismissed)="toastVisible = false"
+></app-toast>

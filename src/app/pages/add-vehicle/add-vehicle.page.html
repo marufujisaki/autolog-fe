@@ -1,9 +1,14 @@
-<div class="add-vehicle-page">
-  <!-- Handle bar -->
-  <div class="handle-bar"></div>
-
-  <!-- Title -->
-  <h1 class="page-title">Add a vehicle</h1>
+<div
+  class="add-vehicle-page"
+  appSwipeToDismiss
+  [swipeHandleSelector]="'.page-header'"
+  (swipeDismissed)="goBack()"
+>
+  <!-- Drag area: handle bar + title -->
+  <header class="page-header">
+    <div class="handle-bar" aria-hidden="true"></div>
+    <h1 class="page-title">Add a vehicle</h1>
+  </header>
 
   <!-- Form -->
   <form [formGroup]="form" (ngSubmit)="onSubmit()" class="form-section">

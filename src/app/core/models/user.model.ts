@@ -21,11 +21,21 @@ export interface User {
   email: string;
   firstName: string;
   lastName: string;
+  phone?: string;
   userType: UserType;
   mechanicLevel?: MechanicLevel;
   workshopId?: string;
   preferredLanguage: string;
   allowSharing: boolean;
+}
+
+/** Editable profile fields submitted from the profile screen. */
+export interface UpdateProfileData {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone?: string;
+  userType: UserType;
 }
 
 /** Credentials submitted on login. */

@@ -1,6 +1,9 @@
 import {
   Component,
   ElementRef,
+  EventEmitter,
+  Input,
+  Output,
   QueryList,
   ViewChildren,
   inject,
@@ -18,12 +21,24 @@ import {
   JobOption,
 } from '../../core/ports/vehicle-catalog.port';
 import { MaintenanceLogService } from '../../core/ports/maintenance-log.port';
+import { MechanicService } from '../../core/ports/mechanic.port';
 import { VehicleService } from '../../core/ports/vehicle.port';
+import { VehicleDataRefreshService } from '../../core/services/vehicle-data-refresh.service';
 import { Vehicle } from '../../core/models/vehicle.model';
 import { CreateLogData } from '../../core/models/maintenance-log.model';
+import {
+  CreateMechanicData,
+  Mechanic,
+  MechanicSource,
+} from '../../core/models/mechanic.model';
 import { ButtonComponent } from '../../presentation/shared/components/button/button.component';
 import { InputComponent } from '../../presentation/shared/components/input/input.component';
 import { AutocompleteComponent } from '../../presentation/shared/components/autocomplete/autocomplete.component';
+import { SwipeToDismissDirective } from '../../presentation/shared/directives/swipe-to-dismiss.directive';
+import {
+  AddMechanicModalComponent,
+  MechanicDraft,
+} from '../../presentation/shared/components/add-mechanic-modal/add-mechanic-modal.component';
 import {
   SelectComponent,
   SelectOption,
@@ -85,6 +100,8 @@ interface JobEntry {
     ButtonComponent,
     InputComponent,
     AutocompleteComponent,
+    SwipeToDismissDirective,
+    AddMechanicModalComponent,
     SelectComponent,
     LucideAngularModule,
     IonModal,
@@ -96,8 +113,14 @@ export class NewLogPage implements OnInit {
   private router = inject(Router);
   private catalogService = inject(VehicleCatalogService);
   private logService = inject(MaintenanceLogService);
+  private mechanicService = inject(MechanicService);
   private vehicleService = inject(VehicleService);
   private route = inject(ActivatedRoute);
+  private dataRefresh = inject(VehicleDataRefreshService);
+
+  /** When true the page is rendered as an overlay and closing emits instead of navigating. */
+  @Input() presentedAsModal = false;
+  @Output() dismissed = new EventEmitter<void>();
 
   @ViewChildren('jobCard', { read: ElementRef })
   private jobCards!: QueryList<ElementRef<HTMLElement>>;
@@ -152,11 +175,15 @@ export class NewLogPage implements OnInit {
   todayISO = new Date().toISOString();
 
   // Mechanic selector state
+  mechanics: Mechanic[] = [];
+  selectedMechanicId = '';
   previousMechanics: string[] = [];
   selectedMechanic = '';
   showNewMechanicInput = false;
   newMechanicName = '';
   mechanicDropdownOpen = false;
+  showAddMechanicModal = false;
+  newMechanicDetails: MechanicDraft | null = null;
 
   ngOnInit(): void {
     this.editLogId = this.route.snapshot.paramMap.get('logId') || '';
@@ -165,7 +192,7 @@ export class NewLogPage implements OnInit {
       this.route.snapshot.paramMap.get('vehicleId') || '';
 
     this.loadVehicles();
-    this.loadMechanicNames();
+    this.loadMechanics();
     if (this.isEditMode) {
       this.loadLogForEdit();
     }
@@ -198,6 +225,7 @@ export class NewLogPage implements OnInit {
         this.selectedVehicleId = log.vehicleId;
         this.selectedDate = this.formatDateForDisplay(log.serviceDate);
         this.odometerValue = log.mileageAtService;
+        this.selectedMechanicId = log.mechanicId || '';
         this.selectedMechanic = log.mechanicName || '';
         this.newMechanicName = '';
         this.showNewMechanicInput = !log.mechanicName;
@@ -261,19 +289,17 @@ export class NewLogPage implements OnInit {
     );
   }
 
-  private loadMechanicNames(): void {
-    this.logService.getMechanicNames().subscribe({
-      next: (names) => {
-        this.previousMechanics = names;
-        if (names.length === 0 && !this.selectedMechanic) {
-          // No previous mechanics - show new input immediately
+  private loadMechanics(): void {
+    this.mechanicService.getMechanics().subscribe({
+      next: (mechanics) => {
+        this.mechanics = mechanics;
+        this.previousMechanics = mechanics.map((mechanic) => mechanic.name);
+        if (mechanics.length === 0 && !this.selectedMechanic) {
           this.showNewMechanicInput = true;
         }
       },
       error: () => {
-        if (!this.selectedMechanic) {
-          this.showNewMechanicInput = true;
-        }
+        if (!this.selectedMechanic) this.showNewMechanicInput = true;
       },
     });
   }
@@ -296,17 +322,49 @@ export class NewLogPage implements OnInit {
     this.mechanicDropdownOpen = false;
   }
 
-  selectMechanic(name: string): void {
-    this.selectedMechanic = name;
+  selectMechanic(mechanic: Mechanic): void {
+    this.selectedMechanicId = mechanic.id;
+    this.selectedMechanic = mechanic.name;
     this.showNewMechanicInput = false;
     this.mechanicDropdownOpen = false;
   }
 
+  /** Opens the "Add a mechanic" sheet instead of the inline text input. */
   selectNewMechanic(): void {
-    this.selectedMechanic = '';
-    this.showNewMechanicInput = true;
     this.mechanicDropdownOpen = false;
-    this.newMechanicName = '';
+    this.showAddMechanicModal = true;
+  }
+
+  closeAddMechanicModal(): void {
+    this.showAddMechanicModal = false;
+  }
+
+  /**
+   * Applies the mechanic captured in the sheet. Only the name is persisted
+   * with the log today; phone and description are kept in memory until a
+   * mechanics endpoint exists.
+   */
+  onMechanicCreated(draft: MechanicDraft): void {
+    const data: CreateMechanicData = {
+      source: MechanicSource.PERSONAL,
+      name: draft.name,
+      phone: draft.phone || undefined,
+      description: draft.description || undefined,
+    };
+    this.mechanicService.createMechanic(data).subscribe({
+      next: (mechanic) => {
+        this.mechanics = [...this.mechanics, mechanic];
+        this.previousMechanics = this.mechanics.map((item) => item.name);
+        this.selectedMechanicId = mechanic.id;
+        this.selectedMechanic = mechanic.name;
+        this.showNewMechanicInput = false;
+        this.showAddMechanicModal = false;
+      },
+      error: (error) => {
+        console.error('Error creating mechanic:', error);
+        this.saveErrorKey = 'mechanics.saveError';
+      },
+    });
   }
 
   openDatePicker(): void {
@@ -372,10 +430,6 @@ export class NewLogPage implements OnInit {
 
   getTypeClass(type: MaintenanceType): string {
     return `label-${type.toLowerCase()}`;
-  }
-
-  getTypeLabel(type: MaintenanceType): string {
-    return type.charAt(0) + type.slice(1).toLowerCase();
   }
 
   getJobIcon(iconName: string): LucideIconData {
@@ -475,6 +529,7 @@ export class NewLogPage implements OnInit {
     const logData: CreateLogData = {
       serviceDate: this.formatDateForApi(),
       mileageAtService: this.odometerValue || this.currentVehicleMileage,
+      mechanicId: this.selectedMechanicId || undefined,
       mechanicName: this.effectiveMechanicName || undefined,
       jobs: this.jobs.map((job) => ({
         title: job.title,
@@ -507,7 +562,8 @@ export class NewLogPage implements OnInit {
 
     this.logService.createLog(this.selectedVehicleId, logData).subscribe({
       next: () => {
-        void this.router.navigate(['/tabs/vehicles']);
+        this.dataRefresh.notifyChanged();
+        this.goBack();
       },
       error: (err) => {
         console.error('Error creating log:', err);
@@ -532,10 +588,18 @@ export class NewLogPage implements OnInit {
 
   goBack(): void {
     this.discardUnsavedJobs();
+    if (this.presentedAsModal) {
+      this.dismissed.emit();
+      return;
+    }
+
     if (this.isEditMode && this.editLogId) {
       void this.router.navigate(['/log', this.editLogId]);
       return;
     }
-    void this.router.navigate(['/tabs/vehicles']);
+    const returnTo = this.route.snapshot.queryParamMap.get('returnTo');
+    const destination =
+      returnTo === '/tabs/profile' ? '/tabs/profile' : '/tabs/vehicles';
+    void this.router.navigateByUrl(destination);
   }
 }

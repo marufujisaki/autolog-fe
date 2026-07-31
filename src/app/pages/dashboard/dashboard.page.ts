@@ -13,12 +13,14 @@ import { catchError, takeUntil } from 'rxjs/operators';
 import { VehicleService } from '../../core/ports/vehicle.port';
 import { MaintenanceLogService } from '../../core/ports/maintenance-log.port';
 import { AuthService } from '../../core/ports/auth.port';
+import { VehicleDataRefreshService } from '../../core/services/vehicle-data-refresh.service';
 import { UserType } from '../../core/models/user.model';
 import { CreateVehicleData, Vehicle } from '../../core/models/vehicle.model';
 import { ButtonComponent } from '../../presentation/shared/components/button/button.component';
 import { InputComponent } from '../../presentation/shared/components/input/input.component';
 import { ModalComponent } from '../../presentation/shared/components/modal/modal.component';
 import { ToastComponent } from '../../presentation/shared/components/toast/toast.component';
+import { BrandComponent } from '../../presentation/shared/components/brand/brand.component';
 import { TranslatePipe } from '@ngx-translate/core';
 import {
   EllipsisVerticalIcon,
@@ -46,6 +48,7 @@ import {
     InputComponent,
     ModalComponent,
     ToastComponent,
+    BrandComponent,
     TranslatePipe,
     LucideAngularModule,
   ],
@@ -56,6 +59,7 @@ export class DashboardPage implements OnInit, OnDestroy {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
   private readonly formBuilder = inject(FormBuilder);
+  private readonly dataRefresh = inject(VehicleDataRefreshService);
   private readonly destroy$ = new Subject<void>();
 
   readonly SearchIcon = SearchIcon;
@@ -99,6 +103,9 @@ export class DashboardPage implements OnInit, OnDestroy {
         user?.userType ?? null,
       );
     });
+    this.dataRefresh.changed$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => this.loadVehicles());
     this.loadVehicles();
   }
 

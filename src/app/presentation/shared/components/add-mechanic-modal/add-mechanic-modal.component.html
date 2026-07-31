@@ -1,0 +1,43 @@
+<app-modal
+  [isOpen]="open"
+  [variant]="'bottom-sheet'"
+  [showCloseButton]="true"
+  [title]="
+    (initialValue ? 'mechanics.editTitle' : 'mechanics.addTitle') | translate
+  "
+  (closed)="onClose()"
+>
+  <form class="mechanic-form" [formGroup]="form" (ngSubmit)="onSubmit()">
+    <app-input
+      [formControl]="nameControl"
+      type="text"
+      [label]="'mechanics.name' | translate"
+      [placeholder]="'mechanics.namePlaceholder' | translate"
+    ></app-input>
+
+    <app-input
+      [formControl]="phoneControl"
+      type="tel"
+      [label]="'mechanics.phone' | translate"
+      placeholder="+58 412 000 0000"
+    ></app-input>
+
+    <app-input
+      [formControl]="descriptionControl"
+      type="text"
+      [label]="'mechanics.description' | translate"
+      [placeholder]="'mechanics.descriptionPlaceholder' | translate"
+    ></app-input>
+
+    <div class="mechanic-form__actions">
+      <app-button
+        variant="primary"
+        type="submit"
+        [fullWidth]="true"
+        [disabled]="form.invalid"
+      >
+        {{ (initialValue ? "common.save" : "common.add") | translate }}
+      </app-button>
+    </div>
+  </form>
+</app-modal>

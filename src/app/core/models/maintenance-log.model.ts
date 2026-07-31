@@ -25,6 +25,7 @@ export interface CreateLogData {
   serviceDate: string;
   mileageAtService: number;
   totalCost?: number;
+  mechanicId?: string;
   mechanicName?: string;
   jobs: CreateJobData[];
 }

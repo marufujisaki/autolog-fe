@@ -1,0 +1,17 @@
+// =============================================================================
+// AddMechanicModalComponent — Design System
+// Figma: "Profile - Add mechanic" sheet (356px card, 3 text inputs + Add)
+// =============================================================================
+
+@use "../../styles/tokens" as tokens;
+
+.mechanic-form {
+  display: flex;
+  flex-direction: column;
+  gap: tokens.$space-4;
+  padding-top: tokens.$space-2;
+
+  &__actions {
+    margin-top: tokens.$space-5;
+  }
+}

@@ -12,9 +12,9 @@
 // ---------------------------------------------------------------------------
 
 .page-header {
+  position: relative;
   display: flex;
   align-items: center;
-  justify-content: space-between;
   margin-bottom: 36px;
 }
 
@@ -32,7 +32,10 @@
 }
 
 .header-title {
+  position: absolute;
+  left: 50%;
   margin: 0;
+  transform: translateX(-50%);
   font-family: t.$font-family-display;
   font-size: t.$font-size-4xl;
   font-weight: t.$font-weight-bold;

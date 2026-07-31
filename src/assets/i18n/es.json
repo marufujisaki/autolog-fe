@@ -250,11 +250,46 @@
     "logout": "Cerrar Sesión",
     "editProfile": "Editar Perfil",
     "changePassword": "Cambiar Contraseña",
+    "firstName": "Nombre",
+    "lastName": "Apellido",
+    "phone": "Teléfono",
+    "mechanics": "Mecánicos",
+    "loadError": "No pudimos cargar tu perfil. Inténtalo nuevamente.",
     "updateSuccess": "Perfil actualizado exitosamente",
     "updateError": "Error al actualizar el perfil",
     "logoutConfirm": "¿Estás seguro de que deseas cerrar sesión?",
     "workshopAccess": "Accede a la información de tu taller",
     "viewWorkshop": "Ver Taller"
+  },
+  "settings": {
+    "title": "Configuración",
+    "language": "Idioma",
+    "languageDescription": "Elige el idioma de la aplicación.",
+    "shareVehicles": "Compartir vehículos",
+    "shareVehiclesDescription": "Permite que un taller o mecánico registre logs de mantenimiento en tus vehículos.",
+    "sharingError": "No pudimos actualizar la preferencia de compartir. Inténtalo nuevamente.",
+    "linkedDevices": "Dispositivos vinculados",
+    "linkedDevicesDescription": "Consulta y administra las sesiones activas de tu cuenta.",
+    "theme": "Tema",
+    "themeDescription": "Cambia entre modo claro y oscuro.",
+    "comingSoon": "Próximamente"
+  },
+  "mechanics": {
+    "addTitle": "Agregar un mecánico",
+    "name": "Nombre",
+    "namePlaceholder": "Taller Equis Ye Zeta",
+    "phone": "Teléfono",
+    "description": "Descripción",
+    "descriptionPlaceholder": "Contacto o nota de referencia",
+    "editTitle": "Editar mecánico",
+    "saveError": "No pudimos guardar este mecánico. Inténtalo nuevamente.",
+    "deleteSuccess": "Mecánico eliminado correctamente.",
+    "deleteError": "No pudimos eliminar este mecánico. Inténtalo nuevamente.",
+    "loadError": "No pudimos cargar tus mecánicos. Inténtalo nuevamente.",
+    "source": {
+      "PERSONAL": "Contacto personal",
+      "WORKSHOP": "Mecánico del taller"
+    }
   },
   "languages": {
     "spanish": "Español",

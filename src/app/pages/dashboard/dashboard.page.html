@@ -1,7 +1,7 @@
 <div class="dashboard-page">
   <!-- Header -->
   <header class="dashboard-header">
-    <h1 class="app-brand">Auto<span class="text-primary">Log</span></h1>
+    <app-brand></app-brand>
     <button class="search-btn" aria-label="Search">
       <lucide-angular [img]="SearchIcon" [size]="24"></lucide-angular>
     </button>
@@ -97,6 +97,7 @@
   <app-modal
     [isOpen]="showEditModal"
     [variant]="'bottom-sheet'"
+    [showCloseButton]="true"
     [title]="'vehicles.editVehicleTitle' | translate"
     (closed)="closeEditModal()"
   >
@@ -206,6 +207,7 @@
   } @if (showDeleteModal && activeVehicle) {
   <app-modal
     [isOpen]="showDeleteModal"
+    [variant]="'confirmation-sheet'"
     [title]="'vehicles.deleteVehicleTitle' | translate"
     (closed)="closeDeleteModal()"
   >
@@ -215,10 +217,18 @@
         activeVehicle.brand + ' ' + activeVehicle.model } }}
       </p>
       <div class="form-actions">
-        <app-button variant="secondary" (click)="closeDeleteModal()">
+        <app-button
+          variant="secondary"
+          [fullWidth]="true"
+          (click)="closeDeleteModal()"
+        >
           {{ 'common.cancel' | translate }}
         </app-button>
-        <app-button variant="primary" (click)="confirmDeleteVehicle()">
+        <app-button
+          variant="primary"
+          [fullWidth]="true"
+          (click)="confirmDeleteVehicle()"
+        >
           {{ 'common.delete' | translate }}
         </app-button>
       </div>

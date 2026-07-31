@@ -1,0 +1,172 @@
+@use "../../presentation/shared/styles/tokens" as t;
+
+.settings-page {
+  padding: t.$space-6;
+  background: t.$color-background;
+  min-height: 100%;
+}
+
+// ---------------------------------------------------------------------------
+// Header
+// ---------------------------------------------------------------------------
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  margin-bottom: t.$space-7;
+}
+
+.back-btn {
+  position: absolute;
+  left: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: t.$color-text-primary;
+  padding: t.$space-1;
+}
+
+.header-title {
+  font-family: t.$font-family-base;
+  font-size: t.$font-size-3xl;
+  font-weight: t.$font-weight-semibold;
+  color: t.$color-text-primary;
+  margin: 0;
+}
+
+.header-spacer {
+  display: none;
+}
+
+// ---------------------------------------------------------------------------
+// Setting entries
+// ---------------------------------------------------------------------------
+
+.setting-block {
+  display: flex;
+  flex-direction: column;
+  gap: t.$space-3;
+  padding: t.$space-2 0;
+}
+
+.setting-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: t.$space-4;
+  padding: t.$space-2 0;
+
+  &--disabled {
+    opacity: 0.6;
+  }
+}
+
+.setting-heading {
+  display: flex;
+  align-items: flex-start;
+  gap: t.$space-3;
+  color: t.$color-text-dark;
+  min-width: 0;
+}
+
+.setting-title {
+  font-family: t.$font-family-base;
+  font-size: t.$font-size-lg;
+  font-weight: t.$font-weight-semibold;
+  color: t.$color-text-dark;
+  margin: 0 0 2px;
+}
+
+.setting-description {
+  font-family: t.$font-family-base;
+  font-size: t.$font-size-base;
+  font-weight: t.$font-weight-regular;
+  color: t.$color-text-secondary;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.badge {
+  flex-shrink: 0;
+  padding: 4px t.$space-3;
+  border-radius: t.$radius-full;
+  background: t.$color-surface-alt;
+  color: t.$color-text-secondary;
+  font-family: t.$font-family-base;
+  font-size: t.$font-size-sm;
+  font-weight: t.$font-weight-semibold;
+  white-space: nowrap;
+}
+
+.divider {
+  height: 1px;
+  background: t.$color-border;
+  margin: t.$space-4 0;
+}
+
+// ---------------------------------------------------------------------------
+// Toggle switch (shared visual with the previous profile toggle)
+// ---------------------------------------------------------------------------
+
+.toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 48px;
+  height: 26px;
+  flex-shrink: 0;
+
+  input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+
+    &:checked + .toggle-slider {
+      background-color: t.$color-primary;
+    }
+
+    &:checked + .toggle-slider::before {
+      transform: translateX(22px);
+    }
+
+    &:disabled + .toggle-slider {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+
+  &.loading {
+    opacity: 0.6;
+  }
+}
+
+.toggle-slider {
+  position: absolute;
+  cursor: pointer;
+  inset: 0;
+  background-color: #ccc;
+  border-radius: 26px;
+  transition: background-color t.$transition-duration-base
+    t.$transition-easing;
+
+  &::before {
+    content: "";
+    position: absolute;
+    height: 20px;
+    width: 20px;
+    left: 3px;
+    bottom: 3px;
+    background-color: #ffffff;
+    border-radius: 50%;
+    transition: transform t.$transition-duration-base t.$transition-easing;
+  }
+}
+
+.toast {
+  position: fixed;
+  right: t.$space-4;
+  bottom: t.$space-4;
+  left: t.$space-4;
+  z-index: 1000;
+}

@@ -1,6 +1,8 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
+import { AddVehiclePage } from '../pages/add-vehicle/add-vehicle.page';
+import { NewLogPage } from '../pages/new-log/new-log.page';
 import {
   LucideAngularModule,
   CarFrontIcon,
@@ -19,7 +21,13 @@ import {
   templateUrl: 'tabs.page.html',
   styleUrls: ['tabs.page.scss'],
   standalone: true,
-  imports: [CommonModule, RouterModule, LucideAngularModule],
+  imports: [
+    CommonModule,
+    RouterModule,
+    LucideAngularModule,
+    AddVehiclePage,
+    NewLogPage,
+  ],
 })
 export class TabsPage {
   private router = inject(Router);
@@ -31,6 +39,8 @@ export class TabsPage {
   readonly WrenchIcon = WrenchIcon;
 
   fabMenuOpen = false;
+  addVehicleModalOpen = false;
+  newLogModalOpen = false;
 
   navigateToVehicles(): void {
     void this.router.navigate(['/tabs/vehicles']);
@@ -46,12 +56,22 @@ export class TabsPage {
 
   openAddVehicle(): void {
     this.fabMenuOpen = false;
-    void this.router.navigate(['/tabs/add-vehicle']);
+    this.newLogModalOpen = false;
+    this.addVehicleModalOpen = true;
+  }
+
+  closeAddVehicle(): void {
+    this.addVehicleModalOpen = false;
   }
 
   openNewLog(): void {
     this.fabMenuOpen = false;
-    void this.router.navigate(['/tabs/new-log']);
+    this.addVehicleModalOpen = false;
+    this.newLogModalOpen = true;
+  }
+
+  closeNewLog(): void {
+    this.newLogModalOpen = false;
   }
 
   navigateToProfile(): void {

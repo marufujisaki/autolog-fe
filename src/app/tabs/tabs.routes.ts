@@ -31,6 +31,11 @@ export const routes: Routes = [
           import('../pages/profile/profile.page').then((m) => m.ProfilePage),
       },
       {
+        path: 'settings',
+        loadComponent: () =>
+          import('../pages/settings/settings.page').then((m) => m.SettingsPage),
+      },
+      {
         path: '',
         redirectTo: 'vehicles',
         pathMatch: 'full',

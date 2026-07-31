@@ -24,21 +24,23 @@
     display: flex;
   }
 
-  &.app-modal--bottom-sheet {
-    align-items: flex-start;
+  &.app-modal--bottom-sheet,
+  &.app-modal--confirmation-sheet {
+    align-items: center;
     box-sizing: border-box;
-    padding: 0 17px;
+    padding: 24px 17px;
 
     .app-modal__container {
       width: min(356px, 100%);
-      height: min(692px, calc(100vh - 76px));
       max-width: none;
-      max-height: calc(100vh - 76px);
-      margin: 76px auto 0;
+      max-height: calc(100dvh - 48px);
+      margin: 0 auto;
       border-radius: tokens.$radius-5xl;
     }
 
+    // The whole header (handle line + title) is the drag-to-dismiss area.
     .app-modal__header {
+      position: relative;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -46,6 +48,13 @@
       flex: 0 0 auto;
       padding: 26px 24px 11px;
       border-bottom: 0;
+      touch-action: none;
+      user-select: none;
+      cursor: grab;
+
+      &:active {
+        cursor: grabbing;
+      }
     }
 
     .app-modal__handle {
@@ -66,12 +75,27 @@
       text-align: center;
     }
 
+    .app-modal__close {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      z-index: 1;
+    }
+
     .app-modal__body {
       flex: 1;
       min-height: 0;
       padding: 0 24px 24px;
       overflow-y: auto;
     }
+  }
+
+  &.app-modal--bottom-sheet .app-modal__container {
+    height: min(740px, calc(100dvh - 48px));
+  }
+
+  &.app-modal--confirmation-sheet .app-modal__container {
+    height: auto;
   }
 
   &__backdrop {

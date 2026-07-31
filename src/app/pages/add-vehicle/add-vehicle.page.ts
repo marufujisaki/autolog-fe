@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   FormBuilder,
@@ -6,14 +6,16 @@ import {
   Validators,
   FormControl,
 } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, map } from 'rxjs';
 import { VehicleService } from '../../core/ports/vehicle.port';
 import { VehicleCatalogService } from '../../core/ports/vehicle-catalog.port';
+import { VehicleDataRefreshService } from '../../core/services/vehicle-data-refresh.service';
 import { CreateVehicleData } from '../../core/models/vehicle.model';
 import { ButtonComponent } from '../../presentation/shared/components/button/button.component';
 import { InputComponent } from '../../presentation/shared/components/input/input.component';
 import { AutocompleteComponent } from '../../presentation/shared/components/autocomplete/autocomplete.component';
+import { SwipeToDismissDirective } from '../../presentation/shared/directives/swipe-to-dismiss.directive';
 
 /**
  * AddVehiclePage — Add a new vehicle form with autocomplete for Make and Model.
@@ -29,6 +31,7 @@ import { AutocompleteComponent } from '../../presentation/shared/components/auto
     ButtonComponent,
     InputComponent,
     AutocompleteComponent,
+    SwipeToDismissDirective,
   ],
 })
 export class AddVehiclePage {
@@ -36,6 +39,12 @@ export class AddVehiclePage {
   private vehicleService = inject(VehicleService);
   private catalogService = inject(VehicleCatalogService);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
+  private dataRefresh = inject(VehicleDataRefreshService);
+
+  /** When true the page is rendered as an overlay and closing emits instead of navigating. */
+  @Input() presentedAsModal = false;
+  @Output() dismissed = new EventEmitter<void>();
 
   isLoading = false;
 
@@ -134,11 +143,24 @@ export class AddVehiclePage {
     this.vehicleService.createVehicle(data).subscribe({
       next: () => {
         this.isLoading = false;
-        void this.router.navigate(['/tabs/vehicles']);
+        this.dataRefresh.notifyChanged();
+        this.goBack();
       },
       error: () => {
         this.isLoading = false;
       },
     });
+  }
+
+  goBack(): void {
+    if (this.presentedAsModal) {
+      this.dismissed.emit();
+      return;
+    }
+
+    const returnTo = this.route.snapshot.queryParamMap.get('returnTo');
+    const destination =
+      returnTo === '/tabs/profile' ? '/tabs/profile' : '/tabs/vehicles';
+    void this.router.navigateByUrl(destination);
   }
 }

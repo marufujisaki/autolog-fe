@@ -1,4 +1,10 @@
-<div class="new-log-page">
+<div
+  class="new-log-page"
+  [class.new-log-page--modal]="presentedAsModal"
+  appSwipeToDismiss
+  [swipeHandleSelector]="'.page-header'"
+  (swipeDismissed)="goBack()"
+>
   <!-- Header -->
   <header class="page-header">
     <button class="back-btn" (click)="goBack()" aria-label="Go back">
@@ -24,12 +30,9 @@
       <div class="info-item mechanic-selector">
         <lucide-angular [img]="UserRoundIcon" [size]="12"></lucide-angular>
         @if (showNewMechanicInput) {
-        <input
-          type="text"
-          class="mechanic-input"
-          [placeholder]="'newLog.mechanicName' | translate"
-          [(ngModel)]="newMechanicName"
-        />
+        <span class="mechanic-label" (click)="selectNewMechanic()">
+          {{ newMechanicName || ('newLog.mechanicName' | translate) }}
+        </span>
         } @else {
         <span class="mechanic-label" (click)="toggleMechanicDropdown()">
           {{ selectedMechanic || ('newLog.mechanic' | translate) }}
@@ -40,9 +43,9 @@
           (click)="closeMechanicDropdown()"
         ></div>
         <div class="mechanic-dropdown">
-          @for (name of previousMechanics; track name) {
-          <div class="mechanic-option" (click)="selectMechanic(name)">
-            {{ name }}
+          @for (mechanic of mechanics; track mechanic.id) {
+          <div class="mechanic-option" (click)="selectMechanic(mechanic)">
+            {{ mechanic.name }}
           </div>
           }
           <div
@@ -148,7 +151,7 @@
       <div class="job-labels">
         @for (type of job.types; track type) {
         <span class="label" [ngClass]="getTypeClass(type)">
-          {{ getTypeLabel(type) }}
+          {{ ('maintenance.types.' + type) | translate }}
         </span>
         }
         <div class="tag-selector">
@@ -165,7 +168,7 @@
               [ngClass]="getTypeClass(type)"
               (click)="addTagToJob(i, type)"
             >
-              {{ getTypeLabel(type) }}
+              {{ ('maintenance.types.' + type) | translate }}
             </div>
             }
           </div>
@@ -324,3 +327,12 @@
   </div>
 </div>
 }
+
+<!-- ========================================================================= -->
+<!-- Add Mechanic Sheet (Figma: "Profile - Add mechanic")                       -->
+<!-- ========================================================================= -->
+<app-add-mechanic-modal
+  [isOpen]="showAddMechanicModal"
+  (closed)="closeAddMechanicModal()"
+  (submitted)="onMechanicCreated($event)"
+></app-add-mechanic-modal>

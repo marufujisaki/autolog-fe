@@ -1,16 +1,27 @@
 @use "../../presentation/shared/styles/tokens" as t;
 
 .new-log-page {
-  padding: t.$space-4 t.$space-4 140px;
-  background: t.$color-background;
-  min-height: 100%;
-  height: 100%;
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  width: 100%;
+  height: 100dvh;
   max-height: 100dvh;
   box-sizing: border-box;
   overflow-y: auto;
-  overscroll-behavior-y: contain;
+  overscroll-behavior: contain;
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
+  background: t.$color-background;
+  border-radius: 0;
+  padding: calc(t.$space-4 + env(safe-area-inset-top)) t.$space-4
+    calc(140px + env(safe-area-inset-bottom));
+}
+
+// Presented as a full-screen modal: the bottom navigation is covered, so the
+// extra clearance it required is not needed.
+.new-log-page--modal {
+  padding-bottom: calc(t.$space-8 + env(safe-area-inset-bottom));
 }
 
 // ---------------------------------------------------------------------------
@@ -24,6 +35,12 @@
   position: relative;
   margin-bottom: t.$space-6;
   padding-top: t.$space-4;
+  touch-action: none;
+  cursor: grab;
+}
+
+.page-header:active {
+  cursor: grabbing;
 }
 
 .back-btn {

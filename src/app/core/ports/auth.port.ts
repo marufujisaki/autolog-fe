@@ -9,6 +9,7 @@ import {
   AuthTokens,
   LoginCredentials,
   RegisterData,
+  UpdateProfileData,
   User,
   UserType,
 } from '../models/user.model';
@@ -33,4 +34,10 @@ export abstract class AuthService {
 
   /** Update the user's sharing preference (USUARIO only) */
   abstract updateAllowSharing(allowSharing: boolean): Observable<void>;
+
+  /** Loads the authenticated user's profile from the backend. */
+  abstract getProfile(): Observable<User>;
+
+  /** Updates the authenticated user's editable profile fields. */
+  abstract updateProfile(data: UpdateProfileData): Observable<User>;
 }

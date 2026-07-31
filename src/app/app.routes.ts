@@ -91,6 +91,12 @@ export const routes: Routes = [
       import('./pages/profile/profile.page').then((m) => m.ProfilePage),
     canActivate: [authGuard],
   },
+  {
+    path: 'settings',
+    loadComponent: () =>
+      import('./pages/settings/settings.page').then((m) => m.SettingsPage),
+    canActivate: [authGuard],
+  },
 
   // Role-restricted routes
   // Workshop page is only accessible to MECANICO users (Requirement 3.6, 9.5)
