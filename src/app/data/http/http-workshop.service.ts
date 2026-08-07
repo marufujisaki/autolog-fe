@@ -1,6 +1,5 @@
-import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Injectable, Signal, inject } from '@angular/core';
+import { HttpResourceRef, httpResource } from '@angular/common/http';
 import { WorkshopService, Workshop } from '../../core/ports/workshop.port';
 
 /**
@@ -10,7 +9,6 @@ import { WorkshopService, Workshop } from '../../core/ports/workshop.port';
  */
 @Injectable()
 export class HttpWorkshopService extends WorkshopService {
-  private readonly http = inject(HttpClient);
   private readonly apiUrl = '/api/workshops';
 
   /**
@@ -18,7 +16,9 @@ export class HttpWorkshopService extends WorkshopService {
    * Requirement 9.4: Verify workshop existence before granting mechanic access
    * Requirement 9.5: Read-only access to workshop data (name, address)
    */
-  override getWorkshop(workshopId: string): Observable<Workshop> {
-    return this.http.get<Workshop>(`${this.apiUrl}/${workshopId}`);
+  override getWorkshopResource(workshopId: Signal<string>): HttpResourceRef<Workshop | undefined> {
+    return httpResource<Workshop>(() =>
+      workshopId() ? `${this.apiUrl}/${workshopId()}` : undefined,
+    );
   }
 }

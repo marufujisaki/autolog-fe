@@ -1,14 +1,12 @@
-import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, effect, inject, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { map, takeUntil } from 'rxjs/operators';
 
 import { Vehicle } from '../../../core/models/vehicle.model';
-import {
-  MaintenanceLog,
-  PaginatedResponse,
-} from '../../../core/models/maintenance-log.model';
+import { MaintenanceLog } from '../../../core/models/maintenance-log.model';
 import { Job, MaintenanceType } from '../../../core/models/job.model';
 import { VehicleService } from '../../../core/ports/vehicle.port';
 import { MaintenanceLogService } from '../../../core/ports/maintenance-log.port';
@@ -93,13 +91,54 @@ export class VehicleDetailPage implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
   private vehicleId: string = '';
 
+  private readonly vehicleIdSignal = toSignal(
+    this.route.paramMap.pipe(map((params) => params.get('id') || '')),
+    { initialValue: '' },
+  );
+  private readonly vehicleResource = this.vehicleService.getVehicleResource(
+    this.vehicleIdSignal,
+  );
+
+  private readonly pageSignal = signal(0);
+  private readonly logsResource = this.maintenanceLogService.getLogsResource(
+    this.vehicleIdSignal,
+    this.pageSignal,
+    this.pageSize,
+  );
+
+  constructor() {
+    effect(() => {
+      this.isLoadingVehicle = this.vehicleResource.isLoading();
+      const vehicle = this.vehicleResource.value();
+      if (vehicle) {
+        this.vehicle = vehicle;
+      }
+      if (this.vehicleResource.error()) {
+        this.showToast('errors.loadVehicle');
+        // Navigate back to vehicles list if not found
+        setTimeout(() => this.router.navigate(['/tabs/vehicles']), 2000);
+      }
+    });
+
+    effect(() => {
+      this.isLoadingLogs = this.logsResource.isLoading();
+      const response = this.logsResource.value();
+      if (response) {
+        this.logs = response.content;
+        this.currentPage = response.page;
+        this.totalPages = response.totalPages;
+        this.totalElements = response.totalElements;
+      }
+      if (this.logsResource.error()) {
+        console.error('Error loading logs:', this.logsResource.error());
+        this.showToast('errors.loadLogs');
+      }
+    });
+  }
+
   ngOnInit(): void {
     this.route.paramMap.pipe(takeUntil(this.destroy$)).subscribe((params) => {
       this.vehicleId = params.get('id') || '';
-      if (this.vehicleId) {
-        this.loadVehicle();
-        this.loadLogs(0);
-      }
     });
   }
 
@@ -108,53 +147,6 @@ export class VehicleDetailPage implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  /**
-   * Load vehicle details.
-   */
-  private loadVehicle(): void {
-    this.isLoadingVehicle = true;
-    this.vehicleService
-      .getVehicle(this.vehicleId)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (vehicle) => {
-          this.vehicle = vehicle;
-          this.isLoadingVehicle = false;
-        },
-        error: (error) => {
-          console.error('Error loading vehicle:', error);
-          this.isLoadingVehicle = false;
-          this.showToast('errors.loadVehicle');
-          // Navigate back to vehicles list if not found
-          setTimeout(() => this.router.navigate(['/tabs/vehicles']), 2000);
-        },
-      });
-  }
-
-  /**
-   * Load paginated maintenance logs.
-   * Requirement 10.1, 10.2: Paginated results ordered by serviceDate DESC
-   */
-  private loadLogs(page: number): void {
-    this.isLoadingLogs = true;
-    this.maintenanceLogService
-      .getLogs(this.vehicleId, page, this.pageSize)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (response: PaginatedResponse<MaintenanceLog>) => {
-          this.logs = response.content;
-          this.currentPage = response.page;
-          this.totalPages = response.totalPages;
-          this.totalElements = response.totalElements;
-          this.isLoadingLogs = false;
-        },
-        error: (error) => {
-          console.error('Error loading logs:', error);
-          this.isLoadingLogs = false;
-          this.showToast('errors.loadLogs');
-        },
-      });
-  }
 
   get latestLog(): MaintenanceLog | null {
     return this.logs.reduce<MaintenanceLog | null>((latest, log) => {
@@ -281,7 +273,7 @@ export class VehicleDetailPage implements OnInit, OnDestroy {
    */
   previousPage(): void {
     if (this.currentPage > 0) {
-      this.loadLogs(this.currentPage - 1);
+      this.pageSignal.set(this.currentPage - 1);
     }
   }
 
@@ -290,7 +282,7 @@ export class VehicleDetailPage implements OnInit, OnDestroy {
    */
   nextPage(): void {
     if (this.currentPage < this.totalPages - 1) {
-      this.loadLogs(this.currentPage + 1);
+      this.pageSignal.set(this.currentPage + 1);
     }
   }
 

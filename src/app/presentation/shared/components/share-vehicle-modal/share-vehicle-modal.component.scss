@@ -1,0 +1,71 @@
+// =============================================================================
+// ShareVehicleModalComponent — Design System
+// Figma: "Add Vehicle - Link client" sheet (node 149:1968 / 152:*)
+// =============================================================================
+
+@use "../../styles/tokens" as tokens;
+
+.share-vehicle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  text-align: center;
+
+  // Instructions + QR: centered in the space above the bottom group.
+  &__top {
+    flex: 1;
+    min-height: 0;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: tokens.$space-5;
+  }
+
+  // Divider + link label + button: pinned to the bottom of the sheet.
+  &__bottom {
+    flex: 0 0 auto;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: tokens.$space-5;
+  }
+
+  &__instructions {
+    margin: 0;
+    color: tokens.$color-text-secondary;
+    font-size: tokens.$font-size-md;
+    font-weight: tokens.$font-weight-medium;
+    line-height: tokens.$line-height-normal;
+  }
+
+  &__qr {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 240px;
+  }
+
+  &__error {
+    margin: 0;
+    color: tokens.$color-error;
+    font-size: tokens.$font-size-md;
+  }
+
+  &__divider {
+    width: 100%;
+    border: none;
+    border-top: 1px solid tokens.$color-border-light;
+    margin: 0;
+  }
+
+  &__link-label {
+    margin: 0;
+    color: tokens.$color-text-secondary;
+    font-size: tokens.$font-size-md;
+    font-weight: tokens.$font-weight-medium;
+  }
+}

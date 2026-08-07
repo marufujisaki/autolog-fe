@@ -1,0 +1,51 @@
+<app-modal
+  [isOpen]="isOpen()"
+  [variant]="'bottom-sheet'"
+  [showCloseButton]="true"
+  [title]="'share.title' | translate"
+  (closed)="onClose()"
+>
+  <div class="share-vehicle">
+    <div class="share-vehicle__top">
+      <p class="share-vehicle__instructions">
+        {{ 'share.qrScanInfo' | translate }}
+      </p>
+
+      <div class="share-vehicle__qr">
+        @if (qrValue) {
+        <qrcode
+          [qrdata]="qrValue"
+          [width]="240"
+          [margin]="1"
+          errorCorrectionLevel="H"
+          elementType="canvas"
+          imageSrc="assets/autolog-iso.png"
+          [imageWidth]="48"
+          [imageHeight]="48"
+        ></qrcode>
+        } @else if (isLoading) {
+        <ion-spinner></ion-spinner>
+        } @else if (errorMessageKey) {
+        <p class="share-vehicle__error">{{ errorMessageKey | translate }}</p>
+        }
+      </div>
+    </div>
+
+    <div class="share-vehicle__bottom">
+      <hr class="share-vehicle__divider" />
+
+      <p class="share-vehicle__link-label">
+        {{ 'share.alternativelyLink' | translate }}
+      </p>
+
+      <app-button
+        variant="primary"
+        [fullWidth]="true"
+        [disabled]="!qrValue"
+        (clicked)="onShareLink()"
+      >
+        {{ 'share.shareLink' | translate }}
+      </app-button>
+    </div>
+  </div>
+</app-modal>

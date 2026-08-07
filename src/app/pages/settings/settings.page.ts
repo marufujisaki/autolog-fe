@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, inject } from '@angular/core';
+import { Component, OnDestroy, effect, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -37,7 +37,7 @@ import type { SelectOption } from '../../presentation/shared/components/select/s
     ToastComponent,
   ],
 })
-export class SettingsPage implements OnInit, OnDestroy {
+export class SettingsPage implements OnDestroy {
   private readonly authService = inject(AuthService);
   private readonly translationService = inject(TranslationService);
   private readonly router = inject(Router);
@@ -63,8 +63,9 @@ export class SettingsPage implements OnInit, OnDestroy {
     { value: 'en', label: 'English' },
   ];
 
-  ngOnInit(): void {
-    this.authService.user$?.pipe(takeUntil(this.destroy$)).subscribe((user) => {
+  constructor() {
+    effect(() => {
+      const user = this.authService.user();
       if (!user) return;
       this.allowSharing = user.allowSharing ?? false;
       this.canManageSharing = user.userType === UserType.USUARIO;

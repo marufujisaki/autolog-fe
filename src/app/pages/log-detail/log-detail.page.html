@@ -1,10 +1,10 @@
 <div class="detail-page">
   <header class="page-header">
-    <button class="back-btn" (click)="goBack()" aria-label="Go back">
+    <button class="back-btn" (click)="goBack()" [attr.aria-label]="'common.back' | translate">
       <lucide-angular [img]="ChevronLeftIcon" [size]="24"></lucide-angular>
     </button>
     <h1 class="header-title">AutoLog</h1>
-    <button class="edit-btn" aria-label="Edit log" (click)="editLog()">
+    <button class="edit-btn" [attr.aria-label]="'common.edit' | translate" (click)="editLog()">
       <lucide-angular [img]="PencilIcon" [size]="20"></lucide-angular>
     </button>
   </header>

@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   FormBuilder,
@@ -48,8 +48,8 @@ export class SignUpPage implements OnInit {
   private route = inject(ActivatedRoute);
 
   signUpForm!: FormGroup;
-  isLoading = false;
-  errorMessage: string | null = null;
+  readonly isLoading = signal(false);
+  readonly errorMessage = signal<string | null>(null);
 
   userTypeOptions = [
     { label: 'Usuario', value: 'USUARIO' },
@@ -131,17 +131,17 @@ export class SignUpPage implements OnInit {
 
   onSubmit(): void {
     if (!this.signUpForm.valid) {
-      this.errorMessage = 'auth.completeForm';
+      this.errorMessage.set('auth.completeForm');
       return;
     }
 
     if (this.passwordControl?.value !== this.confirmPasswordControl?.value) {
-      this.errorMessage = 'auth.passwordMismatch';
+      this.errorMessage.set('auth.passwordMismatch');
       return;
     }
 
-    this.isLoading = true;
-    this.errorMessage = null;
+    this.isLoading.set(true);
+    this.errorMessage.set(null);
 
     const formValue = this.signUpForm.getRawValue();
     const registerData = {
@@ -158,15 +158,15 @@ export class SignUpPage implements OnInit {
 
     this.authService.register(registerData).subscribe({
       next: () => {
-        this.isLoading = false;
+        this.isLoading.set(false);
         void this.router.navigate(['/tabs/vehicles']);
       },
       error: (error) => {
-        this.isLoading = false;
+        this.isLoading.set(false);
         if (error?.error?.message?.includes('email')) {
-          this.errorMessage = 'auth.emailAlreadyExists';
+          this.errorMessage.set('auth.emailAlreadyExists');
         } else {
-          this.errorMessage = 'errors.registrationFailed';
+          this.errorMessage.set('errors.registrationFailed');
         }
       },
     });

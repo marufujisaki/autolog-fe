@@ -2,26 +2,31 @@
  * HTTP implementation of the VehicleService port (Requirement 11.2, 11.4).
  */
 
-import { HttpClient } from '@angular/common/http';
-import { Injectable, inject } from '@angular/core';
+import { HttpClient, HttpResourceRef, httpResource } from '@angular/common/http';
+import { Injectable, Signal, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 
 import { environment } from '../../../environments/environment';
 import { VehicleService } from '../../core/ports/vehicle.port';
+import { VehicleDataRefreshService } from '../../core/services/vehicle-data-refresh.service';
 import { CreateVehicleData, Vehicle } from '../../core/models/vehicle.model';
 
 @Injectable()
 export class HttpVehicleService extends VehicleService {
   private readonly http = inject(HttpClient);
+  private readonly dataRefresh = inject(VehicleDataRefreshService);
 
   private readonly baseUrl = `${environment.apiUrl}/vehicles`;
 
-  getVehicles(): Observable<Vehicle[]> {
-    return this.http.get<Vehicle[]>(this.baseUrl);
+  getVehiclesResource(): HttpResourceRef<Vehicle[] | undefined> {
+    return httpResource<Vehicle[]>(() => {
+      this.dataRefresh.refreshTrigger(); // reactive dependency — refetch on change
+      return this.baseUrl;
+    });
   }
 
-  getVehicle(id: string): Observable<Vehicle> {
-    return this.http.get<Vehicle>(`${this.baseUrl}/${id}`);
+  getVehicleResource(id: Signal<string>): HttpResourceRef<Vehicle | undefined> {
+    return httpResource<Vehicle>(() => (id() ? `${this.baseUrl}/${id()}` : undefined));
   }
 
   createVehicle(data: CreateVehicleData): Observable<Vehicle> {

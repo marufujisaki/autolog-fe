@@ -39,11 +39,11 @@ describe('SelectComponent', () => {
     });
 
     it('should render provided ion-select-option elements', () => {
-      component.options = [
+      fixture.componentRef.setInput('options', [
         { value: '1', label: 'Option 1' },
         { value: '2', label: 'Option 2' },
         { value: '3', label: 'Option 3' },
-      ];
+      ]);
       fixture.detectChanges();
 
       const options = fixture.debugElement.queryAll(
@@ -55,10 +55,10 @@ describe('SelectComponent', () => {
     });
 
     it('should preserve numeric option values and disabled state', () => {
-      component.options = [
+      fixture.componentRef.setInput('options', [
         { value: 1, label: 'First' },
         { value: 2, label: 'Second', disabled: true },
-      ];
+      ]);
       fixture.detectChanges();
 
       const options = fixture.debugElement.queryAll(
@@ -69,7 +69,7 @@ describe('SelectComponent', () => {
     });
 
     it('should render an optional label associated with the ion-select id', () => {
-      component.label = 'Select vehicle';
+      fixture.componentRef.setInput('label', 'Select vehicle');
       fixture.detectChanges();
 
       const label = fixture.debugElement.query(By.css('label'));
@@ -79,7 +79,7 @@ describe('SelectComponent', () => {
     });
 
     it('should render the placeholder on ion-select', () => {
-      component.placeholder = 'Choose a vehicle';
+      fixture.componentRef.setInput('placeholder', 'Choose a vehicle');
       fixture.detectChanges();
 
       expect(debugSelect.componentInstance.placeholder).toBe(
@@ -94,7 +94,7 @@ describe('SelectComponent', () => {
     });
 
     it('should display an error with role alert', () => {
-      component.errorMessage = 'Please select a valid option';
+      fixture.componentRef.setInput('errorMessage', 'Please select a valid option');
       fixture.detectChanges();
 
       const error = fixture.debugElement.query(By.css('[role="alert"]'));
@@ -111,17 +111,17 @@ describe('SelectComponent', () => {
       component.setDisabledState(true);
       fixture.detectChanges();
 
-      expect(component.disabled).toBeTrue();
+      expect(component.isDisabled()).toBeTrue();
       expect(debugSelect.componentInstance.disabled).toBeTrue();
     });
   });
 
   describe('ControlValueAccessor', () => {
     it('should update the value from ionChange', () => {
-      component.options = [
+      fixture.componentRef.setInput('options', [
         { value: 'option1', label: 'Option 1' },
         { value: 'option2', label: 'Option 2' },
-      ];
+      ]);
       fixture.detectChanges();
 
       emitSelection('option2');
@@ -191,16 +191,16 @@ describe('SelectComponent', () => {
     });
 
     it('should update ionic options dynamically', () => {
-      component.options = [{ value: '1', label: 'Option 1' }];
+      fixture.componentRef.setInput('options', [{ value: '1', label: 'Option 1' }]);
       fixture.detectChanges();
       expect(
         fixture.debugElement.queryAll(By.css('ion-select-option')).length,
       ).toBe(1);
 
-      component.options = [
+      fixture.componentRef.setInput('options', [
         { value: '1', label: 'Option 1' },
         { value: '2', label: 'Option 2' },
-      ];
+      ]);
       fixture.detectChanges();
 
       expect(

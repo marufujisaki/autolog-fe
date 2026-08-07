@@ -23,12 +23,12 @@ describe('ButtonComponent', () => {
 
   describe('Variant Rendering', () => {
     it('should render primary variant by default', () => {
-      expect(component.variant).toBe('primary');
+      expect(component.variant()).toBe('primary');
       expect(nativeButton.classList.contains('app-button--primary')).toBe(true);
     });
 
     it('should render secondary variant when specified', () => {
-      component.variant = 'secondary';
+      fixture.componentRef.setInput('variant', 'secondary');
       fixture.detectChanges();
       expect(nativeButton.classList.contains('app-button--secondary')).toBe(
         true,
@@ -36,13 +36,13 @@ describe('ButtonComponent', () => {
     });
 
     it('should render ghost variant when specified', () => {
-      component.variant = 'ghost';
+      fixture.componentRef.setInput('variant', 'ghost');
       fixture.detectChanges();
       expect(nativeButton.classList.contains('app-button--ghost')).toBe(true);
     });
 
     it('should render icon-button variant when specified', () => {
-      component.variant = 'icon-button';
+      fixture.componentRef.setInput('variant', 'icon-button');
       fixture.detectChanges();
       expect(nativeButton.classList.contains('app-button--icon-button')).toBe(
         true,
@@ -57,7 +57,7 @@ describe('ButtonComponent', () => {
         'icon-button',
       ];
       variants.forEach((variant) => {
-        component.variant = variant;
+        fixture.componentRef.setInput('variant', variant);
         fixture.detectChanges();
         expect(nativeButton.classList.contains(`app-button--${variant}`)).toBe(
           true,
@@ -68,12 +68,12 @@ describe('ButtonComponent', () => {
 
   describe('Disabled State', () => {
     it('should not be disabled by default', () => {
-      expect(component.disabled).toBe(false);
+      expect(component.disabled()).toBe(false);
       expect(nativeButton.disabled).toBe(false);
     });
 
     it('should apply disabled attribute when disabled is true', () => {
-      component.disabled = true;
+      fixture.componentRef.setInput('disabled', true);
       fixture.detectChanges();
       expect(nativeButton.disabled).toBe(true);
       expect(nativeButton.classList.contains('app-button--disabled')).toBe(
@@ -82,7 +82,7 @@ describe('ButtonComponent', () => {
     });
 
     it('should prevent click events when disabled', () => {
-      component.disabled = true;
+      fixture.componentRef.setInput('disabled', true);
       const clickSpy = jasmine.createSpy('clicked');
       component.clicked.subscribe(clickSpy);
 
@@ -91,7 +91,7 @@ describe('ButtonComponent', () => {
     });
 
     it('should allow click events when enabled', () => {
-      component.disabled = false;
+      fixture.componentRef.setInput('disabled', false);
       const clickSpy = jasmine.createSpy('clicked');
       component.clicked.subscribe(clickSpy);
 
@@ -102,18 +102,18 @@ describe('ButtonComponent', () => {
 
   describe('Button Type', () => {
     it('should default to type "button"', () => {
-      expect(component.type).toBe('button');
+      expect(component.type()).toBe('button');
       expect(nativeButton.type).toBe('button');
     });
 
     it('should set type to "submit"', () => {
-      component.type = 'submit';
+      fixture.componentRef.setInput('type', 'submit');
       fixture.detectChanges();
       expect(nativeButton.type).toBe('submit');
     });
 
     it('should set type to "reset"', () => {
-      component.type = 'reset';
+      fixture.componentRef.setInput('type', 'reset');
       fixture.detectChanges();
       expect(nativeButton.type).toBe('reset');
     });
@@ -121,14 +121,14 @@ describe('ButtonComponent', () => {
 
   describe('Full Width', () => {
     it('should not be full width by default', () => {
-      expect(component.fullWidth).toBe(false);
+      expect(component.fullWidth()).toBe(false);
       expect(nativeButton.classList.contains('app-button--full-width')).toBe(
         false,
       );
     });
 
     it('should apply full-width class when fullWidth is true', () => {
-      component.fullWidth = true;
+      fixture.componentRef.setInput('fullWidth', true);
       fixture.detectChanges();
       expect(nativeButton.classList.contains('app-button--full-width')).toBe(
         true,
@@ -142,14 +142,14 @@ describe('ButtonComponent', () => {
     });
 
     it('should set aria-label when provided', () => {
-      component.ariaLabel = 'Save changes';
+      fixture.componentRef.setInput('ariaLabel', 'Save changes');
       fixture.detectChanges();
       expect(nativeButton.getAttribute('aria-label')).toBe('Save changes');
     });
 
     it('should support aria-label for icon-button variant', () => {
-      component.variant = 'icon-button';
-      component.ariaLabel = 'Close menu';
+      fixture.componentRef.setInput('variant', 'icon-button');
+      fixture.componentRef.setInput('ariaLabel', 'Close menu');
       fixture.detectChanges();
       expect(nativeButton.getAttribute('aria-label')).toBe('Close menu');
     });
@@ -175,7 +175,7 @@ describe('ButtonComponent', () => {
 
     it('should not emit click event when disabled', () => {
       const clickSpy = jasmine.createSpy('clicked');
-      component.disabled = true;
+      fixture.componentRef.setInput('disabled', true);
       component.clicked.subscribe(clickSpy);
       fixture.detectChanges();
 
@@ -186,7 +186,7 @@ describe('ButtonComponent', () => {
 
   describe('Content Projection', () => {
     it('should project text content', () => {
-      fixture.componentInstance.variant = 'primary';
+      fixture.componentRef.setInput('variant', 'primary');
       nativeButton.textContent = 'Click me';
       fixture.detectChanges();
       expect(nativeButton.textContent.trim()).toBe('Click me');
@@ -217,11 +217,11 @@ describe('ButtonComponent', () => {
 
   describe('Combination Tests', () => {
     it('should handle multiple properties together', () => {
-      component.variant = 'secondary';
-      component.disabled = true;
-      component.fullWidth = true;
-      component.type = 'submit';
-      component.ariaLabel = 'Submit form';
+      fixture.componentRef.setInput('variant', 'secondary');
+      fixture.componentRef.setInput('disabled', true);
+      fixture.componentRef.setInput('fullWidth', true);
+      fixture.componentRef.setInput('type', 'submit');
+      fixture.componentRef.setInput('ariaLabel', 'Submit form');
       fixture.detectChanges();
 
       expect(nativeButton.classList.contains('app-button--secondary')).toBe(
@@ -239,12 +239,12 @@ describe('ButtonComponent', () => {
       const clickSpy = jasmine.createSpy('clicked');
       component.clicked.subscribe(clickSpy);
 
-      component.disabled = true;
+      fixture.componentRef.setInput('disabled', true);
       fixture.detectChanges();
       nativeButton.click();
       expect(clickSpy).not.toHaveBeenCalled();
 
-      component.disabled = false;
+      fixture.componentRef.setInput('disabled', false);
       fixture.detectChanges();
       nativeButton.click();
       expect(clickSpy).toHaveBeenCalled();

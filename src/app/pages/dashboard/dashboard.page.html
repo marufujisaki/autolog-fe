@@ -2,14 +2,14 @@
   <!-- Header -->
   <header class="dashboard-header">
     <app-brand></app-brand>
-    <button class="search-btn" aria-label="Search">
+    <button class="search-btn" [attr.aria-label]="'common.search' | translate">
       <lucide-angular [img]="SearchIcon" [size]="24"></lucide-angular>
     </button>
   </header>
 
   <!-- Section Title -->
   <div class="section-header">
-    <h2 class="section-title">My Vehicles</h2>
+    <h2 class="section-title">{{ 'vehicles.title' | translate }}</h2>
     <button class="filter-btn" aria-label="Filter">
       <lucide-angular [img]="ListFilterIcon" [size]="20"></lucide-angular>
     </button>
@@ -20,6 +20,7 @@
     @for (vehicle of vehicles; track vehicle.id) {
     <div
       class="vehicle-card"
+      [class.menu-open]="openMenuVehicleId === vehicle.id"
       [style.background]="getCardBackground(vehicle)"
       (click)="viewVehicle(vehicle.id)"
     >
@@ -31,14 +32,14 @@
         aria-hidden="true"
       />
 
-      @if (canManageVehicleActions) {
+      @if (canManageVehicleActions() || isSharedWithMechanic(vehicle)) {
       <div class="card-actions">
         <button
           type="button"
           class="card-menu-trigger"
           [attr.aria-label]="'vehicles.actions' | translate"
           [attr.aria-expanded]="openMenuVehicleId === vehicle.id"
-          (click)="toggleVehicleMenu(vehicle.id, $event)"
+          (click)="toggleVehicleMenu(vehicle, $event)"
         >
           <lucide-angular
             [img]="EllipsisVerticalIcon"
@@ -47,6 +48,7 @@
         </button>
         @if (openMenuVehicleId === vehicle.id) {
         <div class="card-menu" role="menu">
+          @if (canManageVehicleActions()) {
           <button
             type="button"
             role="menuitem"
@@ -55,6 +57,16 @@
             <lucide-angular [img]="PencilIcon" [size]="16"></lucide-angular>
             <span>{{ 'common.edit' | translate }}</span>
           </button>
+          @if (canShareVehicles()) {
+          <button
+            type="button"
+            role="menuitem"
+            (click)="openShareModal(vehicle, $event)"
+          >
+            <lucide-angular [img]="Share2Icon" [size]="16"></lucide-angular>
+            <span>{{ 'vehicles.share' | translate }}</span>
+          </button>
+          }
           <button
             type="button"
             role="menuitem"
@@ -64,6 +76,17 @@
             <lucide-angular [img]="Trash2Icon" [size]="16"></lucide-angular>
             <span>{{ 'common.delete' | translate }}</span>
           </button>
+          } @if (isSharedWithMechanic(vehicle)) {
+          <button
+            type="button"
+            role="menuitem"
+            class="card-menu-delete"
+            (click)="openUnlinkModal(vehicle, $event)"
+          >
+            <lucide-angular [img]="UnlinkIcon" [size]="16"></lucide-angular>
+            <span>{{ 'vehicles.unlink' | translate }}</span>
+          </button>
+          }
         </div>
         }
       </div>
@@ -81,14 +104,14 @@
             <p>{{ vehicle.licensePlate || '' }}</p>
           </div>
           <p class="card-update">
-            Last update: {{ formatLastUpdate(vehicle) }}
+            {{ 'vehicles.lastUpdate' | translate }}: {{ formatLastUpdate(vehicle) }}
           </p>
         </div>
       </div>
     </div>
     } @if (!isLoading && vehicles.length === 0) {
     <div class="empty-state">
-      <p class="empty-text">No vehicles yet. Tap + to add one.</p>
+      <p class="empty-text">{{ 'emptyStates.noVehicles' | translate }}</p>
     </div>
     }
   </div>
@@ -234,7 +257,45 @@
       </div>
     </div>
   </app-modal>
-  } @if (toastVisible) {
+  } @if (showUnlinkModal && activeVehicle) {
+  <app-modal
+    [isOpen]="showUnlinkModal"
+    [variant]="'confirmation-sheet'"
+    [title]="'vehicles.unlinkVehicleTitle' | translate"
+    (closed)="closeUnlinkModal()"
+  >
+    <div class="delete-confirmation">
+      <p>
+        {{ 'vehicles.unlinkVehicleMessage' | translate:{ vehicle:
+        activeVehicle.brand + ' ' + activeVehicle.model } }}
+      </p>
+      <div class="form-actions">
+        <app-button
+          variant="secondary"
+          [fullWidth]="true"
+          (click)="closeUnlinkModal()"
+        >
+          {{ 'common.cancel' | translate }}
+        </app-button>
+        <app-button
+          variant="primary"
+          [fullWidth]="true"
+          (click)="confirmUnlinkVehicle()"
+        >
+          {{ 'vehicles.unlink' | translate }}
+        </app-button>
+      </div>
+    </div>
+  </app-modal>
+  }
+
+  <app-share-vehicle-modal
+    [isOpen]="shareModalOpen"
+    [vehicle]="shareModalVehicle"
+    (closed)="closeShareModal()"
+  ></app-share-vehicle-modal>
+
+  @if (toastVisible) {
   <app-toast [message]="toastMessage | translate" class="toast"></app-toast>
   }
 </div>

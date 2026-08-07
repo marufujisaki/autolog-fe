@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   FormBuilder,
@@ -42,8 +42,8 @@ export class LoginPage implements OnInit {
   private router = inject(Router);
 
   loginForm!: FormGroup;
-  isLoading = false;
-  errorMessage: string | null = null;
+  readonly isLoading = signal(false);
+  readonly errorMessage = signal<string | null>(null);
 
   ngOnInit(): void {
     this.loginForm = this.fb.group({
@@ -57,19 +57,19 @@ export class LoginPage implements OnInit {
       return;
     }
 
-    this.isLoading = true;
-    this.errorMessage = null;
+    this.isLoading.set(true);
+    this.errorMessage.set(null);
 
     const credentials = this.loginForm.getRawValue();
 
     this.authService.login(credentials).subscribe({
       next: () => {
-        this.isLoading = false;
+        this.isLoading.set(false);
         void this.router.navigate(['/tabs/vehicles']);
       },
-      error: (error) => {
-        this.isLoading = false;
-        this.errorMessage = 'auth.loginError';
+      error: () => {
+        this.isLoading.set(false);
+        this.errorMessage.set('auth.loginError');
       },
     });
   }

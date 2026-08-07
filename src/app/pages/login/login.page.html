@@ -2,7 +2,7 @@
   <ion-grid class="center">
     <ion-row class="input-row">
       <ion-col size="12">
-        <h2 class="title">Log<span class="text-blue">in</span></h2>
+        <h2 class="title">{{ 'auth.loginTitle' | translate }}<span class="text-blue">{{ 'auth.loginTitleHighlight' | translate }}</span></h2>
         <div class="form-group">
           <app-input
             [formControl]="emailControl!"
@@ -41,8 +41,8 @@
           {{ 'auth.forgotPassword' | translate }}
         </a>
 
-        @if (errorMessage) {
-        <div class="error-alert">{{ errorMessage | translate }}</div>
+        @if (errorMessage()) {
+        <div class="error-alert">{{ errorMessage() | translate }}</div>
         }
       </ion-col>
     </ion-row>
@@ -52,7 +52,7 @@
           variant="primary"
           type="submit"
           [fullWidth]="true"
-          [disabled]="!loginForm.valid || isLoading"
+          [disabled]="!loginForm.valid || isLoading()"
           (clicked)="onSubmit()"
         >
           {{ 'auth.login' | translate }}

@@ -23,18 +23,18 @@ describe('CardComponent', () => {
 
   describe('Variant Rendering', () => {
     it('should render elevated variant by default', () => {
-      expect(component.variant).toBe('elevated');
+      expect(component.variant()).toBe('elevated');
       expect(cardElement.classList.contains('app-card--elevated')).toBe(true);
     });
 
     it('should render elevated variant when specified', () => {
-      component.variant = 'elevated';
+      fixture.componentRef.setInput('variant', 'elevated');
       fixture.detectChanges();
       expect(cardElement.classList.contains('app-card--elevated')).toBe(true);
     });
 
     it('should render outlined variant when specified', () => {
-      component.variant = 'outlined';
+      fixture.componentRef.setInput('variant', 'outlined');
       fixture.detectChanges();
       expect(cardElement.classList.contains('app-card--outlined')).toBe(true);
     });
@@ -42,7 +42,7 @@ describe('CardComponent', () => {
     it('should change variant dynamically', () => {
       const variants: CardVariant[] = ['elevated', 'outlined'];
       variants.forEach((variant) => {
-        component.variant = variant;
+        fixture.componentRef.setInput('variant', variant);
         fixture.detectChanges();
         expect(cardElement.classList.contains(`app-card--${variant}`)).toBe(
           true,
@@ -51,11 +51,11 @@ describe('CardComponent', () => {
     });
 
     it('should remove old variant class when switching', () => {
-      component.variant = 'elevated';
+      fixture.componentRef.setInput('variant', 'elevated');
       fixture.detectChanges();
       expect(cardElement.classList.contains('app-card--elevated')).toBe(true);
 
-      component.variant = 'outlined';
+      fixture.componentRef.setInput('variant', 'outlined');
       fixture.detectChanges();
       expect(cardElement.classList.contains('app-card--elevated')).toBe(false);
       expect(cardElement.classList.contains('app-card--outlined')).toBe(true);
@@ -64,32 +64,32 @@ describe('CardComponent', () => {
 
   describe('Padding', () => {
     it('should be padded by default', () => {
-      expect(component.padded).toBe(true);
+      expect(component.padded()).toBe(true);
       expect(cardElement.classList.contains('app-card--padded')).toBe(true);
     });
 
     it('should apply padded class when padded is true', () => {
-      component.padded = true;
+      fixture.componentRef.setInput('padded', true);
       fixture.detectChanges();
       expect(cardElement.classList.contains('app-card--padded')).toBe(true);
     });
 
     it('should not apply padded class when padded is false', () => {
-      component.padded = false;
+      fixture.componentRef.setInput('padded', false);
       fixture.detectChanges();
       expect(cardElement.classList.contains('app-card--padded')).toBe(false);
     });
 
     it('should toggle padding dynamically', () => {
-      component.padded = true;
+      fixture.componentRef.setInput('padded', true);
       fixture.detectChanges();
       expect(cardElement.classList.contains('app-card--padded')).toBe(true);
 
-      component.padded = false;
+      fixture.componentRef.setInput('padded', false);
       fixture.detectChanges();
       expect(cardElement.classList.contains('app-card--padded')).toBe(false);
 
-      component.padded = true;
+      fixture.componentRef.setInput('padded', true);
       fixture.detectChanges();
       expect(cardElement.classList.contains('app-card--padded')).toBe(true);
     });
@@ -171,11 +171,11 @@ describe('CardComponent', () => {
     });
 
     it('should maintain class consistency with variants', () => {
-      component.variant = 'elevated';
+      fixture.componentRef.setInput('variant', 'elevated');
       fixture.detectChanges();
       expect(cardElement.className).toContain('app-card--elevated');
 
-      component.variant = 'outlined';
+      fixture.componentRef.setInput('variant', 'outlined');
       fixture.detectChanges();
       expect(cardElement.className).toContain('app-card--outlined');
     });
@@ -183,8 +183,8 @@ describe('CardComponent', () => {
 
   describe('Combination Tests', () => {
     it('should handle elevated card with padding', () => {
-      component.variant = 'elevated';
-      component.padded = true;
+      fixture.componentRef.setInput('variant', 'elevated');
+      fixture.componentRef.setInput('padded', true);
       fixture.detectChanges();
 
       expect(cardElement.classList.contains('app-card--elevated')).toBe(true);
@@ -192,8 +192,8 @@ describe('CardComponent', () => {
     });
 
     it('should handle outlined card without padding', () => {
-      component.variant = 'outlined';
-      component.padded = false;
+      fixture.componentRef.setInput('variant', 'outlined');
+      fixture.componentRef.setInput('padded', false);
       fixture.detectChanges();
 
       expect(cardElement.classList.contains('app-card--outlined')).toBe(true);
@@ -201,8 +201,8 @@ describe('CardComponent', () => {
     });
 
     it('should handle complete card scenario with content', () => {
-      component.variant = 'elevated';
-      component.padded = true;
+      fixture.componentRef.setInput('variant', 'elevated');
+      fixture.componentRef.setInput('padded', true);
       fixture.detectChanges();
 
       // Add content
@@ -232,15 +232,15 @@ describe('CardComponent', () => {
       content.textContent = 'Card content';
       cardElement.appendChild(content);
 
-      component.variant = 'elevated';
+      fixture.componentRef.setInput('variant', 'elevated');
       fixture.detectChanges();
       expect(cardElement.querySelector('p')?.textContent).toBe('Card content');
 
-      component.variant = 'outlined';
+      fixture.componentRef.setInput('variant', 'outlined');
       fixture.detectChanges();
       expect(cardElement.querySelector('p')?.textContent).toBe('Card content');
 
-      component.variant = 'elevated';
+      fixture.componentRef.setInput('variant', 'elevated');
       fixture.detectChanges();
       expect(cardElement.querySelector('p')?.textContent).toBe('Card content');
     });
@@ -251,11 +251,11 @@ describe('CardComponent', () => {
       const fixture2 = TestBed.createComponent(CardComponent);
       const component2 = fixture2.componentInstance;
 
-      component.variant = 'elevated';
-      component.padded = true;
+      fixture.componentRef.setInput('variant', 'elevated');
+      fixture.componentRef.setInput('padded', true);
 
-      component2.variant = 'outlined';
-      component2.padded = false;
+      fixture2.componentRef.setInput('variant', 'outlined');
+      fixture2.componentRef.setInput('padded', false);
 
       fixture.detectChanges();
       fixture2.detectChanges();

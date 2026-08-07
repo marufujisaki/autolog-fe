@@ -10,6 +10,8 @@
     "next": "Next",
     "previous": "Previous",
     "close": "Close",
+    "remove": "Remove",
+    "search": "Search",
     "ok": "Ok",
     "error": "Error",
     "success": "Success",
@@ -40,6 +42,10 @@
     "welcome": "Welcome to Auto",
     "welcomeHighlight": "Log",
     "welcomeSubtitle": "Tell us who you are to get started.",
+    "loginTitle": "Log",
+    "loginTitleHighlight": "in",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
     "featuresSubtitle": "Discover what AutoLog can do to help you manage your vehicle.",
     "continue": "Continue",
     "alreadyHaveAccount": "Already have an account?",
@@ -115,6 +121,7 @@
   "vehicles": {
     "title": "My Vehicles",
     "addVehicle": "Add Vehicle",
+    "lastUpdate": "Last update",
     "brand": "Brand",
     "model": "Model",
     "year": "Year",
@@ -127,6 +134,10 @@
     "displayName": "Display Name",
     "cardColor": "Card Color",
     "actions": "Vehicle actions",
+    "share": "Share",
+    "unlink": "Unlink vehicle",
+    "unlinkVehicleTitle": "Unlink Vehicle",
+    "unlinkVehicleMessage": "Unlink {{vehicle}}? You won't see it in your dashboard anymore, unless it's linked again.",
     "deleteVehicleTitle": "Delete Vehicle",
     "deleteVehicleMessage": "Are you sure you want to delete {{vehicle}}? This action cannot be undone.",
     "vehicleDetails": "Vehicle Details",
@@ -235,7 +246,18 @@
     "STATUS_PENDING": "Active Link",
     "STATUS_EXPIRED": "Expired Link",
     "STATUS_REVOKED": "Access Revoked",
-    "STATUS_ACTIVE": "Active Access"
+    "STATUS_ACTIVE": "Active Access",
+    "alternativelyLink": "Alternatively, send a link:",
+    "unlinkSuccess": "Vehicle unlinked",
+    "unlinkError": "Error unlinking vehicle",
+    "scanTitle": "Link a Vehicle",
+    "scanInstructions": "Scan the QR code the owner shows you, or paste the link they sent you below.",
+    "scanButton": "Scan QR Code",
+    "scanError": "Could not read the QR code. Please try again.",
+    "cameraPermissionDenied": "Camera permission is required to scan a QR code",
+    "enterCodeManually": "Or enter the code manually:",
+    "enterCodePlaceholder": "Paste the share link or code",
+    "linkVehicle": "Link Vehicle"
   },
   "profile": {
     "title": "Profile",
@@ -350,6 +372,9 @@
     "save": "Save",
     "itemDescription": "Item description",
     "quantity": "Quantity"
+  },
+  "tabs": {
+    "vehicles": "Vehicles"
   },
   "emptyStates": {
     "noVehicles": "You don't have any vehicles yet. Create one!",

@@ -1,13 +1,13 @@
 <div
   class="new-log-page"
-  [class.new-log-page--modal]="presentedAsModal"
+  [class.new-log-page--modal]="presentedAsModal()"
   appSwipeToDismiss
   [swipeHandleSelector]="'.page-header'"
   (swipeDismissed)="goBack()"
 >
   <!-- Header -->
   <header class="page-header">
-    <button class="back-btn" (click)="goBack()" aria-label="Go back">
+    <button class="back-btn" (click)="goBack()" [attr.aria-label]="'common.back' | translate">
       <lucide-angular [img]="ChevronLeftIcon" [size]="24"></lucide-angular>
     </button>
     <h1 class="header-title">

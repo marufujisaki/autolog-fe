@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, Input, forwardRef } from '@angular/core';
+import { ChangeDetectorRef, Component, computed, forwardRef, input, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { IonSelect, IonSelectOption } from '@ionic/angular/standalone';
@@ -37,20 +37,30 @@ let nextSelectId = 0;
   ],
 })
 export class SelectComponent implements ControlValueAccessor {
+  private readonly changeDetectorRef = inject(ChangeDetectorRef);
+
   /** Array of options to display in the select dropdown. */
-  @Input() options: SelectOption[] = [];
+  readonly options = input<SelectOption[]>([]);
 
   /** Placeholder text shown when no value is selected. */
-  @Input() placeholder = 'Select an option';
+  readonly placeholder = input('Select an option');
 
   /** Optional visible label rendered above the select. */
-  @Input() label?: string;
+  readonly label = input<string>();
 
   /** Disables the select and applies the disabled visual state. */
-  @Input() disabled = false;
+  readonly disabled = input(false);
+
+  /**
+   * Reactive forms can also disable this control via `setDisabledState`
+   * (ControlValueAccessor) — `input()` is read-only, so that path writes
+   * here instead. `isDisabled` combines both sources.
+   */
+  private readonly disabledByForm = signal<boolean | null>(null);
+  readonly isDisabled = computed(() => this.disabledByForm() ?? this.disabled());
 
   /** Validation error message shown below the select when present. */
-  @Input() errorMessage?: string;
+  readonly errorMessage = input<string>();
 
   /** Unique id used to associate the `<label>` with the `<select>`. */
   readonly selectId = `app-select-${nextSelectId++}`;
@@ -60,8 +70,6 @@ export class SelectComponent implements ControlValueAccessor {
 
   private onChange: (value: string | number) => void = () => {};
   private onTouched: () => void = () => {};
-
-  constructor(private readonly changeDetectorRef: ChangeDetectorRef) {}
 
   onSelectionChange(event: any): void {
     const newValue = event?.detail?.value;
@@ -92,7 +100,7 @@ export class SelectComponent implements ControlValueAccessor {
   }
 
   setDisabledState(isDisabled: boolean): void {
-    this.disabled = isDisabled;
+    this.disabledByForm.set(isDisabled);
     this.changeDetectorRef.markForCheck();
   }
 }

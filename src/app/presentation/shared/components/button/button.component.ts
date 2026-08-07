@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 
 /**
  * Visual style variants supported by the Design System button.
@@ -30,29 +30,29 @@ export type ButtonType = 'button' | 'submit' | 'reset';
 })
 export class ButtonComponent {
   /** Visual variant of the button. Defaults to "primary" (Requirement 12.4). */
-  @Input() variant: ButtonVariant = 'primary';
+  readonly variant = input<ButtonVariant>('primary');
 
   /** Disables the button and applies the disabled visual state. */
-  @Input() disabled = false;
+  readonly disabled = input(false);
 
   /** Native `type` attribute of the underlying `<button>` element. */
-  @Input() type: ButtonType = 'button';
+  readonly type = input<ButtonType>('button');
 
   /** Stretches the button to fill the width of its container. */
-  @Input() fullWidth = false;
+  readonly fullWidth = input(false);
 
   /**
    * Accessible label for the button. Required for the `icon-button` variant
    * when no visible text is projected, so assistive technologies can
    * announce the button's purpose.
    */
-  @Input() ariaLabel?: string;
+  readonly ariaLabel = input<string>();
 
   /** Emits the native click event when the button is activated. */
-  @Output() clicked = new EventEmitter<Event>();
+  readonly clicked = output<Event>();
 
   onClick(event: Event): void {
-    if (this.disabled) {
+    if (this.disabled()) {
       return;
     }
     this.clicked.emit(event);

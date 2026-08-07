@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ModalComponent } from './modal.component';
 import { DebugElement } from '@angular/core';
 import { By } from '@angular/platform-browser';
+import { provideTranslateService } from '@ngx-translate/core';
 
 describe('ModalComponent', () => {
   let component: ModalComponent;
@@ -10,6 +11,7 @@ describe('ModalComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [ModalComponent],
+      providers: [provideTranslateService()],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ModalComponent);
@@ -19,11 +21,11 @@ describe('ModalComponent', () => {
 
   describe('Modal Visibility', () => {
     it('should not be open by default', () => {
-      expect(component.isOpen).toBe(false);
+      expect(component.isOpen()).toBe(false);
     });
 
     it('should render modal when isOpen is true', () => {
-      component.isOpen = true;
+      fixture.componentRef.setInput('isOpen', true);
       fixture.detectChanges();
 
       const modal = fixture.debugElement.query(By.css('.app-modal'));
@@ -31,7 +33,7 @@ describe('ModalComponent', () => {
     });
 
     it('should not render modal when isOpen is false', () => {
-      component.isOpen = false;
+      fixture.componentRef.setInput('isOpen', false);
       fixture.detectChanges();
 
       const modal = fixture.debugElement.query(By.css('.app-modal'));
@@ -39,12 +41,12 @@ describe('ModalComponent', () => {
     });
 
     it('should toggle modal visibility dynamically', () => {
-      component.isOpen = true;
+      fixture.componentRef.setInput('isOpen', true);
       fixture.detectChanges();
       let modal = fixture.debugElement.query(By.css('.app-modal'));
       expect(modal).toBeTruthy();
 
-      component.isOpen = false;
+      fixture.componentRef.setInput('isOpen', false);
       fixture.detectChanges();
       modal = fixture.debugElement.query(By.css('.app-modal'));
       expect(modal).toBeNull();
@@ -53,7 +55,7 @@ describe('ModalComponent', () => {
 
   describe('Modal Title', () => {
     it('should not display title when not provided', () => {
-      component.isOpen = true;
+      fixture.componentRef.setInput('isOpen', true);
       fixture.detectChanges();
 
       const title = fixture.debugElement.query(By.css('.app-modal__title'));
@@ -61,8 +63,8 @@ describe('ModalComponent', () => {
     });
 
     it('should display title when provided', () => {
-      component.isOpen = true;
-      component.title = 'Confirm Action';
+      fixture.componentRef.setInput('isOpen', true);
+      fixture.componentRef.setInput('title', 'Confirm Action');
       fixture.detectChanges();
 
       const title = fixture.debugElement.query(By.css('.app-modal__title'));
@@ -71,14 +73,14 @@ describe('ModalComponent', () => {
     });
 
     it('should update title dynamically', () => {
-      component.isOpen = true;
-      component.title = 'First Title';
+      fixture.componentRef.setInput('isOpen', true);
+      fixture.componentRef.setInput('title', 'First Title');
       fixture.detectChanges();
 
       let title = fixture.debugElement.query(By.css('.app-modal__title'));
       expect(title.nativeElement.textContent).toContain('First Title');
 
-      component.title = 'Updated Title';
+      fixture.componentRef.setInput('title', 'Updated Title');
       fixture.detectChanges();
 
       title = fixture.debugElement.query(By.css('.app-modal__title'));
@@ -88,7 +90,7 @@ describe('ModalComponent', () => {
 
   describe('Modal Backdrop and Close Behavior', () => {
     it('should render backdrop when modal is open', () => {
-      component.isOpen = true;
+      fixture.componentRef.setInput('isOpen', true);
       fixture.detectChanges();
 
       const backdrop = fixture.debugElement.query(
@@ -98,7 +100,7 @@ describe('ModalComponent', () => {
     });
 
     it('should emit closed event when backdrop is clicked', () => {
-      component.isOpen = true;
+      fixture.componentRef.setInput('isOpen', true);
       fixture.detectChanges();
 
       const closedSpy = jasmine.createSpy('closed');
@@ -113,8 +115,8 @@ describe('ModalComponent', () => {
     });
 
     it('should emit closed event when close button is clicked', () => {
-      component.isOpen = true;
-      component.title = 'Modal Title';
+      fixture.componentRef.setInput('isOpen', true);
+      fixture.componentRef.setInput('title', 'Modal Title');
       fixture.detectChanges();
 
       const closedSpy = jasmine.createSpy('closed');
@@ -128,8 +130,8 @@ describe('ModalComponent', () => {
     });
 
     it('should prevent click propagation when close button is clicked', () => {
-      component.isOpen = true;
-      component.title = 'Modal Title';
+      fixture.componentRef.setInput('isOpen', true);
+      fixture.componentRef.setInput('title', 'Modal Title');
       fixture.detectChanges();
 
       const closeBtn = fixture.debugElement.query(By.css('.app-modal__close'));
@@ -144,8 +146,8 @@ describe('ModalComponent', () => {
 
   describe('Content Projection', () => {
     it('should project header content', () => {
-      component.isOpen = true;
-      component.title = 'Header';
+      fixture.componentRef.setInput('isOpen', true);
+      fixture.componentRef.setInput('title', 'Header');
       fixture.detectChanges();
 
       const header = fixture.debugElement.query(By.css('.app-modal__header'));
@@ -153,8 +155,7 @@ describe('ModalComponent', () => {
     });
 
     it('should project body content via ng-content', () => {
-      component.isOpen = true;
-      fixture.componentInstance.isOpen = true;
+      fixture.componentRef.setInput('isOpen', true);
       fixture.detectChanges();
 
       const body = fixture.debugElement.query(By.css('.app-modal__body'));
@@ -164,7 +165,7 @@ describe('ModalComponent', () => {
 
   describe('Accessibility', () => {
     it('should have role="dialog" on modal element', () => {
-      component.isOpen = true;
+      fixture.componentRef.setInput('isOpen', true);
       fixture.detectChanges();
 
       const modal = fixture.debugElement.query(By.css('.app-modal'));
@@ -172,7 +173,7 @@ describe('ModalComponent', () => {
     });
 
     it('should have aria-modal="true"', () => {
-      component.isOpen = true;
+      fixture.componentRef.setInput('isOpen', true);
       fixture.detectChanges();
 
       const modal = fixture.debugElement.query(By.css('.app-modal'));
@@ -180,8 +181,8 @@ describe('ModalComponent', () => {
     });
 
     it('should have aria-labelledby when title is provided', () => {
-      component.isOpen = true;
-      component.title = 'Modal Title';
+      fixture.componentRef.setInput('isOpen', true);
+      fixture.componentRef.setInput('title', 'Modal Title');
       fixture.detectChanges();
 
       const modal = fixture.debugElement.query(By.css('.app-modal'));
@@ -196,7 +197,7 @@ describe('ModalComponent', () => {
 
   describe('No Ionic UI Elements', () => {
     it('should not render any ion-modal elements', () => {
-      component.isOpen = true;
+      fixture.componentRef.setInput('isOpen', true);
       fixture.detectChanges();
 
       const ionModal = fixture.debugElement.query(By.css('ion-modal'));
@@ -204,7 +205,7 @@ describe('ModalComponent', () => {
     });
 
     it('should only use native HTML structure', () => {
-      component.isOpen = true;
+      fixture.componentRef.setInput('isOpen', true);
       fixture.detectChanges();
 
       const ionElements = fixture.debugElement.queryAll(By.css('[ion-]'));
@@ -214,7 +215,7 @@ describe('ModalComponent', () => {
 
   describe('Modal Overlay Behavior', () => {
     it('should prevent body scroll when modal is open', () => {
-      component.isOpen = true;
+      fixture.componentRef.setInput('isOpen', true);
       fixture.detectChanges();
 
       // Check if modal has overflow properties applied
@@ -223,7 +224,7 @@ describe('ModalComponent', () => {
     });
 
     it('should have semi-transparent backdrop', () => {
-      component.isOpen = true;
+      fixture.componentRef.setInput('isOpen', true);
       fixture.detectChanges();
 
       const backdrop = fixture.debugElement.query(
@@ -237,7 +238,7 @@ describe('ModalComponent', () => {
 
   describe('Closed Event Emission', () => {
     it('should emit closed event', (done) => {
-      component.isOpen = true;
+      fixture.componentRef.setInput('isOpen', true);
       fixture.detectChanges();
 
       component.closed.subscribe(() => {
@@ -249,7 +250,7 @@ describe('ModalComponent', () => {
     });
 
     it('should emit closed event multiple times', () => {
-      component.isOpen = true;
+      fixture.componentRef.setInput('isOpen', true);
       fixture.detectChanges();
 
       const closedSpy = jasmine.createSpy('closed');
@@ -268,8 +269,8 @@ describe('ModalComponent', () => {
       const closedSpy = jasmine.createSpy('closed');
       component.closed.subscribe(closedSpy);
 
-      component.isOpen = true;
-      component.title = 'Delete Confirmation';
+      fixture.componentRef.setInput('isOpen', true);
+      fixture.componentRef.setInput('title', 'Delete Confirmation');
       fixture.detectChanges();
 
       expect(fixture.debugElement.query(By.css('.app-modal'))).toBeTruthy();
@@ -290,15 +291,15 @@ describe('ModalComponent', () => {
       const closedSpy = jasmine.createSpy('closed');
       component.closed.subscribe(closedSpy);
 
-      component.isOpen = true;
+      fixture.componentRef.setInput('isOpen', true);
       fixture.detectChanges();
       expect(fixture.debugElement.query(By.css('.app-modal'))).toBeTruthy();
 
-      component.isOpen = false;
+      fixture.componentRef.setInput('isOpen', false);
       fixture.detectChanges();
       expect(fixture.debugElement.query(By.css('.app-modal'))).toBeNull();
 
-      component.isOpen = true;
+      fixture.componentRef.setInput('isOpen', true);
       fixture.detectChanges();
       expect(fixture.debugElement.query(By.css('.app-modal'))).toBeTruthy();
     });

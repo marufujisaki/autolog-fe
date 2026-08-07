@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './presentation/guards/auth.guard';
 import { roleGuard } from './presentation/guards/role.guard';
+import { welcomeGuard } from './presentation/guards/welcome.guard';
 import { UserType } from './core/models/user.model';
 
 /**
@@ -23,6 +24,7 @@ export const routes: Routes = [
     path: '',
     loadChildren: () =>
       import('./pages/welcome/welcome.routes').then((m) => m.routes),
+    canActivate: [welcomeGuard],
   },
   {
     path: 'login',
@@ -104,6 +106,13 @@ export const routes: Routes = [
     path: 'workshop',
     loadComponent: () =>
       import('./pages/workshop/workshop.page').then((m) => m.WorkshopPage),
+    canActivate: [authGuard, roleGuard([UserType.MECANICO])],
+  },
+  // Scan-to-link page: only MECANICO users can claim a shared vehicle.
+  {
+    path: 'scan-vehicle',
+    loadComponent: () =>
+      import('./pages/scan-vehicle/scan-vehicle.page').then((m) => m.ScanVehiclePage),
     canActivate: [authGuard, roleGuard([UserType.MECANICO])],
   },
 

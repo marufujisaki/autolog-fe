@@ -1,5 +1,4 @@
 import { Routes } from '@angular/router';
-import { VehiclesPage } from './vehicles.page';
 import { VehicleDetailPage } from './vehicle-detail/vehicle-detail.page';
 
 /**
@@ -9,14 +8,8 @@ import { VehicleDetailPage } from './vehicle-detail/vehicle-detail.page';
 export const vehiclesRoutes: Routes = [
   {
     path: '',
-    component: VehiclesPage,
-  },
-  {
-    path: ':vehicleId/share',
-    loadComponent: () =>
-      import('../share-vehicle/share-vehicle.page').then(
-        (m) => m.ShareVehiclePage,
-      ),
+    redirectTo: '/tabs/vehicles',
+    pathMatch: 'full',
   },
   {
     path: ':vehicleId/logs/create',

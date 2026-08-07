@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
+import { Component, inject, input, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   FormBuilder,
@@ -16,6 +16,7 @@ import { ButtonComponent } from '../../presentation/shared/components/button/but
 import { InputComponent } from '../../presentation/shared/components/input/input.component';
 import { AutocompleteComponent } from '../../presentation/shared/components/autocomplete/autocomplete.component';
 import { SwipeToDismissDirective } from '../../presentation/shared/directives/swipe-to-dismiss.directive';
+import { TranslatePipe } from '@ngx-translate/core';
 
 /**
  * AddVehiclePage — Add a new vehicle form with autocomplete for Make and Model.
@@ -32,6 +33,7 @@ import { SwipeToDismissDirective } from '../../presentation/shared/directives/sw
     InputComponent,
     AutocompleteComponent,
     SwipeToDismissDirective,
+    TranslatePipe,
   ],
 })
 export class AddVehiclePage {
@@ -43,8 +45,8 @@ export class AddVehiclePage {
   private dataRefresh = inject(VehicleDataRefreshService);
 
   /** When true the page is rendered as an overlay and closing emits instead of navigating. */
-  @Input() presentedAsModal = false;
-  @Output() dismissed = new EventEmitter<void>();
+  readonly presentedAsModal = input(false);
+  readonly dismissed = output<void>();
 
   isLoading = false;
 
@@ -153,7 +155,8 @@ export class AddVehiclePage {
   }
 
   goBack(): void {
-    if (this.presentedAsModal) {
+    if (this.presentedAsModal()) {
+      // TODO: The 'emit' function requires a mandatory void argument
       this.dismissed.emit();
       return;
     }

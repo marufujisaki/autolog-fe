@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import { Component, computed, effect, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   IonHeader,
@@ -10,8 +10,6 @@ import { Router } from '@angular/router';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { WorkshopService, Workshop } from '../../core/ports/workshop.port';
 import { AuthService } from '../../core/ports/auth.port';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
 import { CardComponent } from '../../presentation/shared/components/card/card.component';
 import { LoadingComponent } from '../../presentation/shared/components/loading/loading.component';
 import { EmptyStateComponent } from '../../presentation/shared/components/empty-state/empty-state.component';
@@ -39,65 +37,50 @@ import { UserType } from '../../core/models/user.model';
     EmptyStateComponent,
   ],
 })
-export class WorkshopPage implements OnInit, OnDestroy {
+export class WorkshopPage {
   private readonly workshopService = inject(WorkshopService);
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
   private readonly translateService = inject(TranslateService);
-  private readonly destroy$ = new Subject<void>();
 
   workshop: Workshop | null = null;
   isLoading = false;
   error: string | null = null;
 
-  ngOnInit(): void {
-    this.loadWorkshop();
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
-  }
-
   /**
-   * Load workshop information for the current mechanic user.
+   * Empty (idle, no fetch) unless the current user is a mechanic with a
+   * workshop. Reads `authService.user()` — safe synchronously here because
+   * this page is only ever reached past `authGuard`, which already awaited
+   * `hasValidSession()`, so a user is guaranteed to be populated by now.
    */
-  private loadWorkshop(): void {
-    const user = this.authService.user$;
+  private readonly workshopIdSignal = computed(() => {
+    const user = this.authService.user();
+    return user?.userType === UserType.MECANICO ? (user.workshopId ?? '') : '';
+  });
+  private readonly workshopResource = this.workshopService.getWorkshopResource(
+    this.workshopIdSignal,
+  );
 
-    user.pipe(takeUntil(this.destroy$)).subscribe((currentUser) => {
-      if (!currentUser) {
-        // Not authenticated, redirect to login
+  constructor() {
+    effect(() => {
+      const user = this.authService.user();
+      if (!user) {
         this.router.navigate(['/']);
         return;
       }
-
-      if (
-        currentUser.userType !== UserType.MECANICO ||
-        !currentUser.workshopId
-      ) {
-        // Only mechanics have access to workshop information
+      if (user.userType !== UserType.MECANICO || !user.workshopId) {
         this.error = this.translateService.instant('workshop.noWorkshop');
         return;
       }
 
-      this.isLoading = true;
-      this.error = null;
-
-      this.workshopService
-        .getWorkshop(currentUser.workshopId)
-        .pipe(takeUntil(this.destroy$))
-        .subscribe({
-          next: (workshop) => {
-            this.workshop = workshop;
-            this.isLoading = false;
-          },
-          error: (err) => {
-            console.error('Error loading workshop:', err);
-            this.error = this.translateService.instant('workshop.noWorkshop');
-            this.isLoading = false;
-          },
-        });
+      this.isLoading = this.workshopResource.isLoading();
+      const workshop = this.workshopResource.value();
+      if (workshop) {
+        this.workshop = workshop;
+      }
+      if (this.workshopResource.error()) {
+        this.error = this.translateService.instant('workshop.noWorkshop');
+      }
     });
   }
 

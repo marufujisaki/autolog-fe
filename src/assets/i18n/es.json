@@ -10,6 +10,8 @@
     "next": "Siguiente",
     "previous": "Anterior",
     "close": "Cerrar",
+    "remove": "Quitar",
+    "search": "Buscar",
     "ok": "Aceptar",
     "error": "Error",
     "success": "Éxito",
@@ -40,6 +42,10 @@
     "welcome": "Bienvenido a Auto",
     "welcomeHighlight": "Log",
     "welcomeSubtitle": "Cuéntanos quién eres para empezar.",
+    "loginTitle": "Iniciar",
+    "loginTitleHighlight": "Sesión",
+    "showPassword": "Mostrar contraseña",
+    "hidePassword": "Ocultar contraseña",
     "featuresSubtitle": "Descubre lo que AutoLog puede hacer para ayudarte a gestionar tu vehículo.",
     "continue": "Continuar",
     "alreadyHaveAccount": "¿Ya tienes una cuenta?",
@@ -115,6 +121,7 @@
   "vehicles": {
     "title": "Mis Vehículos",
     "addVehicle": "Agregar Vehículo",
+    "lastUpdate": "Última actualización",
     "brand": "Marca",
     "model": "Modelo",
     "year": "Año",
@@ -124,9 +131,13 @@
     "currentMileage": "Kilometraje Actual",
     "createVehicleTitle": "Crear Nuevo Vehículo",
     "editVehicleTitle": "Editar vehículo",
-    "displayName": "Nombre visible",
+    "displayName": "Apodo",
     "cardColor": "Color de tarjeta",
     "actions": "Acciones del vehículo",
+    "share": "Compartir",
+    "unlink": "Desvincular vehículo",
+    "unlinkVehicleTitle": "Desvincular Vehículo",
+    "unlinkVehicleMessage": "¿Desvincular {{vehicle}}? No lo verás más en tu panel, a menos que se vincule de nuevo.",
     "deleteVehicleTitle": "Eliminar Vehículo",
     "deleteVehicleMessage": "¿Estás seguro de que deseas eliminar {{vehicle}}? Esta acción no se puede deshacer.",
     "vehicleDetails": "Detalles del Vehículo",
@@ -235,7 +246,18 @@
     "STATUS_PENDING": "Enlace Activo",
     "STATUS_EXPIRED": "Enlace Expirado",
     "STATUS_REVOKED": "Acceso Revocado",
-    "STATUS_ACTIVE": "Acceso Activo"
+    "STATUS_ACTIVE": "Acceso Activo",
+    "alternativelyLink": "Alternativamente, envía un enlace:",
+    "unlinkSuccess": "Vehículo desvinculado",
+    "unlinkError": "Error al desvincular el vehículo",
+    "scanTitle": "Vincular un Vehículo",
+    "scanInstructions": "Escanea el código QR que te muestra el propietario, o pega abajo el enlace que te envió.",
+    "scanButton": "Escanear Código QR",
+    "scanError": "No se pudo leer el código QR. Intenta de nuevo.",
+    "cameraPermissionDenied": "Se requiere permiso de cámara para escanear un código QR",
+    "enterCodeManually": "O ingresa el código manualmente:",
+    "enterCodePlaceholder": "Pega el enlace o código de compartir",
+    "linkVehicle": "Vincular Vehículo"
   },
   "profile": {
     "title": "Perfil",
@@ -350,6 +372,9 @@
     "save": "Guardar",
     "itemDescription": "Descripción del artículo",
     "quantity": "Cantidad"
+  },
+  "tabs": {
+    "vehicles": "Vehículos"
   },
   "emptyStates": {
     "noVehicles": "Aún no tienes vehículos. ¡Crea uno!",

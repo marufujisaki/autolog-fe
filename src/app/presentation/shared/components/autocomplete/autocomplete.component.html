@@ -1,6 +1,6 @@
-<div class="app-autocomplete" [class.app-autocomplete--disabled]="disabled">
-  <label *ngIf="label" class="app-autocomplete__label" [for]="inputId">
-    {{ label }}
+<div class="app-autocomplete" [class.app-autocomplete--disabled]="isDisabled()">
+  <label *ngIf="label()" class="app-autocomplete__label" [for]="inputId">
+    {{ label() }}
   </label>
 
   <div class="app-autocomplete__field">
@@ -8,8 +8,8 @@
       class="app-autocomplete__input"
       [id]="inputId"
       type="text"
-      [placeholder]="placeholder"
-      [disabled]="disabled"
+      [placeholder]="placeholder()"
+      [disabled]="isDisabled()"
       [value]="value"
       autocomplete="off"
       role="combobox"

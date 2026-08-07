@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ChipComponent, ChipVariant } from './chip.component';
 import { DebugElement } from '@angular/core';
 import { By } from '@angular/platform-browser';
+import { provideTranslateService } from '@ngx-translate/core';
 
 describe('ChipComponent', () => {
   let component: ChipComponent;
@@ -12,6 +13,7 @@ describe('ChipComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [ChipComponent],
+      providers: [provideTranslateService()],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ChipComponent);
@@ -23,12 +25,12 @@ describe('ChipComponent', () => {
 
   describe('Variant Rendering', () => {
     it('should render default variant by default', () => {
-      expect(component.variant).toBe('default');
+      expect(component.variant()).toBe('default');
       expect(chipElement.classList.contains('app-chip--default')).toBe(true);
     });
 
     it('should render selected variant when specified', () => {
-      component.variant = 'selected';
+      fixture.componentRef.setInput('variant', 'selected');
       fixture.detectChanges();
       expect(chipElement.classList.contains('app-chip--selected')).toBe(true);
     });
@@ -36,7 +38,7 @@ describe('ChipComponent', () => {
     it('should change variant dynamically', () => {
       const variants: ChipVariant[] = ['default', 'selected'];
       variants.forEach((variant) => {
-        component.variant = variant;
+        fixture.componentRef.setInput('variant', variant);
         fixture.detectChanges();
         expect(chipElement.classList.contains(`app-chip--${variant}`)).toBe(
           true,
@@ -45,11 +47,11 @@ describe('ChipComponent', () => {
     });
 
     it('should remove old variant class when switching', () => {
-      component.variant = 'default';
+      fixture.componentRef.setInput('variant', 'default');
       fixture.detectChanges();
       expect(chipElement.classList.contains('app-chip--default')).toBe(true);
 
-      component.variant = 'selected';
+      fixture.componentRef.setInput('variant', 'selected');
       fixture.detectChanges();
       expect(chipElement.classList.contains('app-chip--default')).toBe(false);
       expect(chipElement.classList.contains('app-chip--selected')).toBe(true);
@@ -58,22 +60,22 @@ describe('ChipComponent', () => {
 
   describe('Disabled State', () => {
     it('should not be disabled by default', () => {
-      expect(component.disabled).toBe(false);
+      expect(component.disabled()).toBe(false);
       expect(chipElement.classList.contains('app-chip--disabled')).toBe(false);
     });
 
     it('should apply disabled class when disabled is true', () => {
-      component.disabled = true;
+      fixture.componentRef.setInput('disabled', true);
       fixture.detectChanges();
       expect(chipElement.classList.contains('app-chip--disabled')).toBe(true);
     });
 
     it('should remove disabled class when disabled is false', () => {
-      component.disabled = true;
+      fixture.componentRef.setInput('disabled', true);
       fixture.detectChanges();
       expect(chipElement.classList.contains('app-chip--disabled')).toBe(true);
 
-      component.disabled = false;
+      fixture.componentRef.setInput('disabled', false);
       fixture.detectChanges();
       expect(chipElement.classList.contains('app-chip--disabled')).toBe(false);
     });
@@ -81,13 +83,13 @@ describe('ChipComponent', () => {
 
   describe('Removable Chip', () => {
     it('should not be removable by default', () => {
-      expect(component.removable).toBe(false);
+      expect(component.removable()).toBe(false);
       const removeBtn = fixture.debugElement.query(By.css('.app-chip__remove'));
       expect(removeBtn).toBeNull();
     });
 
     it('should display remove button when removable is true', () => {
-      component.removable = true;
+      fixture.componentRef.setInput('removable', true);
       fixture.detectChanges();
 
       const removeBtn = fixture.debugElement.query(By.css('.app-chip__remove'));
@@ -95,19 +97,19 @@ describe('ChipComponent', () => {
     });
 
     it('should hide remove button when removable is false', () => {
-      component.removable = true;
+      fixture.componentRef.setInput('removable', true);
       fixture.detectChanges();
       let removeBtn = fixture.debugElement.query(By.css('.app-chip__remove'));
       expect(removeBtn).toBeTruthy();
 
-      component.removable = false;
+      fixture.componentRef.setInput('removable', false);
       fixture.detectChanges();
       removeBtn = fixture.debugElement.query(By.css('.app-chip__remove'));
       expect(removeBtn).toBeNull();
     });
 
     it('should emit removed event when remove button is clicked', () => {
-      component.removable = true;
+      fixture.componentRef.setInput('removable', true);
       fixture.detectChanges();
 
       const removedSpy = jasmine.createSpy('removed');
@@ -120,7 +122,7 @@ describe('ChipComponent', () => {
     });
 
     it('should stop event propagation when remove button is clicked', () => {
-      component.removable = true;
+      fixture.componentRef.setInput('removable', true);
       fixture.detectChanges();
 
       const removeBtn = fixture.debugElement.query(By.css('.app-chip__remove'));
@@ -132,7 +134,7 @@ describe('ChipComponent', () => {
     });
 
     it('should not emit removed when clicked if not removable', () => {
-      component.removable = false;
+      fixture.componentRef.setInput('removable', false);
       fixture.detectChanges();
 
       const removedSpy = jasmine.createSpy('removed');
@@ -196,7 +198,7 @@ describe('ChipComponent', () => {
 
   describe('Accessibility', () => {
     it('should support aria-pressed for toggle chips', () => {
-      component.variant = 'selected';
+      fixture.componentRef.setInput('variant', 'selected');
       fixture.detectChanges();
 
       const button = fixture.debugElement.query(By.css('button'));
@@ -205,7 +207,7 @@ describe('ChipComponent', () => {
     });
 
     it('should have aria-label on remove button when present', () => {
-      component.removable = true;
+      fixture.componentRef.setInput('removable', true);
       fixture.detectChanges();
 
       const removeBtn = fixture.debugElement.query(By.css('.app-chip__remove'));
@@ -230,9 +232,9 @@ describe('ChipComponent', () => {
 
   describe('Combination Tests', () => {
     it('should handle default selectable chip', () => {
-      component.variant = 'default';
-      component.disabled = false;
-      component.removable = false;
+      fixture.componentRef.setInput('variant', 'default');
+      fixture.componentRef.setInput('disabled', false);
+      fixture.componentRef.setInput('removable', false);
       fixture.detectChanges();
 
       expect(chipElement.classList.contains('app-chip--default')).toBe(true);
@@ -243,8 +245,8 @@ describe('ChipComponent', () => {
 
     it('should handle selected removable chip', () => {
       const removedSpy = jasmine.createSpy('removed');
-      component.variant = 'selected';
-      component.removable = true;
+      fixture.componentRef.setInput('variant', 'selected');
+      fixture.componentRef.setInput('removable', true);
       component.removed.subscribe(removedSpy);
       fixture.detectChanges();
 
@@ -257,8 +259,8 @@ describe('ChipComponent', () => {
     });
 
     it('should handle disabled removable chip', () => {
-      component.disabled = true;
-      component.removable = true;
+      fixture.componentRef.setInput('disabled', true);
+      fixture.componentRef.setInput('removable', true);
       fixture.detectChanges();
 
       expect(chipElement.classList.contains('app-chip--disabled')).toBe(true);
@@ -267,20 +269,20 @@ describe('ChipComponent', () => {
     });
 
     it('should handle chip state transitions', () => {
-      component.variant = 'default';
+      fixture.componentRef.setInput('variant', 'default');
       fixture.detectChanges();
       expect(chipElement.classList.contains('app-chip--default')).toBe(true);
 
-      component.variant = 'selected';
+      fixture.componentRef.setInput('variant', 'selected');
       fixture.detectChanges();
       expect(chipElement.classList.contains('app-chip--selected')).toBe(true);
       expect(chipElement.classList.contains('app-chip--default')).toBe(false);
 
-      component.disabled = true;
+      fixture.componentRef.setInput('disabled', true);
       fixture.detectChanges();
       expect(chipElement.classList.contains('app-chip--disabled')).toBe(true);
 
-      component.removable = true;
+      fixture.componentRef.setInput('removable', true);
       fixture.detectChanges();
       const removeBtn = fixture.debugElement.query(By.css('.app-chip__remove'));
       expect(removeBtn).toBeTruthy();
@@ -292,11 +294,11 @@ describe('ChipComponent', () => {
       const fixture2 = TestBed.createComponent(ChipComponent);
       const component2 = fixture2.componentInstance;
 
-      component.variant = 'default';
-      component.removable = false;
+      fixture.componentRef.setInput('variant', 'default');
+      fixture.componentRef.setInput('removable', false);
 
-      component2.variant = 'selected';
-      component2.removable = true;
+      fixture2.componentRef.setInput('variant', 'selected');
+      fixture2.componentRef.setInput('removable', true);
 
       fixture.detectChanges();
       fixture2.detectChanges();

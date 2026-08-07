@@ -11,11 +11,15 @@
     <button
       class="fab-option"
       (click)="openAddVehicle()"
-      aria-label="Add Vehicle"
+      [attr.aria-label]="'vehicles.addVehicle' | translate"
     >
       <lucide-angular [img]="CarIcon" [size]="36"></lucide-angular>
     </button>
-    <button class="fab-option" (click)="openNewLog()" aria-label="New Log">
+    <button
+      class="fab-option"
+      (click)="openNewLog()"
+      [attr.aria-label]="'maintenance.addLog' | translate"
+    >
       <lucide-angular [img]="WrenchIcon" [size]="36"></lucide-angular>
     </button>
   </div>
@@ -27,13 +31,17 @@
       class="nav-item"
       [class.active]="isActive('/tabs/vehicles')"
       (click)="navigateToVehicles()"
-      aria-label="Vehicles"
+      [attr.aria-label]="'tabs.vehicles' | translate"
     >
       <lucide-angular [img]="CarFrontIcon" [size]="36"></lucide-angular>
-      <span class="nav-label">Vehicles</span>
+      <span class="nav-label">{{ 'tabs.vehicles' | translate }}</span>
     </button>
 
-    <button class="nav-item nav-add" (click)="toggleFabMenu()" aria-label="Add">
+    <button
+      class="nav-item nav-add"
+      (click)="toggleFabMenu()"
+      [attr.aria-label]="'common.add' | translate"
+    >
       <div class="add-circle" [class.active]="fabMenuOpen">
         <lucide-angular [img]="PlusIcon" [size]="36"></lucide-angular>
       </div>
@@ -43,10 +51,10 @@
       class="nav-item"
       [class.active]="isActive('/tabs/profile')"
       (click)="navigateToProfile()"
-      aria-label="Profile"
+      [attr.aria-label]="'profile.title' | translate"
     >
       <lucide-angular [img]="UserIcon" [size]="36"></lucide-angular>
-      <span class="nav-label">Profile</span>
+      <span class="nav-label">{{ 'profile.title' | translate }}</span>
     </button>
   </nav>
 
@@ -56,7 +64,7 @@
     class="page-modal"
     role="dialog"
     aria-modal="true"
-    aria-label="Add Vehicle"
+    [attr.aria-label]="'vehicles.addVehicle' | translate"
   >
     <app-add-vehicle
       [presentedAsModal]="true"
@@ -64,7 +72,12 @@
     ></app-add-vehicle>
   </div>
   } } @defer (when newLogModalOpen) { @if (newLogModalOpen) {
-  <div class="page-modal" role="dialog" aria-modal="true" aria-label="New Log">
+  <div
+    class="page-modal"
+    role="dialog"
+    aria-modal="true"
+    [attr.aria-label]="'maintenance.addLog' | translate"
+  >
     <app-new-log
       [presentedAsModal]="true"
       (dismissed)="closeNewLog()"

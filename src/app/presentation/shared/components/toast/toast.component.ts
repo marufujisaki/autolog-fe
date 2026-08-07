@@ -1,12 +1,14 @@
 import {
   Component,
-  Input,
-  Output,
-  EventEmitter,
   OnInit,
   OnDestroy,
+  computed,
+  input,
+  output,
+  signal
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { TranslatePipe } from '@ngx-translate/core';
 
 /**
  * Toast message type variants supported by the Design System toast.
@@ -28,41 +30,45 @@ export type ToastType = 'success' | 'error' | 'warning' | 'info';
 @Component({
   selector: 'app-toast',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TranslatePipe],
   templateUrl: './toast.component.html',
   styleUrls: ['./toast.component.scss'],
 })
 export class ToastComponent implements OnInit, OnDestroy {
   /** The message text displayed in the toast. */
-  @Input() message = '';
+  readonly message = input('');
 
   /** The type of toast message. Defaults to "info" (Requirement 12.4). */
-  @Input() type: ToastType = 'info';
+  readonly type = input<ToastType>('info');
 
   /**
    * Duration in milliseconds before the toast auto-dismisses.
    * Set to 0 or negative to disable auto-dismiss (manual close only).
    */
-  @Input() duration = 3000;
+  readonly duration = input(3000);
 
   /**
    * Controls whether the toast is visible.
    * Set to false to hide the toast.
    */
-  @Input() isVisible = true;
+  readonly isVisible = input(true);
+
+  /** `dismiss()` also hides the toast internally — `input()` is read-only, so that writes here. */
+  private readonly dismissedByUser = signal(false);
+  readonly visible = computed(() => this.isVisible() && !this.dismissedByUser());
 
   /**
    * Emitted when the toast is dismissed (either by user click or auto-dismiss).
    */
-  @Output() dismissed = new EventEmitter<void>();
+  readonly dismissed = output<void>();
 
   private dismissTimeout?: number;
 
   ngOnInit(): void {
-    if (this.duration > 0 && this.isVisible) {
+    if (this.duration() > 0 && this.isVisible()) {
       this.dismissTimeout = window.setTimeout(() => {
         this.dismiss();
-      }, this.duration);
+      }, this.duration());
     }
   }
 
@@ -77,7 +83,7 @@ export class ToastComponent implements OnInit, OnDestroy {
       clearTimeout(this.dismissTimeout);
       this.dismissTimeout = undefined;
     }
-    this.isVisible = false;
+    this.dismissedByUser.set(true);
     this.dismissed.emit();
   }
 }

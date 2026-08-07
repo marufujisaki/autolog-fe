@@ -1,8 +1,11 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
+import { TranslatePipe } from '@ngx-translate/core';
 import { AddVehiclePage } from '../pages/add-vehicle/add-vehicle.page';
 import { NewLogPage } from '../pages/new-log/new-log.page';
+import { AuthService } from '../core/ports/auth.port';
+import { UserType } from '../core/models/user.model';
 import {
   LucideAngularModule,
   CarFrontIcon,
@@ -24,6 +27,7 @@ import {
   imports: [
     CommonModule,
     RouterModule,
+    TranslatePipe,
     LucideAngularModule,
     AddVehiclePage,
     NewLogPage,
@@ -31,6 +35,7 @@ import {
 })
 export class TabsPage {
   private router = inject(Router);
+  private authService = inject(AuthService);
 
   readonly CarFrontIcon = CarFrontIcon;
   readonly PlusIcon = PlusIcon;
@@ -57,6 +62,14 @@ export class TabsPage {
   openAddVehicle(): void {
     this.fabMenuOpen = false;
     this.newLogModalOpen = false;
+
+    // MECANICO users don't own vehicles to add — they link to one shared
+    // with them by scanning its QR/link instead.
+    if (this.authService.getUserType() === UserType.MECANICO) {
+      void this.router.navigate(['/scan-vehicle']);
+      return;
+    }
+
     this.addVehicleModalOpen = true;
   }
 

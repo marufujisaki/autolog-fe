@@ -1,13 +1,13 @@
 import {
   Component,
   ElementRef,
-  EventEmitter,
-  Input,
-  Output,
-  QueryList,
-  ViewChildren,
+  effect,
   inject,
+  signal,
   OnInit,
+  input,
+  output,
+  viewChildren
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -25,7 +25,7 @@ import { MechanicService } from '../../core/ports/mechanic.port';
 import { VehicleService } from '../../core/ports/vehicle.port';
 import { VehicleDataRefreshService } from '../../core/services/vehicle-data-refresh.service';
 import { Vehicle } from '../../core/models/vehicle.model';
-import { CreateLogData } from '../../core/models/maintenance-log.model';
+import { CreateLogData, MaintenanceLog } from '../../core/models/maintenance-log.model';
 import {
   CreateMechanicData,
   Mechanic,
@@ -118,12 +118,61 @@ export class NewLogPage implements OnInit {
   private route = inject(ActivatedRoute);
   private dataRefresh = inject(VehicleDataRefreshService);
 
-  /** When true the page is rendered as an overlay and closing emits instead of navigating. */
-  @Input() presentedAsModal = false;
-  @Output() dismissed = new EventEmitter<void>();
+  private readonly vehiclesResource = this.vehicleService.getVehiclesResource();
+  private readonly mechanicsResource = this.mechanicService.getMechanicsResource();
 
-  @ViewChildren('jobCard', { read: ElementRef })
-  private jobCards!: QueryList<ElementRef<HTMLElement>>;
+  /** Idle (no fetch) until ngOnInit sets it, in edit mode only. */
+  private readonly editLogIdSignal = signal('');
+  private readonly logResource = this.logService.getLogResource(this.editLogIdSignal);
+
+  constructor() {
+    effect(() => {
+      const vehicles = this.vehiclesResource.value();
+      if (!vehicles) return;
+      this.vehicles = vehicles;
+      this.vehicleOptions = vehicles.map((v) => ({
+        value: v.id,
+        label: `${v.brand} ${v.model} ${v.licensePlate || ''}`.trim(),
+      }));
+      if (vehicles.length > 0 && !this.selectedVehicleId) {
+        this.selectedVehicleId = vehicles[0].id;
+        this.updateCurrentMileage();
+      } else if (this.selectedVehicleId) {
+        this.updateCurrentMileage();
+      }
+    });
+
+    effect(() => {
+      const mechanics = this.mechanicsResource.value();
+      if (mechanics) {
+        this.mechanics = mechanics;
+        this.previousMechanics = mechanics.map((mechanic) => mechanic.name);
+        if (mechanics.length === 0 && !this.selectedMechanic) {
+          this.showNewMechanicInput = true;
+        }
+      }
+      if (this.mechanicsResource.error() && !this.selectedMechanic) {
+        this.showNewMechanicInput = true;
+      }
+    });
+
+    effect(() => {
+      const log = this.logResource.value();
+      if (log) {
+        this.applyLogForEdit(log);
+      }
+      if (this.logResource.error()) {
+        console.error('Error loading log for editing:', this.logResource.error());
+        this.isLoadingLog = false;
+      }
+    });
+  }
+
+  /** When true the page is rendered as an overlay and closing emits instead of navigating. */
+  readonly presentedAsModal = input(false);
+  readonly dismissed = output<void>();
+
+  private readonly jobCards = viewChildren('jobCard', { read: ElementRef });
 
   editLogId = '';
   isEditMode = false;
@@ -191,69 +240,41 @@ export class NewLogPage implements OnInit {
     this.selectedVehicleId =
       this.route.snapshot.paramMap.get('vehicleId') || '';
 
-    this.loadVehicles();
-    this.loadMechanics();
+    // Vehicles/mechanics load automatically via the resources' own initial
+    // fetch (see constructor effects) — nothing to trigger here.
     if (this.isEditMode) {
-      this.loadLogForEdit();
+      this.isLoadingLog = true;
+      this.editLogIdSignal.set(this.editLogId);
     }
   }
 
-  private loadVehicles(): void {
-    this.vehicleService.getVehicles().subscribe({
-      next: (vehicles) => {
-        this.vehicles = vehicles;
-        this.vehicleOptions = vehicles.map((v) => ({
-          value: v.id,
-          label: `${v.brand} ${v.model} ${v.licensePlate || ''}`.trim(),
-        }));
-        if (vehicles.length > 0 && !this.selectedVehicleId) {
-          this.selectedVehicleId = vehicles[0].id;
-          this.updateCurrentMileage();
-        } else if (this.selectedVehicleId) {
-          this.updateCurrentMileage();
-        }
-      },
-    });
-  }
-
-  private loadLogForEdit(): void {
-    if (!this.editLogId) return;
-
-    this.isLoadingLog = true;
-    this.logService.getLog(this.editLogId).subscribe({
-      next: (log) => {
-        this.selectedVehicleId = log.vehicleId;
-        this.selectedDate = this.formatDateForDisplay(log.serviceDate);
-        this.odometerValue = log.mileageAtService;
-        this.selectedMechanicId = log.mechanicId || '';
-        this.selectedMechanic = log.mechanicName || '';
-        this.newMechanicName = '';
-        this.showNewMechanicInput = !log.mechanicName;
-        this.jobs = [...(log.jobs || [])]
-          .sort((a, b) => a.sortOrder - b.sortOrder)
-          .map((job, index) => ({
-            id: index + 1,
-            isPersisted: true,
-            title: job.title,
-            icon: job.icon || 'wrench',
-            types: [...(job.maintenanceTypes || [])],
-            description: job.description || '',
-            items: (job.items || []).map((item) => ({
-              name: item.name,
-              qty: item.quantity,
-              unitCost: item.unitCost,
-              subtotal: item.quantity * item.unitCost,
-            })),
-            serviceCost: job.cost || 0,
-          }));
-        this.updateCurrentMileage();
-        this.isLoadingLog = false;
-      },
-      error: (error) => {
-        console.error('Error loading log for editing:', error);
-        this.isLoadingLog = false;
-      },
-    });
+  private applyLogForEdit(log: MaintenanceLog): void {
+    this.selectedVehicleId = log.vehicleId;
+    this.selectedDate = this.formatDateForDisplay(log.serviceDate);
+    this.odometerValue = log.mileageAtService;
+    this.selectedMechanicId = log.mechanicId || '';
+    this.selectedMechanic = log.mechanicName || '';
+    this.newMechanicName = '';
+    this.showNewMechanicInput = !log.mechanicName;
+    this.jobs = [...(log.jobs || [])]
+      .sort((a, b) => a.sortOrder - b.sortOrder)
+      .map((job, index) => ({
+        id: index + 1,
+        isPersisted: true,
+        title: job.title,
+        icon: job.icon || 'wrench',
+        types: [...(job.maintenanceTypes || [])],
+        description: job.description || '',
+        items: (job.items || []).map((item) => ({
+          name: item.name,
+          qty: item.quantity,
+          unitCost: item.unitCost,
+          subtotal: item.quantity * item.unitCost,
+        })),
+        serviceCost: job.cost || 0,
+      }));
+    this.updateCurrentMileage();
+    this.isLoadingLog = false;
   }
 
   private formatDateForDisplay(dateString: string): string {
@@ -287,21 +308,6 @@ export class NewLogPage implements OnInit {
         job.types.length > 0 &&
         (this.isEditMode || job.items.length > 0),
     );
-  }
-
-  private loadMechanics(): void {
-    this.mechanicService.getMechanics().subscribe({
-      next: (mechanics) => {
-        this.mechanics = mechanics;
-        this.previousMechanics = mechanics.map((mechanic) => mechanic.name);
-        if (mechanics.length === 0 && !this.selectedMechanic) {
-          this.showNewMechanicInput = true;
-        }
-      },
-      error: () => {
-        if (!this.selectedMechanic) this.showNewMechanicInput = true;
-      },
-    });
   }
 
   onMechanicChange(value: string): void {
@@ -479,7 +485,8 @@ export class NewLogPage implements OnInit {
     // The edit route is a full-page route and may not inherit the tabs shell's
     // scroll container. Once Angular renders the new card, bring it into view.
     setTimeout(() => {
-      this.jobCards.last?.nativeElement.scrollIntoView({
+      const cards = this.jobCards();
+      cards[cards.length - 1]?.nativeElement.scrollIntoView({
         behavior: 'smooth',
         block: 'start',
       });
@@ -588,7 +595,8 @@ export class NewLogPage implements OnInit {
 
   goBack(): void {
     this.discardUnsavedJobs();
-    if (this.presentedAsModal) {
+    if (this.presentedAsModal()) {
+      // TODO: The 'emit' function requires a mandatory void argument
       this.dismissed.emit();
       return;
     }

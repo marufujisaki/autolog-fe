@@ -1,23 +1,25 @@
-import { Injectable } from '@angular/core';
-import { Observable, Subject } from 'rxjs';
+import { Injectable, Signal, signal } from '@angular/core';
 
 /**
- * Notifies listeners that vehicle-related data changed and should be reloaded.
- * Used when creation happens in an overlay, without a route change that would
- * otherwise re-create the underlying page.
+ * Notifies listeners that vehicle-related data changed and should be
+ * reloaded. Used when creation happens in an overlay, without a route
+ * change that would otherwise re-create the underlying page.
+ *
+ * A monotonically increasing counter rather than a boolean/void pulse: it's
+ * the natural reactive parameter for `httpResource()` consumers — reading
+ * `refreshTrigger()` inside a resource's `request` function makes that
+ * resource automatically refetch whenever this changes.
  */
 @Injectable({
   providedIn: 'root',
 })
 export class VehicleDataRefreshService {
-  private readonly changedSubject = new Subject<void>();
+  private readonly refreshTriggerSignal = signal(0);
 
-  /** Emits every time vehicles or their maintenance data changed. */
-  get changed$(): Observable<void> {
-    return this.changedSubject.asObservable();
-  }
+  /** Reactive dependency: read inside a `computed()`/`httpResource()`/`effect()` to react on every change. */
+  readonly refreshTrigger: Signal<number> = this.refreshTriggerSignal.asReadonly();
 
   notifyChanged(): void {
-    this.changedSubject.next();
+    this.refreshTriggerSignal.update((v) => v + 1);
   }
 }

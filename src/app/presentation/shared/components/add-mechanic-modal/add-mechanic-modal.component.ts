@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
+import { Component, effect, inject, input, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   FormBuilder,
@@ -42,33 +42,35 @@ export interface MechanicDraft {
 export class AddMechanicModalComponent {
   private readonly formBuilder = inject(FormBuilder);
 
-  @Input() set isOpen(value: boolean) {
-    this.open = value;
-    if (value) {
-      const initial = this.initialValue ?? {
-        name: '',
-        phone: '',
-        description: '',
-      };
-      this.form.reset(initial);
-    }
-  }
-
-  @Input() initialValue: MechanicDraft | null = null;
+  readonly isOpen = input(false);
+  readonly initialValue = input<MechanicDraft | null>(null);
 
   /** Emitted when the sheet is dismissed without submitting. */
-  @Output() closed = new EventEmitter<void>();
+  readonly closed = output<void>();
 
   /** Emitted with the captured mechanic data when the user confirms. */
-  @Output() submitted = new EventEmitter<MechanicDraft>();
-
-  open = false;
+  readonly submitted = output<MechanicDraft>();
 
   readonly form: FormGroup = this.formBuilder.group({
     name: ['', [Validators.required, Validators.maxLength(100)]],
     phone: ['', [Validators.maxLength(30)]],
     description: ['', [Validators.maxLength(255)]],
   });
+
+  constructor() {
+    // Resetting a FormGroup is exactly the "sync a signal into a
+    // non-signal system" case effect() is meant for.
+    effect(() => {
+      if (this.isOpen()) {
+        const initial = this.initialValue() ?? {
+          name: '',
+          phone: '',
+          description: '',
+        };
+        this.form.reset(initial);
+      }
+    });
+  }
 
   get nameControl(): FormControl<string> {
     return this.form.get('name') as FormControl<string>;
@@ -83,6 +85,7 @@ export class AddMechanicModalComponent {
   }
 
   onClose(): void {
+    // TODO: The 'emit' function requires a mandatory void argument
     this.closed.emit();
   }
 

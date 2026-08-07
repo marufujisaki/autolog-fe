@@ -1,7 +1,8 @@
-import { ChangeDetectorRef, Component, Input, forwardRef } from '@angular/core';
+import { ChangeDetectorRef, Component, computed, forwardRef, input, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { LucideAngularModule, EyeIcon, EyeOffIcon } from 'lucide-angular';
+import { TranslatePipe } from '@ngx-translate/core';
 
 /**
  * Native `<input>` types supported by the Design System input component.
@@ -37,7 +38,7 @@ let nextInputId = 0;
 @Component({
   selector: 'app-input',
   standalone: true,
-  imports: [CommonModule, LucideAngularModule],
+  imports: [CommonModule, LucideAngularModule, TranslatePipe],
   templateUrl: './input.component.html',
   styleUrls: ['./input.component.scss'],
   providers: [
@@ -49,33 +50,43 @@ let nextInputId = 0;
   ],
 })
 export class InputComponent implements ControlValueAccessor {
+  private readonly changeDetectorRef = inject(ChangeDetectorRef);
+
   /** Native input type. Controls masking (password) and semantics (search). */
-  @Input() type: InputType = 'text';
+  readonly type = input<InputType>('text');
 
   /** Placeholder text shown when the input is empty. */
-  @Input() placeholder = '';
+  readonly placeholder = input('');
 
   /** Optional visible label rendered above the input. */
-  @Input() label?: string;
+  readonly label = input<string>();
 
   /** Disables the input and applies the disabled visual state. */
-  @Input() disabled = false;
+  readonly disabled = input(false);
+
+  /**
+   * Reactive forms can also disable this control via `setDisabledState`
+   * (ControlValueAccessor) — `input()` is read-only, so that path writes
+   * here instead. `isDisabled` combines both sources.
+   */
+  private readonly disabledByForm = signal<boolean | null>(null);
+  readonly isDisabled = computed(() => this.disabledByForm() ?? this.disabled());
 
   /** Validation error message shown below the input when present. */
-  @Input() errorMessage?: string;
+  readonly errorMessage = input<string>();
 
   /**
    * Explicit validation state. Defaults to "default". When `errorMessage`
    * is provided and no explicit "error"/"success" state is set, the
    * component automatically renders the error state.
    */
-  @Input() state: InputState = 'default';
+  readonly state = input<InputState>('default');
 
   /** Minimum value for number inputs. */
-  @Input() min?: number | string;
+  readonly min = input<number | string>();
 
   /** Maximum value for number inputs. */
-  @Input() max?: number | string;
+  readonly max = input<number | string>();
 
   /** Unique id used to associate the `<label>` with the `<input>`. */
   readonly inputId = `app-input-${nextInputId++}`;
@@ -92,22 +103,22 @@ export class InputComponent implements ControlValueAccessor {
   private onChange: (value: string) => void = () => {};
   private onTouched: () => void = () => {};
 
-  constructor(private readonly changeDetectorRef: ChangeDetectorRef) {}
-
   /** Resolves the effective validation state, deriving "error" when needed. */
   get resolvedState(): InputState {
-    if (this.state === 'default' && this.errorMessage) {
+    const state = this.state();
+    if (state === 'default' && this.errorMessage()) {
       return 'error';
     }
-    return this.state;
+    return state;
   }
 
   /** Resolves the native `type` attribute, accounting for the show/hide toggle. */
   get nativeType(): string {
-    if (this.type === 'password') {
+    const type = this.type();
+    if (type === 'password') {
       return this.showPassword ? 'text' : 'password';
     }
-    return this.type;
+    return type;
   }
 
   togglePasswordVisibility(): void {
@@ -140,7 +151,7 @@ export class InputComponent implements ControlValueAccessor {
   }
 
   setDisabledState(isDisabled: boolean): void {
-    this.disabled = isDisabled;
+    this.disabledByForm.set(isDisabled);
     this.changeDetectorRef.markForCheck();
   }
 }

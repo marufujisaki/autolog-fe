@@ -1,8 +1,8 @@
 <article
   class="app-card"
-  [class.app-card--elevated]="variant === 'elevated'"
-  [class.app-card--outlined]="variant === 'outlined'"
-  [class.app-card--padded]="padded"
+  [class.app-card--elevated]="variant() === 'elevated'"
+  [class.app-card--outlined]="variant() === 'outlined'"
+  [class.app-card--padded]="padded()"
 >
   <ng-content></ng-content>
 </article>

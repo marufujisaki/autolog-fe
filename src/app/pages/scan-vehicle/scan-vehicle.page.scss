@@ -1,0 +1,47 @@
+@use "../../presentation/shared/styles/tokens" as tokens;
+
+.scan-vehicle-content {
+  --padding-start: #{tokens.$space-5};
+  --padding-end: #{tokens.$space-5};
+  --padding-top: #{tokens.$space-6};
+}
+
+.scan-vehicle {
+  display: flex;
+  flex-direction: column;
+  gap: tokens.$space-5;
+
+  &__instructions {
+    margin: 0;
+    color: tokens.$color-text-secondary;
+    font-size: tokens.$font-size-md;
+    text-align: center;
+  }
+
+  &__error {
+    margin: 0;
+    color: tokens.$color-error;
+    font-size: tokens.$font-size-md;
+    text-align: center;
+  }
+
+  &__divider {
+    width: 100%;
+    border: none;
+    border-top: 1px solid tokens.$color-border-light;
+    margin: tokens.$space-2 0;
+  }
+
+  &__manual-label {
+    margin: 0;
+    color: tokens.$color-text-secondary;
+    font-size: tokens.$font-size-md;
+    text-align: center;
+  }
+
+  &__manual-form {
+    display: flex;
+    flex-direction: column;
+    gap: tokens.$space-4;
+  }
+}

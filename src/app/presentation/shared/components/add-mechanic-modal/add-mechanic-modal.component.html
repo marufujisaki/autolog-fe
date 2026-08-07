@@ -1,9 +1,9 @@
 <app-modal
-  [isOpen]="open"
+  [isOpen]="isOpen()"
   [variant]="'bottom-sheet'"
   [showCloseButton]="true"
   [title]="
-    (initialValue ? 'mechanics.editTitle' : 'mechanics.addTitle') | translate
+    (initialValue() ? 'mechanics.editTitle' : 'mechanics.addTitle') | translate
   "
   (closed)="onClose()"
 >
@@ -36,7 +36,7 @@
         [fullWidth]="true"
         [disabled]="form.invalid"
       >
-        {{ (initialValue ? "common.save" : "common.add") | translate }}
+        {{ (initialValue() ? "common.save" : "common.add") | translate }}
       </app-button>
     </div>
   </form>

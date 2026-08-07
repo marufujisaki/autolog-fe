@@ -1,5 +1,6 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { TranslatePipe } from '@ngx-translate/core';
 
 /**
  * Visual style variants supported by the Design System chip.
@@ -20,33 +21,34 @@ export type ChipVariant = 'default' | 'selected';
 @Component({
   selector: 'app-chip',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TranslatePipe],
   templateUrl: './chip.component.html',
   styleUrls: ['./chip.component.scss'],
 })
 export class ChipComponent {
   /** Visual variant of the chip. Defaults to "default" (Requirement 12.4). */
-  @Input() variant: ChipVariant = 'default';
+  readonly variant = input<ChipVariant>('default');
 
   /** Disables the chip and applies the disabled visual state. */
-  @Input() disabled = false;
+  readonly disabled = input(false);
 
   /**
    * Optional close button that emits when clicked. Used for dismissible chips
    * (e.g., applied tags or filters).
    */
-  @Input() removable = false;
+  readonly removable = input(false);
 
   /**
    * Emitted when the chip's remove button is clicked (if removable is true).
    */
-  @Output() removed = new EventEmitter<void>();
+  readonly removed = output<void>();
 
   onRemove(event: Event): void {
-    if (!this.removable) {
+    if (!this.removable()) {
       return;
     }
     event.stopPropagation();
+    // TODO: The 'emit' function requires a mandatory void argument
     this.removed.emit();
   }
 }

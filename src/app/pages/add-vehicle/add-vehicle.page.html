@@ -7,7 +7,7 @@
   <!-- Drag area: handle bar + title -->
   <header class="page-header">
     <div class="handle-bar" aria-hidden="true"></div>
-    <h1 class="page-title">Add a vehicle</h1>
+    <h1 class="page-title">{{ 'vehicles.addVehicle' | translate }}</h1>
   </header>
 
   <!-- Form -->
@@ -16,7 +16,7 @@
     <div class="form-group">
       <app-autocomplete
         [formControl]="brandControl"
-        label="Make"
+        [label]="'vehicles.brand' | translate"
         placeholder="Chevrolet"
         [searchFn]="searchMakes"
         (optionSelected)="onMakeSelected($event)"
@@ -27,7 +27,7 @@
     <div class="form-group">
       <app-autocomplete
         [formControl]="modelControl"
-        label="Model"
+        [label]="'vehicles.model' | translate"
         placeholder="Aveo"
         [searchFn]="searchModels"
       ></app-autocomplete>
@@ -39,7 +39,7 @@
           [formControl]="yearControl!"
           type="text"
           placeholder="2022"
-          label="Year"
+          [label]="'vehicles.year' | translate"
         ></app-input>
       </div>
       <div class="form-group form-group--medium">
@@ -47,7 +47,7 @@
           [formControl]="plateControl!"
           type="text"
           placeholder="AA453YR"
-          label="Plate"
+          [label]="'vehicles.licensePlate' | translate"
         ></app-input>
       </div>
     </div>
@@ -57,7 +57,7 @@
         [formControl]="colorControl!"
         type="text"
         placeholder="Blue"
-        label="Color"
+        [label]="'vehicles.color' | translate"
       ></app-input>
     </div>
 
@@ -66,13 +66,13 @@
         [formControl]="displayNameControl!"
         type="text"
         placeholder="Chile Van 2"
-        label="Display Name"
+        [label]="'vehicles.displayName' | translate"
       ></app-input>
     </div>
 
     <!-- Card Color Selector -->
     <div class="card-color-section">
-      <label class="card-color-label">Card Color</label>
+      <label class="card-color-label">{{ 'vehicles.cardColor' | translate }}</label>
       <div class="card-color-picker">
         @for (c of cardColorOptions; track c) {
         <span
@@ -92,7 +92,7 @@
         [fullWidth]="true"
         [disabled]="!form.valid || isLoading"
       >
-        Add
+        {{ 'common.add' | translate }}
       </app-button>
     </div>
   </form>

@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, inject } from '@angular/core';
+import { Component, OnDestroy, OnInit, effect, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   FormBuilder,
@@ -113,6 +113,42 @@ export class ProfilePage implements OnInit, OnDestroy {
 
   userTypeOptions: SelectOption[] = [];
 
+  private readonly mechanicsResource = this.mechanicService.getMechanicsResource();
+
+  constructor() {
+    effect(() => {
+      const mechanics = this.mechanicsResource.value();
+      if (mechanics) {
+        this.mechanics = mechanics as MechanicEntry[];
+      }
+      if (this.mechanicsResource.error()) {
+        this.showToast('mechanics.loadError', 'error');
+      }
+    });
+
+    // Bridges the auth signal into this page's plain fields until this
+    // whole page converts to signal-based state (tracked separately) —
+    // effect() is the sanctioned pattern for syncing a signal into a
+    // non-signal system, which is exactly what these fields are today.
+    // Field initializers run too early for `this.loadMechanics` etc., so
+    // this lives in the constructor (still a valid injection context).
+    effect(() => {
+      const user = this.authService.user();
+      if (!user) return;
+      this.currentUser = user;
+      this.userName = `${user.firstName} ${user.lastName}`.trim();
+      this.userEmail = user.email;
+      this.userPhone = user.phone ?? '';
+      this.userType = user.userType;
+    });
+
+    effect(() => {
+      if (this.authService.profile.error()) {
+        this.showToast('profile.loadError', 'error');
+      }
+    });
+  }
+
   get firstNameControl(): FormControl<string> {
     return this.profileForm.get('firstName') as FormControl<string>;
   }
@@ -140,29 +176,7 @@ export class ProfilePage implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe(() => this.buildUserTypeOptions());
 
-    this.authService.user$?.pipe(takeUntil(this.destroy$)).subscribe((user) => {
-      if (!user) return;
-      this.currentUser = user;
-      this.userName = `${user.firstName} ${user.lastName}`.trim();
-      this.userEmail = user.email;
-      this.userPhone = user.phone ?? '';
-      this.userType = user.userType;
-    });
-
-    this.authService
-      .getProfile()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (user) => {
-          this.currentUser = user;
-          this.userName = `${user.firstName} ${user.lastName}`.trim();
-          this.userEmail = user.email;
-          this.userPhone = user.phone ?? '';
-          this.userType = user.userType;
-          this.loadMechanics();
-        },
-        error: () => this.showToast('profile.loadError', 'error'),
-      });
+    // `user`/`profile`/`mechanics` are all synced by the effects in the constructor.
   }
 
   ngOnDestroy(): void {
@@ -301,13 +315,11 @@ export class ProfilePage implements OnInit, OnDestroy {
   }
 
   private loadMechanics(): void {
-    this.mechanicService
-      .getMechanics()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (mechanics) => (this.mechanics = mechanics),
-        error: () => this.showToast('mechanics.loadError', 'error'),
-      });
+    // Kept as a method for call-site compatibility with existing mutation
+    // handlers that re-trigger a reload; the actual fetch is the
+    // mechanicsResource field's effect (see constructor) reacting to
+    // mechanicsResource.reload().
+    this.mechanicsResource.reload();
   }
 
   /** Resolves a translatable error key for an invalid, touched control. */

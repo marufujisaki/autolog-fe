@@ -23,7 +23,7 @@ describe('EmptyStateComponent', () => {
 
   describe('Icon Display', () => {
     it('should display default icon emoji', () => {
-      expect(component.icon).toBe('📭');
+      expect(component.icon()).toBe('📭');
       const iconElement = fixture.debugElement.query(
         By.css('.app-empty-state__icon'),
       );
@@ -31,7 +31,7 @@ describe('EmptyStateComponent', () => {
     });
 
     it('should display custom icon emoji', () => {
-      component.icon = '🚗';
+      fixture.componentRef.setInput('icon', '🚗');
       fixture.detectChanges();
 
       const iconElement = fixture.debugElement.query(
@@ -41,7 +41,7 @@ describe('EmptyStateComponent', () => {
     });
 
     it('should update icon dynamically', () => {
-      component.icon = '📋';
+      fixture.componentRef.setInput('icon', '📋');
       fixture.detectChanges();
 
       let iconElement = fixture.debugElement.query(
@@ -49,7 +49,7 @@ describe('EmptyStateComponent', () => {
       );
       expect(iconElement.nativeElement.textContent).toContain('📋');
 
-      component.icon = '⚠️';
+      fixture.componentRef.setInput('icon', '⚠️');
       fixture.detectChanges();
 
       iconElement = fixture.debugElement.query(
@@ -62,7 +62,7 @@ describe('EmptyStateComponent', () => {
       const icons = ['📭', '🚗', '📋', '❌', '✅', '⚙️'];
 
       icons.forEach((icon) => {
-        component.icon = icon;
+        fixture.componentRef.setInput('icon', icon);
         fixture.detectChanges();
 
         const iconElement = fixture.debugElement.query(
@@ -75,7 +75,7 @@ describe('EmptyStateComponent', () => {
 
   describe('Title Display', () => {
     it('should display default title', () => {
-      expect(component.title).toBe('No items');
+      expect(component.title()).toBe('No items');
       const titleElement = fixture.debugElement.query(
         By.css('.app-empty-state__title'),
       );
@@ -83,7 +83,7 @@ describe('EmptyStateComponent', () => {
     });
 
     it('should display custom title', () => {
-      component.title = 'No vehicles found';
+      fixture.componentRef.setInput('title', 'No vehicles found');
       fixture.detectChanges();
 
       const titleElement = fixture.debugElement.query(
@@ -95,7 +95,7 @@ describe('EmptyStateComponent', () => {
     });
 
     it('should update title dynamically', () => {
-      component.title = 'No maintenance logs';
+      fixture.componentRef.setInput('title', 'No maintenance logs');
       fixture.detectChanges();
 
       let titleElement = fixture.debugElement.query(
@@ -105,7 +105,7 @@ describe('EmptyStateComponent', () => {
         'No maintenance logs',
       );
 
-      component.title = 'Empty list';
+      fixture.componentRef.setInput('title', 'Empty list');
       fixture.detectChanges();
 
       titleElement = fixture.debugElement.query(
@@ -125,7 +125,7 @@ describe('EmptyStateComponent', () => {
     it('should support long title text', () => {
       const longTitle =
         'No maintenance records available for this vehicle in the selected period';
-      component.title = longTitle;
+      fixture.componentRef.setInput('title', longTitle);
       fixture.detectChanges();
 
       const titleElement = fixture.debugElement.query(
@@ -137,7 +137,7 @@ describe('EmptyStateComponent', () => {
 
   describe('Description Display', () => {
     it('should not display description when not provided', () => {
-      component.description = undefined;
+      fixture.componentRef.setInput('description', undefined);
       fixture.detectChanges();
 
       const descElement = fixture.debugElement.query(
@@ -147,7 +147,7 @@ describe('EmptyStateComponent', () => {
     });
 
     it('should display description when provided', () => {
-      component.description = 'Start by adding a new vehicle';
+      fixture.componentRef.setInput('description', 'Start by adding a new vehicle');
       fixture.detectChanges();
 
       const descElement = fixture.debugElement.query(
@@ -160,7 +160,7 @@ describe('EmptyStateComponent', () => {
     });
 
     it('should update description dynamically', () => {
-      component.description = 'Create your first vehicle to get started';
+      fixture.componentRef.setInput('description', 'Create your first vehicle to get started');
       fixture.detectChanges();
 
       let descElement = fixture.debugElement.query(
@@ -170,7 +170,7 @@ describe('EmptyStateComponent', () => {
         'Create your first vehicle to get started',
       );
 
-      component.description = 'No records to display yet';
+      fixture.componentRef.setInput('description', 'No records to display yet');
       fixture.detectChanges();
 
       descElement = fixture.debugElement.query(
@@ -184,7 +184,7 @@ describe('EmptyStateComponent', () => {
     it('should support long description text', () => {
       const longDescription =
         'You have not recorded any maintenance activities for your vehicles yet. Start by tapping the "+" button to create your first maintenance log.';
-      component.description = longDescription;
+      fixture.componentRef.setInput('description', longDescription);
       fixture.detectChanges();
 
       const descElement = fixture.debugElement.query(
@@ -194,7 +194,7 @@ describe('EmptyStateComponent', () => {
     });
 
     it('should handle empty description string', () => {
-      component.description = '';
+      fixture.componentRef.setInput('description', '');
       fixture.detectChanges();
 
       const descElement = fixture.debugElement.query(
@@ -218,7 +218,7 @@ describe('EmptyStateComponent', () => {
     });
 
     it('should have semantic structure: icon, title, description', () => {
-      component.description = 'Please add items';
+      fixture.componentRef.setInput('description', 'Please add items');
       fixture.detectChanges();
 
       const icon = fixture.debugElement.query(By.css('.app-empty-state__icon'));
@@ -246,7 +246,7 @@ describe('EmptyStateComponent', () => {
     });
 
     it('should support ARIA attributes', () => {
-      component.description = 'No items available';
+      fixture.componentRef.setInput('description', 'No items available');
       fixture.detectChanges();
 
       const emptyState = fixture.debugElement.query(By.css('.app-empty-state'));
@@ -262,7 +262,7 @@ describe('EmptyStateComponent', () => {
     });
 
     it('should only render native HTML', () => {
-      component.description = 'Test description';
+      fixture.componentRef.setInput('description', 'Test description');
       fixture.detectChanges();
 
       const ionCard = fixture.debugElement.query(By.css('ion-card'));
@@ -297,7 +297,7 @@ describe('EmptyStateComponent', () => {
     });
 
     it('should allow custom actions below description', () => {
-      component.description = 'No vehicles yet';
+      fixture.componentRef.setInput('description', 'No vehicles yet');
       fixture.detectChanges();
 
       const actionLink = document.createElement('a');
@@ -315,9 +315,9 @@ describe('EmptyStateComponent', () => {
 
   describe('Combination Tests', () => {
     it('should handle no vehicles empty state', () => {
-      component.icon = '🚗';
-      component.title = 'No vehicles';
-      component.description = 'Add your first vehicle to get started';
+      fixture.componentRef.setInput('icon', '🚗');
+      fixture.componentRef.setInput('title', 'No vehicles');
+      fixture.componentRef.setInput('description', 'Add your first vehicle to get started');
       fixture.detectChanges();
 
       const icon = fixture.debugElement.query(By.css('.app-empty-state__icon'));
@@ -336,10 +336,9 @@ describe('EmptyStateComponent', () => {
     });
 
     it('should handle no logs empty state', () => {
-      component.icon = '📋';
-      component.title = 'No maintenance logs';
-      component.description =
-        'Start recording maintenance activities for this vehicle';
+      fixture.componentRef.setInput('icon', '📋');
+      fixture.componentRef.setInput('title', 'No maintenance logs');
+      fixture.componentRef.setInput('description', 'Start recording maintenance activities for this vehicle');
       fixture.detectChanges();
 
       const icon = fixture.debugElement.query(By.css('.app-empty-state__icon'));
@@ -359,18 +358,18 @@ describe('EmptyStateComponent', () => {
 
     it('should handle state transitions', () => {
       // First state: no vehicles
-      component.icon = '🚗';
-      component.title = 'No vehicles';
-      component.description = 'Add a vehicle';
+      fixture.componentRef.setInput('icon', '🚗');
+      fixture.componentRef.setInput('title', 'No vehicles');
+      fixture.componentRef.setInput('description', 'Add a vehicle');
       fixture.detectChanges();
 
       let title = fixture.debugElement.query(By.css('.app-empty-state__title'));
       expect(title.nativeElement.textContent).toContain('No vehicles');
 
       // Transition to: no search results
-      component.icon = '🔍';
-      component.title = 'No results found';
-      component.description = 'Try a different search term';
+      fixture.componentRef.setInput('icon', '🔍');
+      fixture.componentRef.setInput('title', 'No results found');
+      fixture.componentRef.setInput('description', 'Try a different search term');
       fixture.detectChanges();
 
       title = fixture.debugElement.query(By.css('.app-empty-state__title'));
@@ -378,9 +377,9 @@ describe('EmptyStateComponent', () => {
     });
 
     it('should display all content variants together', () => {
-      component.icon = '⚠️';
-      component.title = 'Error loading data';
-      component.description = 'Please try again later';
+      fixture.componentRef.setInput('icon', '⚠️');
+      fixture.componentRef.setInput('title', 'Error loading data');
+      fixture.componentRef.setInput('description', 'Please try again later');
       fixture.detectChanges();
 
       const emptyState = fixture.debugElement.query(By.css('.app-empty-state'));
@@ -407,11 +406,11 @@ describe('EmptyStateComponent', () => {
       const fixture2 = TestBed.createComponent(EmptyStateComponent);
       const component2 = fixture2.componentInstance;
 
-      component.icon = '🚗';
-      component.title = 'No vehicles';
+      fixture.componentRef.setInput('icon', '🚗');
+      fixture.componentRef.setInput('title', 'No vehicles');
 
-      component2.icon = '📋';
-      component2.title = 'No logs';
+      fixture2.componentRef.setInput('icon', '📋');
+      fixture2.componentRef.setInput('title', 'No logs');
 
       fixture.detectChanges();
       fixture2.detectChanges();
@@ -450,9 +449,9 @@ describe('EmptyStateComponent', () => {
     });
 
     it('should allow overriding all defaults', () => {
-      component.icon = '✨';
-      component.title = 'All caught up';
-      component.description = 'No pending tasks';
+      fixture.componentRef.setInput('icon', '✨');
+      fixture.componentRef.setInput('title', 'All caught up');
+      fixture.componentRef.setInput('description', 'No pending tasks');
       fixture.detectChanges();
 
       const icon = fixture.debugElement.query(By.css('.app-empty-state__icon'));

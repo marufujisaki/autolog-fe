@@ -1,6 +1,6 @@
 <div class="vehicle-detail-page">
   <header class="page-header">
-    <button class="back-btn" (click)="goBack()" aria-label="Go back">
+    <button class="back-btn" (click)="goBack()" [attr.aria-label]="'common.back' | translate">
       <lucide-angular [img]="ChevronLeftIcon" [size]="24"></lucide-angular>
     </button>
     <h1 class="header-title">Auto<span>Log</span></h1>
@@ -22,7 +22,7 @@
     </div>
     <div class="summary-total">
       <lucide-angular [img]="CircleDollarSignIcon" [size]="17"></lucide-angular>
-      <span>${{ getTotalCost() | number: '1.0-2' }} Total</span>
+      <span>${{ getTotalCost() | number: '1.0-2' }} {{ 'newLog.total' | translate }}</span>
     </div>
   </section>
 

@@ -1,7 +1,6 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, effect, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
-import { map, switchMap } from 'rxjs';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { MaintenanceLogService } from '../../core/ports/maintenance-log.port';
 import { VehicleService } from '../../core/ports/vehicle.port';
@@ -77,9 +76,47 @@ export class LogDetailPage implements OnInit {
   isLoading = true;
   private hasEnteredDetail = false;
 
+  /** Idle (no fetch) until ngOnInit/ionViewWillEnter set it. */
+  private readonly logIdSignal = signal('');
+  private readonly logResource = this.logService.getLogResource(this.logIdSignal);
+
+  /** Set once the log resolves and its vehicleId is known; idle (no fetch) until then. */
+  private readonly vehicleIdSignal = signal('');
+  private readonly vehicleResource = this.vehicleService.getVehicleResource(
+    this.vehicleIdSignal,
+  );
+
+  constructor() {
+    effect(() => {
+      const log = this.logResource.value();
+      if (log) {
+        this.log = log;
+        this.vehicleId = log.vehicleId;
+        this.vehicleIdSignal.set(log.vehicleId);
+      }
+      if (this.logResource.error()) {
+        console.error(
+          'Error loading maintenance log detail:',
+          this.logResource.error(),
+        );
+        this.log = null;
+        this.vehicle = null;
+      }
+    });
+
+    effect(() => {
+      const vehicle = this.vehicleResource.value();
+      if (vehicle) {
+        this.vehicle = vehicle;
+      }
+      this.isLoading =
+        this.logResource.isLoading() || this.vehicleResource.isLoading();
+    });
+  }
+
   ngOnInit(): void {
     this.logId = this.route.snapshot.paramMap.get('logId') || '';
-    this.loadDetail();
+    this.logIdSignal.set(this.logId);
   }
 
   /**
@@ -89,44 +126,17 @@ export class LogDetailPage implements OnInit {
    */
   ionViewWillEnter(): void {
     if (this.hasEnteredDetail) {
-      this.logId = this.route.snapshot.paramMap.get('logId') || this.logId;
-      this.loadDetail();
+      const nextLogId = this.route.snapshot.paramMap.get('logId') || this.logId;
+      this.logId = nextLogId;
+      if (this.logIdSignal() === nextLogId) {
+        // Same id — a signal .set() with an unchanged value wouldn't
+        // reactively refetch, so reload explicitly to pick up server edits.
+        this.logResource.reload();
+      } else {
+        this.logIdSignal.set(nextLogId);
+      }
     }
     this.hasEnteredDetail = true;
-  }
-
-  private loadDetail(): void {
-    if (!this.logId) {
-      this.isLoading = false;
-      return;
-    }
-
-    this.isLoading = true;
-    this.log = null;
-    this.vehicle = null;
-    this.logService
-      .getLog(this.logId)
-      .pipe(
-        switchMap((log) =>
-          this.vehicleService
-            .getVehicle(log.vehicleId)
-            .pipe(map((vehicle) => ({ log, vehicle }))),
-        ),
-      )
-      .subscribe({
-        next: ({ log, vehicle }) => {
-          this.log = log;
-          this.vehicleId = log.vehicleId;
-          this.vehicle = vehicle;
-          this.isLoading = false;
-        },
-        error: (error) => {
-          console.error('Error loading maintenance log detail:', error);
-          this.log = null;
-          this.vehicle = null;
-          this.isLoading = false;
-        },
-      });
   }
 
   get sortedJobs(): Job[] {

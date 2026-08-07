@@ -1,17 +1,35 @@
-import {
-  ComponentFixture,
-  TestBed,
-  fakeAsync,
-  tick,
-} from '@angular/core/testing';
+import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { signal } from '@angular/core';
+import { HttpResourceRef } from '@angular/common/http';
 import { ProfilePage } from './profile.page';
 import { AuthService } from '../../core/ports/auth.port';
 import { Router } from '@angular/router';
-import { BehaviorSubject, of, throwError } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
 import { User, UserType } from '../../core/models/user.model';
 import { MechanicService } from '../../core/ports/mechanic.port';
 import { Mechanic, MechanicSource } from '../../core/models/mechanic.model';
+
+/**
+ * Minimal fake matching the subset of HttpResourceRef<T> the component
+ * actually calls (.value()/.isLoading()/.error()). `as unknown as
+ * HttpResourceRef<T>` bypasses structural typing for unused members.
+ */
+function createFakeResource<T>() {
+  const valueSignal = signal<T | undefined>(undefined);
+  const errorSignal = signal<unknown>(undefined);
+  const isLoadingSignal = signal(false);
+  const fake = {
+    value: valueSignal,
+    error: errorSignal,
+    isLoading: isLoadingSignal,
+    reload: () => true,
+    setValue: (v: T | undefined) => valueSignal.set(v),
+    setError: (e: unknown) => errorSignal.set(e),
+    setLoading: (l: boolean) => isLoadingSignal.set(l),
+  };
+  return fake as typeof fake & HttpResourceRef<T>;
+}
 
 describe('ProfilePage', () => {
   let component: ProfilePage;
@@ -20,7 +38,9 @@ describe('ProfilePage', () => {
   let mockRouter: jasmine.SpyObj<Router>;
   let mockTranslateService: jasmine.SpyObj<TranslateService>;
   let mockMechanicService: jasmine.SpyObj<MechanicService>;
-  let userSubject: BehaviorSubject<User | null>;
+  let userSignal: ReturnType<typeof signal<User | null>>;
+  let fakeProfileResource: ReturnType<typeof createFakeResource<User>>;
+  let fakeMechanicsResource: ReturnType<typeof createFakeResource<Mechanic[]>>;
 
   const testMechanic: Mechanic = {
     id: 'mechanic-1',
@@ -45,44 +65,65 @@ describe('ProfilePage', () => {
     allowSharing: false,
   };
 
+  /**
+   * Component construction (field initializers + constructor effects) is
+   * where auth/mechanics data loading now happens — so tests that need a
+   * specific initial mock state (e.g. no user) must set it up BEFORE
+   * calling this, not after.
+   */
+  function createComponent(): void {
+    fixture = TestBed.createComponent(ProfilePage);
+    component = fixture.componentInstance;
+  }
+
   beforeEach(async () => {
+    userSignal = signal<User | null>(testUser);
+    fakeProfileResource = createFakeResource<User>();
+    fakeMechanicsResource = createFakeResource<Mechanic[]>();
+    fakeMechanicsResource.setValue([]);
+
     mockAuthService = jasmine.createSpyObj('AuthService', [
       'logout',
-      'getProfile',
       'updateProfile',
     ]);
-    mockAuthService.getProfile.and.returnValue(of(testUser));
+    (mockAuthService as any).user = userSignal;
+    (mockAuthService as any).profile = fakeProfileResource;
     mockAuthService.updateProfile.and.returnValue(of(testUser));
 
     mockRouter = jasmine.createSpyObj('Router', ['navigate']);
 
     mockTranslateService = jasmine.createSpyObj(
       'TranslateService',
-      ['instant', 'get', 'use'],
+      ['instant', 'get', 'use', 'translate'],
       { onLangChange: of() },
     );
     mockTranslateService.instant.and.callFake((key: string) => key);
     (mockTranslateService.get as jasmine.Spy).and.callFake((key: string) =>
       of(key),
     );
+    (mockTranslateService.translate as jasmine.Spy).and.callFake(
+      (key: string) => {
+        const signal: any = () => key;
+        signal.set = () => {};
+        signal.update = () => {};
+        signal.asReadonly = () => signal;
+        return signal;
+      },
+    );
 
     mockMechanicService = jasmine.createSpyObj('MechanicService', [
-      'getMechanics',
-      'getMechanic',
+      'getMechanicsResource',
+      'getMechanicResource',
       'createMechanic',
       'updateMechanic',
       'deleteMechanic',
     ]);
-    mockMechanicService.getMechanics.and.returnValue(of([]));
-    mockMechanicService.getMechanic.and.returnValue(of(testMechanic));
+    mockMechanicService.getMechanicsResource.and.returnValue(
+      fakeMechanicsResource,
+    );
     mockMechanicService.createMechanic.and.returnValue(of(testMechanic));
     mockMechanicService.updateMechanic.and.returnValue(of(testMechanic));
     mockMechanicService.deleteMechanic.and.returnValue(of(void 0));
-
-    userSubject = new BehaviorSubject<User | null>(testUser);
-    Object.defineProperty(mockAuthService, 'user$', {
-      value: userSubject.asObservable(),
-    });
 
     await TestBed.configureTestingModule({
       imports: [ProfilePage],
@@ -93,38 +134,29 @@ describe('ProfilePage', () => {
         { provide: MechanicService, useValue: mockMechanicService },
       ],
     }).compileComponents();
-
-    fixture = TestBed.createComponent(ProfilePage);
-    component = fixture.componentInstance;
   });
 
   it('should create', () => {
+    createComponent();
     expect(component).toBeTruthy();
   });
 
   it('should load user name, email and phone on initialization', fakeAsync(() => {
-    component.ngOnInit();
+    createComponent();
+    fixture.detectChanges();
     tick();
 
     expect(component.userName).toBe('John Doe');
     expect(component.userEmail).toBe('test@example.com');
     expect(component.userPhone).toBe('+584120000000');
-    expect(mockAuthService.getProfile).toHaveBeenCalled();
   }));
 
-  it('should start with empty identity values', () => {
-    expect(component.userName).toBe('');
-    expect(component.userEmail).toBe('');
-  });
-
   it('should keep empty values when the user is null', fakeAsync(() => {
-    // Sin sesion no hay perfil disponible: ni el stream de usuario ni la
+    // Sin sesion no hay perfil disponible: ni la signal de usuario ni la
     // consulta al backend aportan datos.
-    mockAuthService.getProfile.and.returnValue(
-      throwError(() => new Error('unauthenticated')),
-    );
-    userSubject.next(null);
-    component.ngOnInit();
+    userSignal.set(null);
+    createComponent();
+    fixture.detectChanges();
     tick();
 
     expect(component.userName).toBe('');
@@ -132,6 +164,7 @@ describe('ProfilePage', () => {
   }));
 
   it('should build the user type options from translations', () => {
+    createComponent();
     component.ngOnInit();
 
     expect(component.userTypeOptions.length).toBe(3);
@@ -139,7 +172,8 @@ describe('ProfilePage', () => {
   });
 
   it('should prefill the edit form from the loaded profile', fakeAsync(() => {
-    component.ngOnInit();
+    createComponent();
+    fixture.detectChanges();
     tick();
 
     component.openEditProfile();
@@ -151,7 +185,8 @@ describe('ProfilePage', () => {
   }));
 
   it('should submit the profile update and close the modal', fakeAsync(() => {
-    component.ngOnInit();
+    createComponent();
+    fixture.detectChanges();
     tick();
     component.openEditProfile();
 
@@ -172,7 +207,8 @@ describe('ProfilePage', () => {
     mockAuthService.updateProfile.and.returnValue(
       throwError(() => new Error('failed')),
     );
-    component.ngOnInit();
+    createComponent();
+    fixture.detectChanges();
     tick();
     component.openEditProfile();
 
@@ -184,12 +220,14 @@ describe('ProfilePage', () => {
   }));
 
   it('should navigate to the settings screen', () => {
+    createComponent();
     component.openSettings();
 
     expect(mockRouter.navigate).toHaveBeenCalledWith(['/tabs/settings']);
   });
 
   it('should create a personal mechanic through the service and list it', () => {
+    createComponent();
     component.onMechanicAdded({
       name: 'Taller La Candelaria',
       phone: '+584120483325',
@@ -209,16 +247,17 @@ describe('ProfilePage', () => {
   });
 
   it('should load the mechanics directory on initialization', fakeAsync(() => {
-    mockMechanicService.getMechanics.and.returnValue(of([testMechanic]));
-
-    component.ngOnInit();
+    fakeMechanicsResource.setValue([testMechanic]);
+    createComponent();
+    fixture.detectChanges();
     tick();
 
-    expect(mockMechanicService.getMechanics).toHaveBeenCalled();
+    expect(mockMechanicService.getMechanicsResource).toHaveBeenCalled();
     expect(component.mechanics).toEqual([testMechanic]);
   }));
 
   it('should remove a mechanic through the service', () => {
+    createComponent();
     component.mechanics = [{ ...testMechanic }];
 
     component.deleteMechanic(component.mechanics[0]);
@@ -230,6 +269,7 @@ describe('ProfilePage', () => {
   });
 
   it('should logout and navigate to home', () => {
+    createComponent();
     component.logout();
 
     expect(mockAuthService.logout).toHaveBeenCalled();

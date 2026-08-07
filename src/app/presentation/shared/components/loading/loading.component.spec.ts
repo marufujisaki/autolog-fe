@@ -23,18 +23,18 @@ describe('LoadingComponent', () => {
 
   describe('Size Variants', () => {
     it('should default to size "md"', () => {
-      expect(component.size).toBe('md');
+      expect(component.size()).toBe('md');
       expect(loadingElement.classList.contains('app-loading--md')).toBe(true);
     });
 
     it('should render size "sm"', () => {
-      component.size = 'sm';
+      fixture.componentRef.setInput('size', 'sm');
       fixture.detectChanges();
       expect(loadingElement.classList.contains('app-loading--sm')).toBe(true);
     });
 
     it('should render size "lg"', () => {
-      component.size = 'lg';
+      fixture.componentRef.setInput('size', 'lg');
       fixture.detectChanges();
       expect(loadingElement.classList.contains('app-loading--lg')).toBe(true);
     });
@@ -42,7 +42,7 @@ describe('LoadingComponent', () => {
     it('should change size dynamically', () => {
       const sizes: LoadingSize[] = ['sm', 'md', 'lg'];
       sizes.forEach((size) => {
-        component.size = size;
+        fixture.componentRef.setInput('size', size);
         fixture.detectChanges();
         expect(loadingElement.classList.contains(`app-loading--${size}`)).toBe(
           true,
@@ -51,11 +51,11 @@ describe('LoadingComponent', () => {
     });
 
     it('should remove old size class when switching', () => {
-      component.size = 'sm';
+      fixture.componentRef.setInput('size', 'sm');
       fixture.detectChanges();
       expect(loadingElement.classList.contains('app-loading--sm')).toBe(true);
 
-      component.size = 'lg';
+      fixture.componentRef.setInput('size', 'lg');
       fixture.detectChanges();
       expect(loadingElement.classList.contains('app-loading--sm')).toBe(false);
       expect(loadingElement.classList.contains('app-loading--lg')).toBe(true);
@@ -73,7 +73,7 @@ describe('LoadingComponent', () => {
     it('should have spinner class for all sizes', () => {
       const sizes: LoadingSize[] = ['sm', 'md', 'lg'];
       sizes.forEach((size) => {
-        component.size = size;
+        fixture.componentRef.setInput('size', size);
         fixture.detectChanges();
 
         const spinner = fixture.debugElement.query(
@@ -89,7 +89,7 @@ describe('LoadingComponent', () => {
 
   describe('Loading Text Display', () => {
     it('should not display text when not provided', () => {
-      component.text = undefined;
+      fixture.componentRef.setInput('text', undefined);
       fixture.detectChanges();
 
       const textElement = fixture.debugElement.query(
@@ -99,7 +99,7 @@ describe('LoadingComponent', () => {
     });
 
     it('should display text when provided', () => {
-      component.text = 'Loading...';
+      fixture.componentRef.setInput('text', 'Loading...');
       fixture.detectChanges();
 
       const textElement = fixture.debugElement.query(
@@ -110,7 +110,7 @@ describe('LoadingComponent', () => {
     });
 
     it('should update text dynamically', () => {
-      component.text = 'Fetching data';
+      fixture.componentRef.setInput('text', 'Fetching data');
       fixture.detectChanges();
 
       let textElement = fixture.debugElement.query(
@@ -118,7 +118,7 @@ describe('LoadingComponent', () => {
       );
       expect(textElement.nativeElement.textContent).toContain('Fetching data');
 
-      component.text = 'Processing...';
+      fixture.componentRef.setInput('text', 'Processing...');
       fixture.detectChanges();
 
       textElement = fixture.debugElement.query(By.css('.app-loading__text'));
@@ -126,7 +126,7 @@ describe('LoadingComponent', () => {
     });
 
     it('should handle empty text string', () => {
-      component.text = '';
+      fixture.componentRef.setInput('text', '');
       fixture.detectChanges();
 
       const textElement = fixture.debugElement.query(
@@ -145,7 +145,7 @@ describe('LoadingComponent', () => {
       ];
 
       textVariants.forEach((text) => {
-        component.text = text;
+        fixture.componentRef.setInput('text', text);
         fixture.detectChanges();
 
         const textElement = fixture.debugElement.query(
@@ -158,12 +158,12 @@ describe('LoadingComponent', () => {
 
   describe('Accessibility - ariaLabel', () => {
     it('should default to "Loading" aria-label', () => {
-      expect(component.ariaLabel).toBe('Loading');
+      expect(component.ariaLabel()).toBe('Loading');
       expect(loadingElement.getAttribute('aria-label')).toBe('Loading');
     });
 
     it('should set custom aria-label when provided', () => {
-      component.ariaLabel = 'Uploading file...';
+      fixture.componentRef.setInput('ariaLabel', 'Uploading file...');
       fixture.detectChanges();
       expect(loadingElement.getAttribute('aria-label')).toBe(
         'Uploading file...',
@@ -191,7 +191,7 @@ describe('LoadingComponent', () => {
       ];
 
       ariaLabels.forEach((label) => {
-        component.ariaLabel = label;
+        fixture.componentRef.setInput('ariaLabel', label);
         fixture.detectChanges();
         expect(loadingElement.getAttribute('aria-label')).toBe(label);
       });
@@ -228,8 +228,8 @@ describe('LoadingComponent', () => {
 
   describe('Content Structure', () => {
     it('should have proper structure: loading > spinner + text', () => {
-      component.text = 'Loading...';
-      component.size = 'md';
+      fixture.componentRef.setInput('text', 'Loading...');
+      fixture.componentRef.setInput('size', 'md');
       fixture.detectChanges();
 
       const spinner = fixture.debugElement.query(
@@ -242,7 +242,7 @@ describe('LoadingComponent', () => {
     });
 
     it('should render spinner without text', () => {
-      component.text = undefined;
+      fixture.componentRef.setInput('text', undefined);
       fixture.detectChanges();
 
       const spinner = fixture.debugElement.query(
@@ -257,9 +257,9 @@ describe('LoadingComponent', () => {
 
   describe('Combination Tests', () => {
     it('should handle small spinner with text', () => {
-      component.size = 'sm';
-      component.text = 'Loading...';
-      component.ariaLabel = 'Loading small';
+      fixture.componentRef.setInput('size', 'sm');
+      fixture.componentRef.setInput('text', 'Loading...');
+      fixture.componentRef.setInput('ariaLabel', 'Loading small');
       fixture.detectChanges();
 
       expect(loadingElement.classList.contains('app-loading--sm')).toBe(true);
@@ -269,9 +269,9 @@ describe('LoadingComponent', () => {
     });
 
     it('should handle large spinner with descriptive text', () => {
-      component.size = 'lg';
-      component.text = 'Processing your request...';
-      component.ariaLabel = 'Processing data';
+      fixture.componentRef.setInput('size', 'lg');
+      fixture.componentRef.setInput('text', 'Processing your request...');
+      fixture.componentRef.setInput('ariaLabel', 'Processing data');
       fixture.detectChanges();
 
       expect(loadingElement.classList.contains('app-loading--lg')).toBe(true);
@@ -283,16 +283,16 @@ describe('LoadingComponent', () => {
     });
 
     it('should handle state transitions', () => {
-      component.size = 'sm';
-      component.text = 'Starting...';
+      fixture.componentRef.setInput('size', 'sm');
+      fixture.componentRef.setInput('text', 'Starting...');
       fixture.detectChanges();
 
       expect(loadingElement.classList.contains('app-loading--sm')).toBe(true);
       let text = fixture.debugElement.query(By.css('.app-loading__text'));
       expect(text.nativeElement.textContent).toContain('Starting...');
 
-      component.size = 'lg';
-      component.text = 'In progress...';
+      fixture.componentRef.setInput('size', 'lg');
+      fixture.componentRef.setInput('text', 'In progress...');
       fixture.detectChanges();
 
       expect(loadingElement.classList.contains('app-loading--lg')).toBe(true);
@@ -306,8 +306,8 @@ describe('LoadingComponent', () => {
 
       sizes.forEach((size) => {
         texts.forEach((text) => {
-          component.size = size;
-          component.text = text;
+          fixture.componentRef.setInput('size', size);
+          fixture.componentRef.setInput('text', text);
           fixture.detectChanges();
 
           expect(
@@ -327,11 +327,11 @@ describe('LoadingComponent', () => {
       const fixture2 = TestBed.createComponent(LoadingComponent);
       const component2 = fixture2.componentInstance;
 
-      component.size = 'sm';
-      component.text = 'Loading 1';
+      fixture.componentRef.setInput('size', 'sm');
+      fixture.componentRef.setInput('text', 'Loading 1');
 
-      component2.size = 'lg';
-      component2.text = 'Loading 2';
+      fixture2.componentRef.setInput('size', 'lg');
+      fixture2.componentRef.setInput('text', 'Loading 2');
 
       fixture.detectChanges();
       fixture2.detectChanges();
@@ -350,7 +350,7 @@ describe('LoadingComponent', () => {
 
   describe('Styling Integration', () => {
     it('should use design token-based class naming', () => {
-      component.size = 'md';
+      fixture.componentRef.setInput('size', 'md');
       fixture.detectChanges();
 
       // Verify class names follow design token naming convention
@@ -361,7 +361,7 @@ describe('LoadingComponent', () => {
     it('should maintain spinner class across size changes', () => {
       const sizes: LoadingSize[] = ['sm', 'md', 'lg'];
       sizes.forEach((size) => {
-        component.size = size;
+        fixture.componentRef.setInput('size', size);
         fixture.detectChanges();
 
         const spinner = fixture.debugElement.query(

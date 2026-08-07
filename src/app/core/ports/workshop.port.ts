@@ -6,7 +6,8 @@
  * Requirement 9.5: Expose workshop name and address as read-only data accessible to mechanics
  */
 
-import { Observable } from 'rxjs';
+import { HttpResourceRef } from '@angular/common/http';
+import { Signal } from '@angular/core';
 
 export interface Workshop {
   id: string;
@@ -16,9 +17,9 @@ export interface Workshop {
 
 export abstract class WorkshopService {
   /**
-   * Get workshop information by ID.
+   * Live resource for workshop information, keyed on `workshopId`.
    * Requirement 9.4: Verify workshop existence before granting mechanic access
    * Requirement 9.5: Read-only access to workshop data (name, address)
    */
-  abstract getWorkshop(workshopId: string): Observable<Workshop>;
+  abstract getWorkshopResource(workshopId: Signal<string>): HttpResourceRef<Workshop | undefined>;
 }

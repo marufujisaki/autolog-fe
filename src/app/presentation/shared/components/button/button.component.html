@@ -1,14 +1,14 @@
 <button
   class="app-button"
-  [class.app-button--primary]="variant === 'primary'"
-  [class.app-button--secondary]="variant === 'secondary'"
-  [class.app-button--ghost]="variant === 'ghost'"
-  [class.app-button--icon-button]="variant === 'icon-button'"
-  [class.app-button--full-width]="fullWidth"
-  [class.app-button--disabled]="disabled"
-  [type]="type"
-  [disabled]="disabled"
-  [attr.aria-label]="ariaLabel"
+  [class.app-button--primary]="variant() === 'primary'"
+  [class.app-button--secondary]="variant() === 'secondary'"
+  [class.app-button--ghost]="variant() === 'ghost'"
+  [class.app-button--icon-button]="variant() === 'icon-button'"
+  [class.app-button--full-width]="fullWidth()"
+  [class.app-button--disabled]="disabled()"
+  [type]="type()"
+  [disabled]="disabled()"
+  [attr.aria-label]="ariaLabel()"
   (click)="onClick($event)"
 >
   <ng-content></ng-content>

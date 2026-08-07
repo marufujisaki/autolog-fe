@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, inject } from '@angular/core';
+import { Component, OnDestroy, OnInit, computed, effect, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   FormBuilder,
@@ -13,7 +13,9 @@ import { catchError, takeUntil } from 'rxjs/operators';
 import { VehicleService } from '../../core/ports/vehicle.port';
 import { MaintenanceLogService } from '../../core/ports/maintenance-log.port';
 import { AuthService } from '../../core/ports/auth.port';
+import { ShareService } from '../../core/ports/share.port';
 import { VehicleDataRefreshService } from '../../core/services/vehicle-data-refresh.service';
+import { TranslationService } from '../../core/services/translation.service';
 import { UserType } from '../../core/models/user.model';
 import { CreateVehicleData, Vehicle } from '../../core/models/vehicle.model';
 import { ButtonComponent } from '../../presentation/shared/components/button/button.component';
@@ -21,6 +23,7 @@ import { InputComponent } from '../../presentation/shared/components/input/input
 import { ModalComponent } from '../../presentation/shared/components/modal/modal.component';
 import { ToastComponent } from '../../presentation/shared/components/toast/toast.component';
 import { BrandComponent } from '../../presentation/shared/components/brand/brand.component';
+import { ShareVehicleModalComponent } from '../../presentation/shared/components/share-vehicle-modal/share-vehicle-modal.component';
 import { TranslatePipe } from '@ngx-translate/core';
 import {
   EllipsisVerticalIcon,
@@ -28,7 +31,9 @@ import {
   ListFilterIcon,
   PencilIcon,
   SearchIcon,
+  Share2Icon,
   Trash2Icon,
+  UnlinkIcon,
 } from 'lucide-angular';
 
 /**
@@ -49,6 +54,7 @@ import {
     ModalComponent,
     ToastComponent,
     BrandComponent,
+    ShareVehicleModalComponent,
     TranslatePipe,
     LucideAngularModule,
   ],
@@ -57,9 +63,11 @@ export class DashboardPage implements OnInit, OnDestroy {
   private readonly vehicleService = inject(VehicleService);
   private readonly maintenanceLogService = inject(MaintenanceLogService);
   private readonly authService = inject(AuthService);
+  private readonly shareService = inject(ShareService);
   private readonly router = inject(Router);
   private readonly formBuilder = inject(FormBuilder);
   private readonly dataRefresh = inject(VehicleDataRefreshService);
+  private readonly translationService = inject(TranslationService);
   private readonly destroy$ = new Subject<void>();
 
   readonly SearchIcon = SearchIcon;
@@ -67,12 +75,26 @@ export class DashboardPage implements OnInit, OnDestroy {
   readonly EllipsisVerticalIcon = EllipsisVerticalIcon;
   readonly PencilIcon = PencilIcon;
   readonly Trash2Icon = Trash2Icon;
+  readonly Share2Icon = Share2Icon;
+  readonly UnlinkIcon = UnlinkIcon;
 
   vehicles: Vehicle[] = [];
   isLoading = false;
-  canManageVehicleActions = false;
+  readonly canManageVehicleActions = computed(() =>
+    this.isVehicleManager(this.authService.user()?.userType ?? null),
+  );
+  /** USUARIO owners need `allowSharing` enabled; CLIENTE owners can always share. */
+  readonly canShareVehicles = computed(() => {
+    const user = this.authService.user();
+    if (!user) return false;
+    if (user.userType === UserType.CLIENTE) return true;
+    return user.userType === UserType.USUARIO && user.allowSharing;
+  });
   showEditModal = false;
   showDeleteModal = false;
+  showUnlinkModal = false;
+  shareModalOpen = false;
+  shareModalVehicle: Vehicle | null = null;
   activeVehicle: Vehicle | null = null;
   toastMessage = '';
   toastVisible = false;
@@ -93,20 +115,25 @@ export class DashboardPage implements OnInit, OnDestroy {
     '#A855F7',
   ];
 
+  /** Reactively refetches on `dataRefresh.refreshTrigger()` changes — no manual reload wiring needed. */
+  private readonly vehiclesResource = this.vehicleService.getVehiclesResource();
+
+  constructor() {
+    effect(() => {
+      this.isLoading = this.vehiclesResource.isLoading();
+      const vehicles = this.vehiclesResource.value();
+      if (vehicles) {
+        this.vehicles = vehicles;
+        this.loadLatestMaintenanceDates(vehicles);
+      }
+      if (this.vehiclesResource.error()) {
+        this.showToast('errors.loadVehicles');
+      }
+    });
+  }
+
   ngOnInit(): void {
     this.initializeEditForm();
-    this.canManageVehicleActions = this.isVehicleManager(
-      this.authService.getUserType(),
-    );
-    this.authService.user$.pipe(takeUntil(this.destroy$)).subscribe((user) => {
-      this.canManageVehicleActions = this.isVehicleManager(
-        user?.userType ?? null,
-      );
-    });
-    this.dataRefresh.changed$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(() => this.loadVehicles());
-    this.loadVehicles();
   }
 
   ngOnDestroy(): void {
@@ -137,23 +164,6 @@ export class DashboardPage implements OnInit, OnDestroy {
     });
   }
 
-  private loadVehicles(): void {
-    this.isLoading = true;
-    this.vehicleService
-      .getVehicles()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (vehicles) => {
-          this.vehicles = vehicles;
-          this.loadLatestMaintenanceDates(vehicles);
-          this.isLoading = false;
-        },
-        error: () => {
-          this.isLoading = false;
-          this.showToast('errors.loadVehicles');
-        },
-      });
-  }
 
   private loadLatestMaintenanceDates(vehicles: Vehicle[]): void {
     this.latestMaintenanceDates.clear();
@@ -162,7 +172,7 @@ export class DashboardPage implements OnInit, OnDestroy {
     forkJoin(
       vehicles.map((vehicle) =>
         this.maintenanceLogService
-          .getLogs(vehicle.id, 0, 1)
+          .getLogsPage(vehicle.id, 0, 1)
           .pipe(catchError(() => of(null))),
       ),
     )
@@ -186,7 +196,8 @@ export class DashboardPage implements OnInit, OnDestroy {
     const date = this.parseDateOnly(dateString);
     if (Number.isNaN(date.getTime())) return '';
 
-    return date.toLocaleDateString('en-US', {
+    const locale = this.translationService.getCurrentLanguage() === 'es' ? 'es-ES' : 'en-US';
+    return date.toLocaleDateString(locale, {
       month: 'short',
       day: 'numeric',
     });
@@ -213,16 +224,28 @@ export class DashboardPage implements OnInit, OnDestroy {
     void this.router.navigate(['/vehicles', vehicleId]);
   }
 
-  toggleVehicleMenu(vehicleId: string, event: Event): void {
+  /** True for vehicles a MECANICO has been shared access to (not their own). */
+  isSharedWithMechanic(vehicle: Vehicle): boolean {
+    const user = this.authService.user();
+    return (
+      !!user &&
+      user.userType === UserType.MECANICO &&
+      vehicle.ownerId !== user.id
+    );
+  }
+
+  toggleVehicleMenu(vehicle: Vehicle, event: Event): void {
     event.stopPropagation();
-    if (!this.canManageVehicleActions) return;
+    if (!this.canManageVehicleActions() && !this.isSharedWithMechanic(vehicle)) {
+      return;
+    }
     this.openMenuVehicleId =
-      this.openMenuVehicleId === vehicleId ? null : vehicleId;
+      this.openMenuVehicleId === vehicle.id ? null : vehicle.id;
   }
 
   openEditModal(vehicle: Vehicle, event: Event): void {
     event.stopPropagation();
-    if (!this.canManageVehicleActions) return;
+    if (!this.canManageVehicleActions()) return;
 
     this.openMenuVehicleId = null;
     this.activeVehicle = vehicle;
@@ -292,7 +315,7 @@ export class DashboardPage implements OnInit, OnDestroy {
 
   openDeleteModal(vehicle: Vehicle, event: Event): void {
     event.stopPropagation();
-    if (!this.canManageVehicleActions) return;
+    if (!this.canManageVehicleActions()) return;
 
     this.openMenuVehicleId = null;
     this.activeVehicle = vehicle;
@@ -322,6 +345,55 @@ export class DashboardPage implements OnInit, OnDestroy {
         },
         error: () => {
           this.showToast('errors.deleteVehicle');
+        },
+      });
+  }
+
+  openShareModal(vehicle: Vehicle, event: Event): void {
+    event.stopPropagation();
+    if (!this.canShareVehicles()) return;
+
+    this.openMenuVehicleId = null;
+    this.shareModalVehicle = vehicle;
+    this.shareModalOpen = true;
+  }
+
+  closeShareModal(): void {
+    this.shareModalOpen = false;
+    this.shareModalVehicle = null;
+  }
+
+  openUnlinkModal(vehicle: Vehicle, event: Event): void {
+    event.stopPropagation();
+    this.openMenuVehicleId = null;
+    this.activeVehicle = vehicle;
+    this.showUnlinkModal = true;
+  }
+
+  closeUnlinkModal(): void {
+    this.showUnlinkModal = false;
+    this.activeVehicle = null;
+  }
+
+  confirmUnlinkVehicle(): void {
+    if (!this.activeVehicle) return;
+
+    const vehicleId = this.activeVehicle.id;
+    this.shareService
+      .unlinkVehicle(vehicleId)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => {
+          this.vehicles = this.vehicles.filter(
+            (vehicle) => vehicle.id !== vehicleId,
+          );
+          this.closeUnlinkModal();
+          this.dataRefresh.notifyChanged();
+          this.showToast('share.unlinkSuccess');
+        },
+        error: () => {
+          this.closeUnlinkModal();
+          this.showToast('share.unlinkError');
         },
       });
   }

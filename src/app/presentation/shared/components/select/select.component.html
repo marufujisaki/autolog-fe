@@ -1,22 +1,22 @@
-<div class="app-select" [class.app-select--disabled]="disabled">
-  <label *ngIf="label" class="app-select__label" [for]="selectId">{{
-    label
+<div class="app-select" [class.app-select--disabled]="isDisabled()">
+  <label *ngIf="label()" class="app-select__label" [for]="selectId">{{
+    label()
   }}</label>
 
   <div class="app-select__field">
     <ion-select
       [id]="selectId"
       [value]="value"
-      [disabled]="disabled"
-      [placeholder]="placeholder"
+      [disabled]="isDisabled()"
+      [placeholder]="placeholder()"
       interface="action-sheet"
-      [attr.aria-invalid]="errorMessage ? true : null"
-      [attr.aria-describedby]="errorMessage ? selectId + '-error' : null"
+      [attr.aria-invalid]="errorMessage() ? true : null"
+      [attr.aria-describedby]="errorMessage() ? selectId + '-error' : null"
       (ionChange)="onSelectionChange($event)"
       (ionBlur)="onBlur()"
     >
       <ion-select-option
-        *ngFor="let opt of options"
+        *ngFor="let opt of options()"
         [value]="opt.value"
         [disabled]="opt.disabled || false"
       >
@@ -26,11 +26,11 @@
   </div>
 
   <p
-    *ngIf="errorMessage"
+    *ngIf="errorMessage()"
     class="app-select__error"
     role="alert"
     [id]="selectId + '-error'"
   >
-    {{ errorMessage }}
+    {{ errorMessage() }}
   </p>
 </div>

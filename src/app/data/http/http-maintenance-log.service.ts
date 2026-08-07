@@ -2,8 +2,8 @@
  * HTTP implementation of the MaintenanceLogService port (Requirement 11.2, 11.4).
  */
 
-import { HttpClient, HttpParams } from '@angular/common/http';
-import { Injectable, inject } from '@angular/core';
+import { HttpClient, HttpParams, HttpResourceRef, httpResource } from '@angular/common/http';
+import { Injectable, Signal, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 
 import { environment } from '../../../environments/environment';
@@ -21,7 +21,28 @@ export class HttpMaintenanceLogService extends MaintenanceLogService {
 
   private readonly logsUrl = `${environment.apiUrl}/logs`;
 
-  getLogs(
+  getLogsResource(
+    vehicleId: Signal<string>,
+    page: Signal<number>,
+    size: number,
+  ): HttpResourceRef<PaginatedResponse<MaintenanceLog> | undefined> {
+    return httpResource<PaginatedResponse<MaintenanceLog>>(() =>
+      vehicleId()
+        ? {
+            url: `${environment.apiUrl}/vehicles/${vehicleId()}/logs`,
+            params: { page: page(), size },
+          }
+        : undefined,
+    );
+  }
+
+  getLogResource(logId: Signal<string>): HttpResourceRef<MaintenanceLog | undefined> {
+    return httpResource<MaintenanceLog>(() =>
+      logId() ? `${this.logsUrl}/${logId()}` : undefined,
+    );
+  }
+
+  getLogsPage(
     vehicleId: string,
     page: number,
     size: number,
@@ -31,10 +52,6 @@ export class HttpMaintenanceLogService extends MaintenanceLogService {
       `${environment.apiUrl}/vehicles/${vehicleId}/logs`,
       { params },
     );
-  }
-
-  getLog(logId: string): Observable<MaintenanceLog> {
-    return this.http.get<MaintenanceLog>(`${this.logsUrl}/${logId}`);
   }
 
   createLog(
@@ -63,7 +80,7 @@ export class HttpMaintenanceLogService extends MaintenanceLogService {
     return this.http.delete<void>(`${this.logsUrl}/${logId}/jobs/${jobId}`);
   }
 
-  getMechanicNames(): Observable<string[]> {
-    return this.http.get<string[]>(`${this.logsUrl}/mechanic-names`);
+  getMechanicNamesResource(): HttpResourceRef<string[] | undefined> {
+    return httpResource<string[]>(() => `${this.logsUrl}/mechanic-names`);
   }
 }

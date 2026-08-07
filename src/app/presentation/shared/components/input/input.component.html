@@ -2,15 +2,15 @@
   class="app-input"
   [class.app-input--error]="resolvedState === 'error'"
   [class.app-input--success]="resolvedState === 'success'"
-  [class.app-input--disabled]="disabled"
+  [class.app-input--disabled]="isDisabled()"
 >
-  <label *ngIf="label" class="app-input__label" [for]="inputId">{{
-    label
+  <label *ngIf="label()" class="app-input__label" [for]="inputId">{{
+    label()
   }}</label>
 
   <div class="app-input__field">
     <span
-      *ngIf="type === 'search'"
+      *ngIf="type() === 'search'"
       class="app-input__icon app-input__icon--search"
       aria-hidden="true"
     ></span>
@@ -21,23 +21,23 @@
       [class.app-input--success]="resolvedState === 'success'"
       [id]="inputId"
       [type]="nativeType"
-      [placeholder]="placeholder"
-      [disabled]="disabled"
+      [placeholder]="placeholder()"
+      [disabled]="isDisabled()"
       [value]="value"
-      [attr.min]="min"
-      [attr.max]="max"
+      [attr.min]="min()"
+      [attr.max]="max()"
       [attr.aria-invalid]="resolvedState === 'error' ? true : null"
-      [attr.aria-describedby]="errorMessage ? inputId + '-error' : null"
+      [attr.aria-describedby]="errorMessage() ? inputId + '-error' : null"
       (input)="onInput($any($event.target).value)"
       (blur)="onBlur()"
     />
 
     <button
-      *ngIf="type === 'password'"
+      *ngIf="type() === 'password'"
       type="button"
       class="app-input__toggle app-input__password-toggle"
-      [disabled]="disabled"
-      [attr.aria-label]="showPassword ? 'Hide password' : 'Show password'"
+      [disabled]="isDisabled()"
+      [attr.aria-label]="(showPassword ? 'auth.hidePassword' : 'auth.showPassword') | translate"
       (click)="togglePasswordVisibility()"
     >
       <lucide-angular
@@ -48,11 +48,11 @@
   </div>
 
   <p
-    *ngIf="errorMessage"
+    *ngIf="errorMessage()"
     class="app-input__error"
     role="alert"
     [id]="inputId + '-error'"
   >
-    {{ errorMessage }}
+    {{ errorMessage() }}
   </p>
 </div>

@@ -33,4 +33,8 @@ export class HttpShareService extends ShareService {
   revokeShare(vehicleId: string): Observable<void> {
     return this.http.delete<void>(`${this.vehiclesUrl}/${vehicleId}/share`);
   }
+
+  unlinkVehicle(vehicleId: string): Observable<void> {
+    return this.http.post<void>(`${this.vehiclesUrl}/${vehicleId}/unlink`, {});
+  }
 }

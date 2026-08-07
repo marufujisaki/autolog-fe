@@ -3,6 +3,7 @@ import { InputComponent } from './input.component';
 import { DebugElement } from '@angular/core';
 import { By } from '@angular/platform-browser';
 import { ReactiveFormsModule, FormControl } from '@angular/forms';
+import { provideTranslateService } from '@ngx-translate/core';
 
 describe('InputComponent', () => {
   let component: InputComponent;
@@ -13,6 +14,7 @@ describe('InputComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [InputComponent, ReactiveFormsModule],
+      providers: [provideTranslateService()],
     }).compileComponents();
 
     fixture = TestBed.createComponent(InputComponent);
@@ -24,18 +26,18 @@ describe('InputComponent', () => {
 
   describe('Input Type', () => {
     it('should default to type "text"', () => {
-      expect(component.type).toBe('text');
+      expect(component.type()).toBe('text');
       expect(nativeInput.type).toBe('text');
     });
 
     it('should set type to "password"', () => {
-      component.type = 'password';
+      fixture.componentRef.setInput('type', 'password');
       fixture.detectChanges();
       expect(nativeInput.type).toBe('password');
     });
 
     it('should set type to "search"', () => {
-      component.type = 'search';
+      fixture.componentRef.setInput('type', 'search');
       fixture.detectChanges();
       expect(nativeInput.type).toBe('search');
     });
@@ -43,11 +45,11 @@ describe('InputComponent', () => {
 
   describe('Placeholder', () => {
     it('should have empty placeholder by default', () => {
-      expect(component.placeholder).toBe('');
+      expect(component.placeholder()).toBe('');
     });
 
     it('should set placeholder text', () => {
-      component.placeholder = 'Enter email';
+      fixture.componentRef.setInput('placeholder', 'Enter email');
       fixture.detectChanges();
       expect(nativeInput.placeholder).toBe('Enter email');
     });
@@ -60,7 +62,7 @@ describe('InputComponent', () => {
     });
 
     it('should display label when provided', () => {
-      component.label = 'Email address';
+      fixture.componentRef.setInput('label', 'Email address');
       fixture.detectChanges();
       const label = fixture.debugElement.query(By.css('label'));
       expect(label).toBeTruthy();
@@ -68,7 +70,7 @@ describe('InputComponent', () => {
     });
 
     it('should associate label with input using id', () => {
-      component.label = 'Username';
+      fixture.componentRef.setInput('label', 'Username');
       fixture.detectChanges();
       const label = fixture.debugElement.query(By.css('label'));
       expect(label.nativeElement.getAttribute('for')).toBe(component.inputId);
@@ -78,12 +80,12 @@ describe('InputComponent', () => {
 
   describe('Disabled State', () => {
     it('should not be disabled by default', () => {
-      expect(component.disabled).toBe(false);
+      expect(component.disabled()).toBe(false);
       expect(nativeInput.disabled).toBe(false);
     });
 
     it('should apply disabled attribute when disabled is true', () => {
-      component.disabled = true;
+      fixture.componentRef.setInput('disabled', true);
       fixture.detectChanges();
       expect(nativeInput.disabled).toBe(true);
     });
@@ -91,33 +93,33 @@ describe('InputComponent', () => {
 
   describe('Validation States', () => {
     it('should default to "default" state', () => {
-      expect(component.state).toBe('default');
+      expect(component.state()).toBe('default');
       expect(component.resolvedState).toBe('default');
     });
 
     it('should set state to "error"', () => {
-      component.state = 'error';
+      fixture.componentRef.setInput('state', 'error');
       fixture.detectChanges();
       expect(component.resolvedState).toBe('error');
       expect(nativeInput.classList.contains('app-input--error')).toBe(true);
     });
 
     it('should set state to "success"', () => {
-      component.state = 'success';
+      fixture.componentRef.setInput('state', 'success');
       fixture.detectChanges();
       expect(component.resolvedState).toBe('success');
       expect(nativeInput.classList.contains('app-input--success')).toBe(true);
     });
 
     it('should automatically resolve to error state when errorMessage is present', () => {
-      component.errorMessage = 'Email is invalid';
+      fixture.componentRef.setInput('errorMessage', 'Email is invalid');
       fixture.detectChanges();
       expect(component.resolvedState).toBe('error');
     });
 
     it('should keep explicit state even with errorMessage present', () => {
-      component.state = 'success';
-      component.errorMessage = 'This should not override';
+      fixture.componentRef.setInput('state', 'success');
+      fixture.componentRef.setInput('errorMessage', 'This should not override');
       fixture.detectChanges();
       expect(component.resolvedState).toBe('success');
     });
@@ -130,7 +132,7 @@ describe('InputComponent', () => {
     });
 
     it('should display error message when provided', () => {
-      component.errorMessage = 'This field is required';
+      fixture.componentRef.setInput('errorMessage', 'This field is required');
       fixture.detectChanges();
       const errorMsg = fixture.debugElement.query(By.css('[role="alert"]'));
       expect(errorMsg).toBeTruthy();
@@ -140,7 +142,7 @@ describe('InputComponent', () => {
     });
 
     it('should include role="alert" for accessibility', () => {
-      component.errorMessage = 'Validation error';
+      fixture.componentRef.setInput('errorMessage', 'Validation error');
       fixture.detectChanges();
       const errorMsg = fixture.debugElement.query(By.css('[role="alert"]'));
       expect(errorMsg.nativeElement.getAttribute('role')).toBe('alert');
@@ -149,14 +151,14 @@ describe('InputComponent', () => {
 
   describe('Password Visibility Toggle', () => {
     it('should default to hidden password', () => {
-      component.type = 'password';
+      fixture.componentRef.setInput('type', 'password');
       fixture.detectChanges();
       expect(component.showPassword).toBe(false);
       expect(nativeInput.type).toBe('password');
     });
 
     it('should show password when toggled', () => {
-      component.type = 'password';
+      fixture.componentRef.setInput('type', 'password');
       fixture.detectChanges();
       component.togglePasswordVisibility();
       fixture.detectChanges();
@@ -165,7 +167,7 @@ describe('InputComponent', () => {
     });
 
     it('should hide password again when toggled', () => {
-      component.type = 'password';
+      fixture.componentRef.setInput('type', 'password');
       component.togglePasswordVisibility();
       component.togglePasswordVisibility();
       expect(component.showPassword).toBe(false);
@@ -173,7 +175,7 @@ describe('InputComponent', () => {
     });
 
     it('should not have toggle button for non-password types', () => {
-      component.type = 'text';
+      fixture.componentRef.setInput('type', 'text');
       fixture.detectChanges();
       const toggleBtn = fixture.debugElement.query(
         By.css('.app-input__password-toggle'),
@@ -182,7 +184,7 @@ describe('InputComponent', () => {
     });
 
     it('should have toggle button for password type', () => {
-      component.type = 'password';
+      fixture.componentRef.setInput('type', 'password');
       fixture.detectChanges();
       const toggleBtn = fixture.debugElement.query(
         By.css('.app-input__password-toggle'),
@@ -232,7 +234,7 @@ describe('InputComponent', () => {
     it('should respect disabled state from setDisabledState', () => {
       component.setDisabledState(true);
       fixture.detectChanges();
-      expect(component.disabled).toBe(true);
+      expect(component.isDisabled()).toBe(true);
       expect(nativeInput.disabled).toBe(true);
     });
   });
@@ -289,9 +291,9 @@ describe('InputComponent', () => {
 
   describe('Combination Tests', () => {
     it('should handle password input with error state', () => {
-      component.type = 'password';
-      component.errorMessage = 'Password is too weak';
-      component.label = 'Password';
+      fixture.componentRef.setInput('type', 'password');
+      fixture.componentRef.setInput('errorMessage', 'Password is too weak');
+      fixture.componentRef.setInput('label', 'Password');
       fixture.detectChanges();
 
       expect(nativeInput.type).toBe('password');
@@ -306,9 +308,9 @@ describe('InputComponent', () => {
       const onChangeSpy = jasmine.createSpy('onChange');
       const onTouchedSpy = jasmine.createSpy('onTouched');
 
-      component.type = 'text';
-      component.placeholder = 'Enter email';
-      component.label = 'Email';
+      fixture.componentRef.setInput('type', 'text');
+      fixture.componentRef.setInput('placeholder', 'Enter email');
+      fixture.componentRef.setInput('label', 'Email');
       component.registerOnChange(onChangeSpy);
       component.registerOnTouched(onTouchedSpy);
       fixture.detectChanges();

@@ -25,7 +25,7 @@ export interface User {
   userType: UserType;
   mechanicLevel?: MechanicLevel;
   workshopId?: string;
-  preferredLanguage: string;
+  preferredLanguage: string | null;
   allowSharing: boolean;
 }
 

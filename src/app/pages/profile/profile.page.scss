@@ -40,6 +40,10 @@
     border-radius: t.$radius-full;
     background: t.$color-surface-alt;
   }
+
+  &--danger {
+    color: t.$color-danger;
+  }
 }
 
 // ---------------------------------------------------------------------------

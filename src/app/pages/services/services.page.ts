@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { MaintenanceLogService } from '../../core/ports/maintenance-log.port';
 import { MaintenanceLog } from '../../core/models/maintenance-log.model';
 import { MaintenanceType } from '../../core/models/job.model';
+import { TranslatePipe } from '@ngx-translate/core';
 import {
   LucideAngularModule,
   ChevronLeftIcon,
@@ -20,7 +21,7 @@ import {
   templateUrl: './services.page.html',
   styleUrls: ['./services.page.scss'],
   standalone: true,
-  imports: [CommonModule, LucideAngularModule],
+  imports: [CommonModule, LucideAngularModule, TranslatePipe],
 })
 export class ServicesPage implements OnInit {
   private logService = inject(MaintenanceLogService);

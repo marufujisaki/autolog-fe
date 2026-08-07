@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 /**
@@ -21,11 +21,11 @@ import { CommonModule } from '@angular/common';
 })
 export class EmptyStateComponent {
   /** The icon or emoji displayed in the empty state. */
-  @Input() icon = '📭';
+  readonly icon = input('📭');
 
   /** The main heading text describing the empty state. */
-  @Input() title = 'No items';
+  readonly title = input('No items');
 
   /** Optional description text providing more context. */
-  @Input() description?: string;
+  readonly description = input<string>();
 }

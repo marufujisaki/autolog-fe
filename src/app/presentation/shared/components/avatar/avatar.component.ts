@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 /**
@@ -26,14 +26,14 @@ export type AvatarSize = 'sm' | 'md' | 'lg';
 })
 export class AvatarComponent {
   /** URL to the image displayed in the avatar. */
-  @Input() imageUrl?: string;
+  readonly imageUrl = input<string>();
 
   /** Initials or short text shown as fallback when no image is provided. */
-  @Input() initials?: string;
+  readonly initials = input<string>();
 
   /** Size of the avatar. Defaults to "md" (Requirement 12.4). */
-  @Input() size: AvatarSize = 'md';
+  readonly size = input<AvatarSize>('md');
 
   /** Accessible alt text or description for the avatar. */
-  @Input() ariaLabel?: string;
+  readonly ariaLabel = input<string>();
 }

@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 /**
@@ -26,8 +26,8 @@ export type CardVariant = 'elevated' | 'outlined';
 })
 export class CardComponent {
   /** Visual variant of the card. Defaults to "elevated" (Requirement 12.4). */
-  @Input() variant: CardVariant = 'elevated';
+  readonly variant = input<CardVariant>('elevated');
 
   /** Optional padding applied to the card content. Defaults to true. */
-  @Input() padded = true;
+  readonly padded = input(true);
 }

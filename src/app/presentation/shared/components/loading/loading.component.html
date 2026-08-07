@@ -1,14 +1,14 @@
 <div
   class="app-loading"
-  [class.app-loading--sm]="size === 'sm'"
-  [class.app-loading--md]="size === 'md'"
-  [class.app-loading--lg]="size === 'lg'"
+  [class.app-loading--sm]="size() === 'sm'"
+  [class.app-loading--md]="size() === 'md'"
+  [class.app-loading--lg]="size() === 'lg'"
   role="status"
   aria-live="polite"
   aria-busy="true"
-  [attr.aria-label]="ariaLabel"
+  [attr.aria-label]="ariaLabel()"
 >
   <div class="app-loading__spinner"></div>
 
-  <p *ngIf="text !== undefined" class="app-loading__text">{{ text }}</p>
+  <p *ngIf="text() !== undefined" class="app-loading__text">{{ text() }}</p>
 </div>

@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 /**
@@ -27,11 +27,11 @@ export type LoadingSize = 'sm' | 'md' | 'lg';
 })
 export class LoadingComponent {
   /** Size of the spinner. Defaults to "md" (Requirement 12.4). */
-  @Input() size: LoadingSize = 'md';
+  readonly size = input<LoadingSize>('md');
 
   /** Optional loading text displayed below the spinner. */
-  @Input() text?: string;
+  readonly text = input<string>();
 
   /** Accessible label for the loading indicator. */
-  @Input() ariaLabel = 'Loading';
+  readonly ariaLabel = input('Loading');
 }

@@ -1,6 +1,7 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SwipeToDismissDirective } from '../../directives/swipe-to-dismiss.directive';
+import { TranslatePipe } from '@ngx-translate/core';
 
 /**
  * Design System modal component.
@@ -15,7 +16,7 @@ import { SwipeToDismissDirective } from '../../directives/swipe-to-dismiss.direc
 @Component({
   selector: 'app-modal',
   standalone: true,
-  imports: [CommonModule, SwipeToDismissDirective],
+  imports: [CommonModule, SwipeToDismissDirective, TranslatePipe],
   templateUrl: './modal.component.html',
   styleUrls: ['./modal.component.scss'],
 })
@@ -26,17 +27,16 @@ export class ModalComponent {
    * Controls whether the modal is visible. When true, the modal and backdrop
    * are rendered and interactive.
    */
-  @Input() isOpen = false;
+  readonly isOpen = input(false);
 
   /** Optional title rendered in the modal header. */
-  @Input() title?: string;
+  readonly title = input<string>();
 
   /** Visual layout variant used by the design system modal. */
-  @Input() variant: 'default' | 'bottom-sheet' | 'confirmation-sheet' =
-    'default';
+  readonly variant = input<'default' | 'bottom-sheet' | 'confirmation-sheet'>('default');
 
   /** Shows the close button for layouts that normally omit it. */
-  @Input() showCloseButton = false;
+  readonly showCloseButton = input(false);
 
   /** Unique ID for linking aria-labelledby to the title element. */
   readonly modalTitleId = `app-modal-title-${ModalComponent.nextId++}`;
@@ -45,20 +45,23 @@ export class ModalComponent {
    * Emitted when the user requests to close the modal (e.g., by clicking
    * the backdrop, close button, or cancel action).
    */
-  @Output() closed = new EventEmitter<void>();
+  readonly closed = output<void>();
 
   /** Sheet layouts can be dragged down from their header to close. */
   get isSheet(): boolean {
+    const variant = this.variant();
     return (
-      this.variant === 'bottom-sheet' || this.variant === 'confirmation-sheet'
+      variant === 'bottom-sheet' || variant === 'confirmation-sheet'
     );
   }
 
   onBackdropClick(): void {
+    // TODO: The 'emit' function requires a mandatory void argument
     this.closed.emit();
   }
 
   onCloseClick(): void {
+    // TODO: The 'emit' function requires a mandatory void argument
     this.closed.emit();
   }
 }

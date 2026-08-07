@@ -23,18 +23,18 @@ describe('AvatarComponent', () => {
 
   describe('Size Variants', () => {
     it('should default to size "md"', () => {
-      expect(component.size).toBe('md');
+      expect(component.size()).toBe('md');
       expect(avatarElement.classList.contains('app-avatar--md')).toBe(true);
     });
 
     it('should render size "sm"', () => {
-      component.size = 'sm';
+      fixture.componentRef.setInput('size', 'sm');
       fixture.detectChanges();
       expect(avatarElement.classList.contains('app-avatar--sm')).toBe(true);
     });
 
     it('should render size "lg"', () => {
-      component.size = 'lg';
+      fixture.componentRef.setInput('size', 'lg');
       fixture.detectChanges();
       expect(avatarElement.classList.contains('app-avatar--lg')).toBe(true);
     });
@@ -42,7 +42,7 @@ describe('AvatarComponent', () => {
     it('should change size dynamically', () => {
       const sizes: AvatarSize[] = ['sm', 'md', 'lg'];
       sizes.forEach((size) => {
-        component.size = size;
+        fixture.componentRef.setInput('size', size);
         fixture.detectChanges();
         expect(avatarElement.classList.contains(`app-avatar--${size}`)).toBe(
           true,
@@ -51,11 +51,11 @@ describe('AvatarComponent', () => {
     });
 
     it('should remove old size class when switching', () => {
-      component.size = 'sm';
+      fixture.componentRef.setInput('size', 'sm');
       fixture.detectChanges();
       expect(avatarElement.classList.contains('app-avatar--sm')).toBe(true);
 
-      component.size = 'lg';
+      fixture.componentRef.setInput('size', 'lg');
       fixture.detectChanges();
       expect(avatarElement.classList.contains('app-avatar--sm')).toBe(false);
       expect(avatarElement.classList.contains('app-avatar--lg')).toBe(true);
@@ -64,7 +64,7 @@ describe('AvatarComponent', () => {
 
   describe('Image Display', () => {
     it('should not display image when imageUrl is not provided', () => {
-      component.imageUrl = undefined;
+      fixture.componentRef.setInput('imageUrl', undefined);
       fixture.detectChanges();
 
       const img = fixture.debugElement.query(By.css('img'));
@@ -72,7 +72,7 @@ describe('AvatarComponent', () => {
     });
 
     it('should display image when imageUrl is provided', () => {
-      component.imageUrl = 'https://example.com/avatar.jpg';
+      fixture.componentRef.setInput('imageUrl', 'https://example.com/avatar.jpg');
       fixture.detectChanges();
 
       const img = fixture.debugElement.query(By.css('img'));
@@ -83,8 +83,8 @@ describe('AvatarComponent', () => {
     });
 
     it('should set alt attribute for image', () => {
-      component.imageUrl = 'https://example.com/avatar.jpg';
-      component.ariaLabel = 'John Doe';
+      fixture.componentRef.setInput('imageUrl', 'https://example.com/avatar.jpg');
+      fixture.componentRef.setInput('ariaLabel', 'John Doe');
       fixture.detectChanges();
 
       const img = fixture.debugElement.query(By.css('img'));
@@ -92,7 +92,7 @@ describe('AvatarComponent', () => {
     });
 
     it('should update image URL dynamically', () => {
-      component.imageUrl = 'https://example.com/avatar1.jpg';
+      fixture.componentRef.setInput('imageUrl', 'https://example.com/avatar1.jpg');
       fixture.detectChanges();
 
       let img = fixture.debugElement.query(By.css('img'));
@@ -100,7 +100,7 @@ describe('AvatarComponent', () => {
         'avatar1.jpg',
       );
 
-      component.imageUrl = 'https://example.com/avatar2.jpg';
+      fixture.componentRef.setInput('imageUrl', 'https://example.com/avatar2.jpg');
       fixture.detectChanges();
 
       img = fixture.debugElement.query(By.css('img'));
@@ -110,7 +110,7 @@ describe('AvatarComponent', () => {
     });
 
     it('should have rounded class for circular appearance', () => {
-      component.imageUrl = 'https://example.com/avatar.jpg';
+      fixture.componentRef.setInput('imageUrl', 'https://example.com/avatar.jpg');
       fixture.detectChanges();
 
       const img = fixture.debugElement.query(By.css('img'));
@@ -122,7 +122,7 @@ describe('AvatarComponent', () => {
 
   describe('Initials Fallback', () => {
     it('should not display initials when not provided', () => {
-      component.initials = undefined;
+      fixture.componentRef.setInput('initials', undefined);
       fixture.detectChanges();
 
       const initialsSpan = fixture.debugElement.query(
@@ -132,7 +132,7 @@ describe('AvatarComponent', () => {
     });
 
     it('should display initials when provided', () => {
-      component.initials = 'JD';
+      fixture.componentRef.setInput('initials', 'JD');
       fixture.detectChanges();
 
       const initialsSpan = fixture.debugElement.query(
@@ -143,8 +143,8 @@ describe('AvatarComponent', () => {
     });
 
     it('should display initials when image is not provided', () => {
-      component.imageUrl = undefined;
-      component.initials = 'AB';
+      fixture.componentRef.setInput('imageUrl', undefined);
+      fixture.componentRef.setInput('initials', 'AB');
       fixture.detectChanges();
 
       const initialsSpan = fixture.debugElement.query(
@@ -155,8 +155,8 @@ describe('AvatarComponent', () => {
     });
 
     it('should use image over initials when both are provided', () => {
-      component.imageUrl = 'https://example.com/avatar.jpg';
-      component.initials = 'JD';
+      fixture.componentRef.setInput('imageUrl', 'https://example.com/avatar.jpg');
+      fixture.componentRef.setInput('initials', 'JD');
       fixture.detectChanges();
 
       const img = fixture.debugElement.query(By.css('img'));
@@ -169,14 +169,14 @@ describe('AvatarComponent', () => {
     });
 
     it('should switch to initials when image URL is removed', () => {
-      component.imageUrl = 'https://example.com/avatar.jpg';
-      component.initials = 'JD';
+      fixture.componentRef.setInput('imageUrl', 'https://example.com/avatar.jpg');
+      fixture.componentRef.setInput('initials', 'JD');
       fixture.detectChanges();
 
       let img = fixture.debugElement.query(By.css('img'));
       expect(img).toBeTruthy();
 
-      component.imageUrl = undefined;
+      fixture.componentRef.setInput('imageUrl', undefined);
       fixture.detectChanges();
 
       img = fixture.debugElement.query(By.css('img'));
@@ -190,7 +190,7 @@ describe('AvatarComponent', () => {
     });
 
     it('should support single character initials', () => {
-      component.initials = 'A';
+      fixture.componentRef.setInput('initials', 'A');
       fixture.detectChanges();
 
       const initialsSpan = fixture.debugElement.query(
@@ -200,7 +200,7 @@ describe('AvatarComponent', () => {
     });
 
     it('should support multiple character initials', () => {
-      component.initials = 'ABC';
+      fixture.componentRef.setInput('initials', 'ABC');
       fixture.detectChanges();
 
       const initialsSpan = fixture.debugElement.query(
@@ -216,7 +216,7 @@ describe('AvatarComponent', () => {
     });
 
     it('should set aria-label when provided', () => {
-      component.ariaLabel = 'User avatar for John Doe';
+      fixture.componentRef.setInput('ariaLabel', 'User avatar for John Doe');
       fixture.detectChanges();
       expect(avatarElement.getAttribute('aria-label')).toBe(
         'User avatar for John Doe',
@@ -224,8 +224,8 @@ describe('AvatarComponent', () => {
     });
 
     it('should use aria-label for image alt text', () => {
-      component.imageUrl = 'https://example.com/avatar.jpg';
-      component.ariaLabel = 'Jane Smith';
+      fixture.componentRef.setInput('imageUrl', 'https://example.com/avatar.jpg');
+      fixture.componentRef.setInput('ariaLabel', 'Jane Smith');
       fixture.detectChanges();
 
       const img = fixture.debugElement.query(By.css('img'));
@@ -233,8 +233,8 @@ describe('AvatarComponent', () => {
     });
 
     it('should support aria-label with initials', () => {
-      component.initials = 'JS';
-      component.ariaLabel = 'Jane Smith initials';
+      fixture.componentRef.setInput('initials', 'JS');
+      fixture.componentRef.setInput('ariaLabel', 'Jane Smith initials');
       fixture.detectChanges();
 
       expect(avatarElement.getAttribute('aria-label')).toBe(
@@ -272,9 +272,9 @@ describe('AvatarComponent', () => {
 
   describe('Combination Tests', () => {
     it('should handle avatar with image and aria-label', () => {
-      component.imageUrl = 'https://example.com/avatar.jpg';
-      component.ariaLabel = 'User profile picture';
-      component.size = 'lg';
+      fixture.componentRef.setInput('imageUrl', 'https://example.com/avatar.jpg');
+      fixture.componentRef.setInput('ariaLabel', 'User profile picture');
+      fixture.componentRef.setInput('size', 'lg');
       fixture.detectChanges();
 
       const img = fixture.debugElement.query(By.css('img'));
@@ -286,12 +286,12 @@ describe('AvatarComponent', () => {
     });
 
     it('should handle avatar with initials and different sizes', () => {
-      component.initials = 'MR';
-      component.ariaLabel = 'Maria Rodriguez';
+      fixture.componentRef.setInput('initials', 'MR');
+      fixture.componentRef.setInput('ariaLabel', 'Maria Rodriguez');
 
       const sizes: AvatarSize[] = ['sm', 'md', 'lg'];
       sizes.forEach((size) => {
-        component.size = size;
+        fixture.componentRef.setInput('size', size);
         fixture.detectChanges();
 
         const initialsSpan = fixture.debugElement.query(
@@ -305,16 +305,16 @@ describe('AvatarComponent', () => {
     });
 
     it('should switch between image and initials at different sizes', () => {
-      component.imageUrl = 'https://example.com/avatar.jpg';
-      component.initials = 'AB';
+      fixture.componentRef.setInput('imageUrl', 'https://example.com/avatar.jpg');
+      fixture.componentRef.setInput('initials', 'AB');
       fixture.detectChanges();
 
-      component.size = 'sm';
+      fixture.componentRef.setInput('size', 'sm');
       fixture.detectChanges();
       expect(fixture.debugElement.query(By.css('img'))).toBeTruthy();
 
-      component.imageUrl = undefined;
-      component.size = 'lg';
+      fixture.componentRef.setInput('imageUrl', undefined);
+      fixture.componentRef.setInput('size', 'lg');
       fixture.detectChanges();
 
       expect(fixture.debugElement.query(By.css('img'))).toBeNull();
@@ -329,11 +329,11 @@ describe('AvatarComponent', () => {
       const fixture2 = TestBed.createComponent(AvatarComponent);
       const component2 = fixture2.componentInstance;
 
-      component.imageUrl = 'https://example.com/avatar1.jpg';
-      component.size = 'sm';
+      fixture.componentRef.setInput('imageUrl', 'https://example.com/avatar1.jpg');
+      fixture.componentRef.setInput('size', 'sm');
 
-      component2.initials = 'AB';
-      component2.size = 'lg';
+      fixture2.componentRef.setInput('initials', 'AB');
+      fixture2.componentRef.setInput('size', 'lg');
 
       fixture.detectChanges();
       fixture2.detectChanges();

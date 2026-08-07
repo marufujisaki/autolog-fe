@@ -1,23 +1,23 @@
 <div
   class="app-avatar"
-  [class.app-avatar--sm]="size === 'sm'"
-  [class.app-avatar--md]="size === 'md'"
-  [class.app-avatar--lg]="size === 'lg'"
-  [attr.aria-label]="ariaLabel"
+  [class.app-avatar--sm]="size() === 'sm'"
+  [class.app-avatar--md]="size() === 'md'"
+  [class.app-avatar--lg]="size() === 'lg'"
+  [attr.aria-label]="ariaLabel()"
   role="img"
 >
   <img
-    *ngIf="imageUrl"
+    *ngIf="imageUrl()"
     class="app-avatar__image"
-    [src]="imageUrl"
-    [attr.alt]="ariaLabel || 'Avatar'"
+    [src]="imageUrl()"
+    [attr.alt]="ariaLabel() || 'Avatar'"
   />
 
-  <span *ngIf="!imageUrl && initials" class="app-avatar__initials">{{
-    initials
+  <span *ngIf="!imageUrl() && initials()" class="app-avatar__initials">{{
+    initials()
   }}</span>
 
-  <span *ngIf="!imageUrl && !initials" class="app-avatar__placeholder">
+  <span *ngIf="!imageUrl() && !initials()" class="app-avatar__placeholder">
     👤
   </span>
 </div>

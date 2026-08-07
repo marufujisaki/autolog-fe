@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   FormBuilder,
@@ -40,7 +40,7 @@ export class ForgotPasswordPage {
     email: ['', [Validators.required, Validators.email]],
   });
 
-  isLoading = false;
+  readonly isLoading = signal(false);
 
   get emailControl(): FormControl<string> {
     return this.form.get('email') as FormControl<string>;

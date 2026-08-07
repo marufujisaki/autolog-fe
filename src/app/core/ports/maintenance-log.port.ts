@@ -3,6 +3,8 @@
  * Implemented by: HttpMaintenanceLogService (data layer)
  */
 
+import { HttpResourceRef } from '@angular/common/http';
+import { Signal } from '@angular/core';
 import { Observable } from 'rxjs';
 import { CreateJobData, Job } from '../models/job.model';
 import {
@@ -12,12 +14,27 @@ import {
 } from '../models/maintenance-log.model';
 
 export abstract class MaintenanceLogService {
-  abstract getLogs(
+  /** Reactively refetches when `vehicleId` or `page` change. */
+  abstract getLogsResource(
+    vehicleId: Signal<string>,
+    page: Signal<number>,
+    size: number,
+  ): HttpResourceRef<PaginatedResponse<MaintenanceLog> | undefined>;
+
+  abstract getLogResource(logId: Signal<string>): HttpResourceRef<MaintenanceLog | undefined>;
+
+  /**
+   * Observable escape hatch for batch/imperative reads that don't fit a
+   * single stable resource — e.g. a `forkJoin` looking up one page of logs
+   * per vehicle across a dynamic list (dashboard's "last updated" lookup).
+   * Prefer `getLogsResource` for anything that's just "load logs for a page."
+   */
+  abstract getLogsPage(
     vehicleId: string,
     page: number,
     size: number,
   ): Observable<PaginatedResponse<MaintenanceLog>>;
-  abstract getLog(logId: string): Observable<MaintenanceLog>;
+
   abstract createLog(
     vehicleId: string,
     data: CreateLogData,
@@ -31,5 +48,5 @@ export abstract class MaintenanceLogService {
   abstract removeJob(logId: string, jobId: string): Observable<void>;
 
   /** Get previously-used mechanic names for the current user */
-  abstract getMechanicNames(): Observable<string[]>;
+  abstract getMechanicNamesResource(): HttpResourceRef<string[] | undefined>;
 }

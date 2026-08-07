@@ -68,8 +68,8 @@
           ></app-input>
         </div>
 
-        @if (errorMessage) {
-        <div class="error-alert">{{ errorMessage | translate }}</div>
+        @if (errorMessage()) {
+        <div class="error-alert">{{ errorMessage() | translate }}</div>
         }
       </ion-col>
     </ion-row>
@@ -79,7 +79,7 @@
           variant="primary"
           type="submit"
           [fullWidth]="true"
-          [disabled]="!signUpForm.valid || isLoading"
+          [disabled]="!signUpForm.valid || isLoading()"
           (clicked)="onSubmit()"
         >
           {{ 'auth.signUp' | translate }}

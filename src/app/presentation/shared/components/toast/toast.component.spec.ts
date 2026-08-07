@@ -7,6 +7,7 @@ import {
 import { ToastComponent, ToastType } from './toast.component';
 import { DebugElement } from '@angular/core';
 import { By } from '@angular/platform-browser';
+import { provideTranslateService } from '@ngx-translate/core';
 
 describe('ToastComponent', () => {
   let component: ToastComponent;
@@ -15,6 +16,7 @@ describe('ToastComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [ToastComponent],
+      providers: [provideTranslateService()],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ToastComponent);
@@ -28,8 +30,8 @@ describe('ToastComponent', () => {
 
   describe('Message Display', () => {
     it('should display message text', () => {
-      component.message = 'Operation successful';
-      component.isVisible = true;
+      fixture.componentRef.setInput('message', 'Operation successful');
+      fixture.componentRef.setInput('isVisible', true);
       fixture.detectChanges();
 
       const toast = fixture.debugElement.query(By.css('.app-toast'));
@@ -37,14 +39,14 @@ describe('ToastComponent', () => {
     });
 
     it('should update message dynamically', () => {
-      component.isVisible = true;
-      component.message = 'First message';
+      fixture.componentRef.setInput('isVisible', true);
+      fixture.componentRef.setInput('message', 'First message');
       fixture.detectChanges();
 
       let toast = fixture.debugElement.query(By.css('.app-toast'));
       expect(toast.nativeElement.textContent).toContain('First message');
 
-      component.message = 'Updated message';
+      fixture.componentRef.setInput('message', 'Updated message');
       fixture.detectChanges();
 
       toast = fixture.debugElement.query(By.css('.app-toast'));
@@ -52,8 +54,8 @@ describe('ToastComponent', () => {
     });
 
     it('should handle empty message', () => {
-      component.message = '';
-      component.isVisible = true;
+      fixture.componentRef.setInput('message', '');
+      fixture.componentRef.setInput('isVisible', true);
       fixture.detectChanges();
 
       const toast = fixture.debugElement.query(By.css('.app-toast'));
@@ -63,8 +65,8 @@ describe('ToastComponent', () => {
 
   describe('Toast Type Variants', () => {
     it('should default to type "info"', () => {
-      expect(component.type).toBe('info');
-      component.isVisible = true;
+      expect(component.type()).toBe('info');
+      fixture.componentRef.setInput('isVisible', true);
       fixture.detectChanges();
 
       const toast = fixture.debugElement.query(By.css('.app-toast'));
@@ -74,8 +76,8 @@ describe('ToastComponent', () => {
     });
 
     it('should render success type', () => {
-      component.type = 'success';
-      component.isVisible = true;
+      fixture.componentRef.setInput('type', 'success');
+      fixture.componentRef.setInput('isVisible', true);
       fixture.detectChanges();
 
       const toast = fixture.debugElement.query(By.css('.app-toast'));
@@ -85,8 +87,8 @@ describe('ToastComponent', () => {
     });
 
     it('should render error type', () => {
-      component.type = 'error';
-      component.isVisible = true;
+      fixture.componentRef.setInput('type', 'error');
+      fixture.componentRef.setInput('isVisible', true);
       fixture.detectChanges();
 
       const toast = fixture.debugElement.query(By.css('.app-toast'));
@@ -96,8 +98,8 @@ describe('ToastComponent', () => {
     });
 
     it('should render warning type', () => {
-      component.type = 'warning';
-      component.isVisible = true;
+      fixture.componentRef.setInput('type', 'warning');
+      fixture.componentRef.setInput('isVisible', true);
       fixture.detectChanges();
 
       const toast = fixture.debugElement.query(By.css('.app-toast'));
@@ -108,10 +110,10 @@ describe('ToastComponent', () => {
 
     it('should change type dynamically', () => {
       const types: ToastType[] = ['success', 'error', 'warning', 'info'];
-      component.isVisible = true;
+      fixture.componentRef.setInput('isVisible', true);
 
       types.forEach((type) => {
-        component.type = type;
+        fixture.componentRef.setInput('type', type);
         fixture.detectChanges();
 
         const toast = fixture.debugElement.query(By.css('.app-toast'));
@@ -124,7 +126,7 @@ describe('ToastComponent', () => {
 
   describe('Visibility Control', () => {
     it('should not render toast when isVisible is false', () => {
-      component.isVisible = false;
+      fixture.componentRef.setInput('isVisible', false);
       fixture.detectChanges();
 
       const toast = fixture.debugElement.query(By.css('.app-toast'));
@@ -132,7 +134,7 @@ describe('ToastComponent', () => {
     });
 
     it('should render toast when isVisible is true', () => {
-      component.isVisible = true;
+      fixture.componentRef.setInput('isVisible', true);
       fixture.detectChanges();
 
       const toast = fixture.debugElement.query(By.css('.app-toast'));
@@ -140,19 +142,19 @@ describe('ToastComponent', () => {
     });
 
     it('should toggle visibility dynamically', () => {
-      component.message = 'Test message';
+      fixture.componentRef.setInput('message', 'Test message');
 
-      component.isVisible = true;
+      fixture.componentRef.setInput('isVisible', true);
       fixture.detectChanges();
       let toast = fixture.debugElement.query(By.css('.app-toast'));
       expect(toast).toBeTruthy();
 
-      component.isVisible = false;
+      fixture.componentRef.setInput('isVisible', false);
       fixture.detectChanges();
       toast = fixture.debugElement.query(By.css('.app-toast'));
       expect(toast).toBeNull();
 
-      component.isVisible = true;
+      fixture.componentRef.setInput('isVisible', true);
       fixture.detectChanges();
       toast = fixture.debugElement.query(By.css('.app-toast'));
       expect(toast).toBeTruthy();
@@ -161,16 +163,16 @@ describe('ToastComponent', () => {
 
   describe('Auto-Dismiss Duration', () => {
     it('should default to 3000ms duration', () => {
-      expect(component.duration).toBe(3000);
+      expect(component.duration()).toBe(3000);
     });
 
     it('should auto-dismiss after specified duration', fakeAsync(() => {
       const dismissedSpy = jasmine.createSpy('dismissed');
       component.dismissed.subscribe(dismissedSpy);
 
-      component.message = 'Auto-dismiss message';
-      component.duration = 1000;
-      component.isVisible = true;
+      fixture.componentRef.setInput('message', 'Auto-dismiss message');
+      fixture.componentRef.setInput('duration', 1000);
+      fixture.componentRef.setInput('isVisible', true);
       fixture.detectChanges();
 
       component.ngOnInit();
@@ -179,16 +181,16 @@ describe('ToastComponent', () => {
 
       tick(1000);
       expect(dismissedSpy).toHaveBeenCalled();
-      expect(component.isVisible).toBe(false);
+      expect(component.visible()).toBe(false);
     }));
 
     it('should not auto-dismiss when duration is 0', fakeAsync(() => {
       const dismissedSpy = jasmine.createSpy('dismissed');
       component.dismissed.subscribe(dismissedSpy);
 
-      component.message = 'Persistent message';
-      component.duration = 0;
-      component.isVisible = true;
+      fixture.componentRef.setInput('message', 'Persistent message');
+      fixture.componentRef.setInput('duration', 0);
+      fixture.componentRef.setInput('isVisible', true);
       fixture.detectChanges();
 
       component.ngOnInit();
@@ -201,9 +203,9 @@ describe('ToastComponent', () => {
       const dismissedSpy = jasmine.createSpy('dismissed');
       component.dismissed.subscribe(dismissedSpy);
 
-      component.message = 'Persistent message';
-      component.duration = -1;
-      component.isVisible = true;
+      fixture.componentRef.setInput('message', 'Persistent message');
+      fixture.componentRef.setInput('duration', -1);
+      fixture.componentRef.setInput('isVisible', true);
       fixture.detectChanges();
 
       component.ngOnInit();
@@ -216,8 +218,8 @@ describe('ToastComponent', () => {
       const dismissedSpy = jasmine.createSpy('dismissed');
       component.dismissed.subscribe(dismissedSpy);
 
-      component.duration = 500;
-      component.isVisible = true;
+      fixture.componentRef.setInput('duration', 500);
+      fixture.componentRef.setInput('isVisible', true);
       fixture.detectChanges();
 
       component.ngOnInit();
@@ -238,18 +240,18 @@ describe('ToastComponent', () => {
     });
 
     it('should set isVisible to false when dismissed', () => {
-      component.isVisible = true;
+      fixture.componentRef.setInput('isVisible', true);
       component.dismiss();
 
-      expect(component.isVisible).toBe(false);
+      expect(component.visible()).toBe(false);
     });
 
     it('should allow manual dismiss via close button', () => {
       const dismissedSpy = jasmine.createSpy('dismissed');
       component.dismissed.subscribe(dismissedSpy);
 
-      component.isVisible = true;
-      component.message = 'Test';
+      fixture.componentRef.setInput('isVisible', true);
+      fixture.componentRef.setInput('message', 'Test');
       fixture.detectChanges();
 
       const closeBtn = fixture.debugElement.query(By.css('.app-toast__close'));
@@ -263,8 +265,8 @@ describe('ToastComponent', () => {
       const dismissedSpy = jasmine.createSpy('dismissed');
       component.dismissed.subscribe(dismissedSpy);
 
-      component.duration = 2000;
-      component.isVisible = true;
+      fixture.componentRef.setInput('duration', 2000);
+      fixture.componentRef.setInput('isVisible', true);
       fixture.detectChanges();
 
       component.ngOnInit();
@@ -279,8 +281,8 @@ describe('ToastComponent', () => {
 
   describe('Lifecycle Cleanup', () => {
     it('should clear timeout on destroy', fakeAsync(() => {
-      component.duration = 1000;
-      component.isVisible = true;
+      fixture.componentRef.setInput('duration', 1000);
+      fixture.componentRef.setInput('isVisible', true);
       fixture.detectChanges();
 
       component.ngOnInit();
@@ -291,14 +293,14 @@ describe('ToastComponent', () => {
       tick(1000);
       // If timeout was properly cleared, dismissed should not be called
       // This test verifies cleanup behavior
-      expect(component.isVisible).toBe(true); // Still true because manually destroyed
+      expect(component.visible()).toBe(true); // Still true because manually destroyed
     }));
   });
 
   describe('Accessibility', () => {
     it('should have role="status" for polite notifications', () => {
-      component.isVisible = true;
-      component.type = 'info';
+      fixture.componentRef.setInput('isVisible', true);
+      fixture.componentRef.setInput('type', 'info');
       fixture.detectChanges();
 
       const toast = fixture.debugElement.query(By.css('.app-toast'));
@@ -306,7 +308,7 @@ describe('ToastComponent', () => {
     });
 
     it('should have aria-live="polite"', () => {
-      component.isVisible = true;
+      fixture.componentRef.setInput('isVisible', true);
       fixture.detectChanges();
 
       const toast = fixture.debugElement.query(By.css('.app-toast'));
@@ -314,8 +316,8 @@ describe('ToastComponent', () => {
     });
 
     it('should have role="alert" for error toasts', () => {
-      component.isVisible = true;
-      component.type = 'error';
+      fixture.componentRef.setInput('isVisible', true);
+      fixture.componentRef.setInput('type', 'error');
       fixture.detectChanges();
 
       const toast = fixture.debugElement.query(By.css('.app-toast'));
@@ -326,7 +328,7 @@ describe('ToastComponent', () => {
 
   describe('No Ionic UI Elements', () => {
     it('should not render any ion-toast elements', () => {
-      component.isVisible = true;
+      fixture.componentRef.setInput('isVisible', true);
       fixture.detectChanges();
 
       const ionToast = fixture.debugElement.query(By.css('ion-toast'));
@@ -334,7 +336,7 @@ describe('ToastComponent', () => {
     });
 
     it('should only render native HTML', () => {
-      component.isVisible = true;
+      fixture.componentRef.setInput('isVisible', true);
       fixture.detectChanges();
 
       const ionElements = fixture.debugElement.queryAll(By.css('[ion-]'));
@@ -347,10 +349,10 @@ describe('ToastComponent', () => {
       const dismissedSpy = jasmine.createSpy('dismissed');
       component.dismissed.subscribe(dismissedSpy);
 
-      component.message = 'Changes saved successfully';
-      component.type = 'success';
-      component.duration = 2000;
-      component.isVisible = true;
+      fixture.componentRef.setInput('message', 'Changes saved successfully');
+      fixture.componentRef.setInput('type', 'success');
+      fixture.componentRef.setInput('duration', 2000);
+      fixture.componentRef.setInput('isVisible', true);
       fixture.detectChanges();
 
       component.ngOnInit();
@@ -371,10 +373,10 @@ describe('ToastComponent', () => {
       const dismissedSpy = jasmine.createSpy('dismissed');
       component.dismissed.subscribe(dismissedSpy);
 
-      component.message = 'An error occurred';
-      component.type = 'error';
-      component.duration = 0; // No auto-dismiss
-      component.isVisible = true;
+      fixture.componentRef.setInput('message', 'An error occurred');
+      fixture.componentRef.setInput('type', 'error');
+      fixture.componentRef.setInput('duration', 0); // No auto-dismiss
+      fixture.componentRef.setInput('isVisible', true);
       fixture.detectChanges();
 
       component.ngOnInit();
@@ -386,7 +388,7 @@ describe('ToastComponent', () => {
 
       component.dismiss();
       expect(dismissedSpy).toHaveBeenCalled();
-      expect(component.isVisible).toBe(false);
+      expect(component.visible()).toBe(false);
     });
 
     it('should handle multiple sequential toasts', fakeAsync(() => {
@@ -394,10 +396,10 @@ describe('ToastComponent', () => {
       component.dismissed.subscribe(dismissedSpy);
 
       // First toast
-      component.message = 'Toast 1';
-      component.type = 'info';
-      component.duration = 1000;
-      component.isVisible = true;
+      fixture.componentRef.setInput('message', 'Toast 1');
+      fixture.componentRef.setInput('type', 'info');
+      fixture.componentRef.setInput('duration', 1000);
+      fixture.componentRef.setInput('isVisible', true);
       fixture.detectChanges();
       component.ngOnInit();
 
@@ -405,10 +407,10 @@ describe('ToastComponent', () => {
       expect(dismissedSpy).toHaveBeenCalledTimes(1);
 
       // Second toast
-      component.message = 'Toast 2';
-      component.type = 'success';
-      component.duration = 1000;
-      component.isVisible = true;
+      fixture.componentRef.setInput('message', 'Toast 2');
+      fixture.componentRef.setInput('type', 'success');
+      fixture.componentRef.setInput('duration', 1000);
+      fixture.componentRef.setInput('isVisible', true);
       fixture.detectChanges();
       component.ngOnInit();
 
@@ -428,14 +430,14 @@ describe('ToastComponent', () => {
       component.dismissed.subscribe(dismissedSpy1);
       component2.dismissed.subscribe(dismissedSpy2);
 
-      component.message = 'Toast 1';
-      component.duration = 1000;
-      component.isVisible = true;
+      fixture.componentRef.setInput('message', 'Toast 1');
+      fixture.componentRef.setInput('duration', 1000);
+      fixture.componentRef.setInput('isVisible', true);
       component.ngOnInit();
 
-      component2.message = 'Toast 2';
-      component2.duration = 2000;
-      component2.isVisible = true;
+      fixture2.componentRef.setInput('message', 'Toast 2');
+      fixture2.componentRef.setInput('duration', 2000);
+      fixture2.componentRef.setInput('isVisible', true);
       component2.ngOnInit();
 
       tick(1000);

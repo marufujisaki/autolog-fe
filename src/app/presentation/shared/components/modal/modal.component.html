@@ -1,12 +1,12 @@
 <div
   class="app-modal"
-  [class.open]="isOpen"
-  [class.app-modal--bottom-sheet]="variant === 'bottom-sheet'"
-  [class.app-modal--confirmation-sheet]="variant === 'confirmation-sheet'"
-  *ngIf="isOpen"
+  [class.open]="isOpen()"
+  [class.app-modal--bottom-sheet]="variant() === 'bottom-sheet'"
+  [class.app-modal--confirmation-sheet]="variant() === 'confirmation-sheet'"
+  *ngIf="isOpen()"
   role="dialog"
   [attr.aria-modal]="true"
-  [attr.aria-labelledby]="title ? modalTitleId : null"
+  [attr.aria-labelledby]="title() ? modalTitleId : null"
 >
   <div class="app-modal__backdrop" (click)="onBackdropClick()"></div>
 
@@ -17,21 +17,21 @@
     [swipeHandleSelector]="'.app-modal__header'"
     (swipeDismissed)="onCloseClick()"
   >
-    <div class="app-modal__header" *ngIf="title">
+    <div class="app-modal__header" *ngIf="title()">
       <div
-        *ngIf="variant === 'bottom-sheet' || variant === 'confirmation-sheet'"
+        *ngIf="variant() === 'bottom-sheet' || variant() === 'confirmation-sheet'"
         class="app-modal__handle"
         aria-hidden="true"
       ></div>
-      <h2 class="app-modal__title" [id]="modalTitleId">{{ title }}</h2>
+      <h2 class="app-modal__title" [id]="modalTitleId">{{ title() }}</h2>
       <button
         *ngIf="
-          showCloseButton ||
-          (variant !== 'bottom-sheet' && variant !== 'confirmation-sheet')
+          showCloseButton() ||
+          (variant() !== 'bottom-sheet' && variant() !== 'confirmation-sheet')
         "
         type="button"
         class="app-modal__close"
-        aria-label="Close modal"
+        [attr.aria-label]="'common.close' | translate"
         (click)="onCloseClick(); $event.stopPropagation()"
       >
         ✕

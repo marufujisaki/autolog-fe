@@ -10,4 +10,6 @@ export abstract class ShareService {
   abstract generateShareLink(vehicleId: string): Observable<VehicleShareInfo>;
   abstract claimShare(shareToken: string, workshopId: string): Observable<void>;
   abstract revokeShare(vehicleId: string): Observable<void>;
+  /** A mechanic hides a shared vehicle from just their own dashboard/access. */
+  abstract unlinkVehicle(vehicleId: string): Observable<void>;
 }

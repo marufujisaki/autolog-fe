@@ -1,0 +1,53 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/tabs/vehicles"></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{ 'share.scanTitle' | translate }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="scan-vehicle-content">
+  <div class="scan-vehicle">
+    <p class="scan-vehicle__instructions">
+      {{ 'share.scanInstructions' | translate }}
+    </p>
+
+    <app-button
+      variant="primary"
+      [fullWidth]="true"
+      [disabled]="isScanning || isSubmitting"
+      (clicked)="startCameraScan()"
+    >
+      @if (isScanning) { {{ 'common.loading' | translate }} } @else {
+      {{ 'share.scanButton' | translate }} }
+    </app-button>
+
+    @if (errorMessage) {
+    <p class="scan-vehicle__error">{{ errorMessage }}</p>
+    }
+
+    <hr class="scan-vehicle__divider" />
+
+    <p class="scan-vehicle__manual-label">
+      {{ 'share.enterCodeManually' | translate }}
+    </p>
+
+    <form class="scan-vehicle__manual-form" (ngSubmit)="submitManualCode()">
+      <app-input
+        type="text"
+        [formControl]="manualCodeControl"
+        [placeholder]="'share.enterCodePlaceholder' | translate"
+      ></app-input>
+      <app-button
+        variant="secondary"
+        type="submit"
+        [fullWidth]="true"
+        [disabled]="isSubmitting"
+      >
+        @if (isSubmitting) { {{ 'common.loading' | translate }} } @else {
+        {{ 'share.linkVehicle' | translate }} }
+      </app-button>
+    </form>
+  </div>
+</ion-content>

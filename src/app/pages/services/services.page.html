@@ -1,17 +1,17 @@
 <div class="services-page">
   <!-- Header -->
   <header class="page-header">
-    <button class="back-btn" (click)="goBack()" aria-label="Go back">
+    <button class="back-btn" (click)="goBack()" [attr.aria-label]="'common.back' | translate">
       <lucide-angular [img]="ChevronLeftIcon" [size]="24"></lucide-angular>
     </button>
     <h1 class="header-title">AutoLog</h1>
-    <button class="search-btn" aria-label="Search">
+    <button class="search-btn" [attr.aria-label]="'common.search' | translate">
       <lucide-angular [img]="SearchIcon" [size]="24"></lucide-angular>
     </button>
   </header>
 
   <!-- Section Title -->
-  <h2 class="section-title">Services</h2>
+  <h2 class="section-title">{{ 'maintenance.services' | translate }}</h2>
 
   <!-- Log Cards -->
   <div class="log-list">

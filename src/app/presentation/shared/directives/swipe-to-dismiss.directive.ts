@@ -1,12 +1,4 @@
-import {
-  Directive,
-  ElementRef,
-  EventEmitter,
-  HostListener,
-  Input,
-  OnDestroy,
-  Output,
-} from '@angular/core';
+import { Directive, ElementRef, HostListener, OnDestroy, input, output, inject } from '@angular/core';
 
 /**
  * Adds a downward drag-to-dismiss interaction to a page-like host element.
@@ -17,17 +9,18 @@ import {
   standalone: true,
 })
 export class SwipeToDismissDirective implements OnDestroy {
-  @Input() swipeHandleSelector = '.page-header';
-  @Input() swipeDismissThreshold = 120;
+  private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
+
+  readonly swipeHandleSelector = input('.page-header');
+  readonly swipeDismissThreshold = input(120);
 
   /** Allows consumers to turn the gesture off without removing the directive. */
-  @Input() swipeToDismissEnabled = true;
+  readonly swipeToDismissEnabled = input(true);
 
   /** Interactive elements inside the handle that must keep their own behavior. */
-  @Input() swipeIgnoreSelector =
-    'button, a, input, textarea, select, [contenteditable="true"]';
+  readonly swipeIgnoreSelector = input('button, a, input, textarea, select, [contenteditable="true"]');
 
-  @Output() swipeDismissed = new EventEmitter<void>();
+  readonly swipeDismissed = output<void>();
 
   private pointerId: number | null = null;
   private startY = 0;
@@ -35,12 +28,10 @@ export class SwipeToDismissDirective implements OnDestroy {
   private isDragging = false;
   private dismissTimeout: ReturnType<typeof setTimeout> | null = null;
 
-  constructor(private readonly elementRef: ElementRef<HTMLElement>) {}
-
   @HostListener('pointerdown', ['$event'])
   onPointerDown(event: PointerEvent): void {
     if (
-      !this.swipeToDismissEnabled ||
+      !this.swipeToDismissEnabled() ||
       this.isDragging ||
       (event.pointerType === 'mouse' && event.button !== 0)
     ) {
@@ -48,11 +39,12 @@ export class SwipeToDismissDirective implements OnDestroy {
     }
 
     const target = event.target as Element | null;
-    if (!target?.closest(this.swipeHandleSelector)) {
+    if (!target?.closest(this.swipeHandleSelector())) {
       return;
     }
 
-    if (this.swipeIgnoreSelector && target.closest(this.swipeIgnoreSelector)) {
+    const swipeIgnoreSelector = this.swipeIgnoreSelector();
+    if (swipeIgnoreSelector && target.closest(swipeIgnoreSelector)) {
       return;
     }
 
@@ -107,7 +99,7 @@ export class SwipeToDismissDirective implements OnDestroy {
       return;
     }
 
-    const shouldDismiss = this.currentOffset >= this.swipeDismissThreshold;
+    const shouldDismiss = this.currentOffset >= this.swipeDismissThreshold();
     this.isDragging = false;
     this.pointerId = null;
 
@@ -118,6 +110,7 @@ export class SwipeToDismissDirective implements OnDestroy {
       host.style.transform = 'translate3d(0, 100%, 0)';
       host.style.opacity = '0';
       this.dismissTimeout = setTimeout(() => {
+        // TODO: The 'emit' function requires a mandatory void argument
         this.swipeDismissed.emit();
         this.dismissTimeout = null;
       }, 180);

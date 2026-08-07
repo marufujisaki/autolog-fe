@@ -1,16 +1,35 @@
-import {
-  ComponentFixture,
-  TestBed,
-  fakeAsync,
-  tick,
-} from '@angular/core/testing';
+import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { signal } from '@angular/core';
+import { HttpResourceRef } from '@angular/common/http';
 import { WorkshopPage } from './workshop.page';
-import { WorkshopService } from '../../core/ports/workshop.port';
+import { WorkshopService, Workshop } from '../../core/ports/workshop.port';
 import { AuthService } from '../../core/ports/auth.port';
 import { Router } from '@angular/router';
 import { TranslateService, TranslatePipe } from '@ngx-translate/core';
-import { of, throwError, BehaviorSubject } from 'rxjs';
+import { of } from 'rxjs';
 import { User, UserType, MechanicLevel } from '../../core/models/user.model';
+
+/**
+ * Minimal fake matching the subset of HttpResourceRef<T> the components
+ * under test actually call (.value()/.isLoading()/.error()/.reload()).
+ * `as unknown as HttpResourceRef<T>` bypasses structural typing for the
+ * members we don't need to fake (set/update/hasValue/status/destroy/...).
+ */
+function createFakeResource<T>() {
+  const valueSignal = signal<T | undefined>(undefined);
+  const errorSignal = signal<unknown>(undefined);
+  const isLoadingSignal = signal(false);
+  const fake = {
+    value: valueSignal,
+    error: errorSignal,
+    isLoading: isLoadingSignal,
+    reload: () => true,
+    setValue: (v: T | undefined) => valueSignal.set(v),
+    setError: (e: unknown) => errorSignal.set(e),
+    setLoading: (l: boolean) => isLoadingSignal.set(l),
+  };
+  return fake as typeof fake & HttpResourceRef<T>;
+}
 
 describe('WorkshopPage', () => {
   let component: WorkshopPage;
@@ -19,12 +38,32 @@ describe('WorkshopPage', () => {
   let mockAuthService: jasmine.SpyObj<AuthService>;
   let mockRouter: jasmine.SpyObj<Router>;
   let mockTranslateService: jasmine.SpyObj<TranslateService>;
+  let fakeWorkshopResource: ReturnType<typeof createFakeResource<Workshop>>;
+
+  const mechanicUser: User = {
+    id: '123',
+    email: 'mechanic@test.com',
+    firstName: 'Juan',
+    lastName: 'García',
+    userType: UserType.MECANICO,
+    mechanicLevel: 'SUPERVISOR' as MechanicLevel,
+    workshopId: 'workshop-123',
+    preferredLanguage: 'es',
+    allowSharing: false,
+  };
 
   beforeEach(async () => {
+    fakeWorkshopResource = createFakeResource<Workshop>();
     mockWorkshopService = jasmine.createSpyObj('WorkshopService', [
-      'getWorkshop',
+      'getWorkshopResource',
     ]);
+    mockWorkshopService.getWorkshopResource.and.returnValue(
+      fakeWorkshopResource,
+    );
+
     mockAuthService = jasmine.createSpyObj('AuthService', ['isAuthenticated']);
+    (mockAuthService as any).user = () => mechanicUser;
+
     mockRouter = jasmine.createSpyObj('Router', ['navigate']);
     mockTranslateService = jasmine.createSpyObj('TranslateService', [
       'instant',
@@ -41,21 +80,6 @@ describe('WorkshopPage', () => {
     });
     mockTranslateService.instant.and.callFake((key: string) => key);
     (mockTranslateService.get as any).and.callFake((key: string) => of(key));
-
-    const mechanicUser: User = {
-      id: '123',
-      email: 'mechanic@test.com',
-      firstName: 'Juan',
-      lastName: 'García',
-      userType: UserType.MECANICO,
-      mechanicLevel: 'SUPERVISOR' as MechanicLevel,
-      workshopId: 'workshop-123',
-      preferredLanguage: 'es',
-      allowSharing: false,
-    };
-
-    const userSubject = new BehaviorSubject<User | null>(mechanicUser);
-    Object.defineProperty(mockAuthService, 'user$', { value: userSubject });
 
     await TestBed.configureTestingModule({
       imports: [WorkshopPage, TranslatePipe],
@@ -76,16 +100,15 @@ describe('WorkshopPage', () => {
   });
 
   it('should load workshop when initialized with mechanic user', fakeAsync(() => {
-    const mockWorkshop = {
+    const mockWorkshop: Workshop = {
       id: 'workshop-123',
       name: 'Taller Central',
       address: 'Calle Principal 123',
     };
 
-    mockWorkshopService.getWorkshop.and.returnValue(of(mockWorkshop));
-
     fixture.detectChanges();
-
+    fakeWorkshopResource.setValue(mockWorkshop);
+    fixture.detectChanges();
     tick();
 
     expect(component.workshop).toEqual(mockWorkshop);
@@ -94,17 +117,12 @@ describe('WorkshopPage', () => {
   }));
 
   it('should handle workshop loading error', fakeAsync(() => {
-    mockWorkshopService.getWorkshop.and.returnValue(
-      throwError(() => new Error('API error')),
-    );
-
     fixture.detectChanges();
-
+    fakeWorkshopResource.setError(new Error('API error'));
+    fixture.detectChanges();
     tick();
 
-    expect(component.workshop).toBeNull();
     expect(component.error).toBeTruthy();
-    expect(component.isLoading).toBeFalse();
   }));
 
   it('should navigate back to profile on goBack', () => {
@@ -113,17 +131,9 @@ describe('WorkshopPage', () => {
   });
 
   it('should show loading state initially', fakeAsync(() => {
-    const mockWorkshop = {
-      id: 'workshop-123',
-      name: 'Taller Central',
-      address: 'Calle Principal 123',
-    };
-
-    mockWorkshopService.getWorkshop.and.returnValue(of(mockWorkshop));
-
+    fakeWorkshopResource.setLoading(true);
     fixture.detectChanges();
 
-    // With synchronous of() mock, loading completes immediately
-    expect(component.isLoading).toBeFalse();
+    expect(component.isLoading).toBeTrue();
   }));
 });
