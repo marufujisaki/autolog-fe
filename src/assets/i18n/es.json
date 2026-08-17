@@ -82,9 +82,9 @@
     "userType": "Tipo de Usuario",
     "userTypeLabel": "Selecciona tu rol",
     "userTypes": {
-      "CLIENTE": "Cliente (Solo Lectura)",
-      "USUARIO": "Usuario (Gestor)",
-      "MECANICO": "Mecánico (Taller)"
+      "CLIENT": "Cliente (Solo Lectura)",
+      "OWNER": "Usuario (Gestor)",
+      "MECHANIC": "Mecánico (Taller)"
     },
     "roles": {
       "person": "Persona",
@@ -295,6 +295,7 @@
     "lastName": "Apellido",
     "phone": "Teléfono",
     "mechanics": "Mecánicos",
+    "clients": "Lista de clientes",
     "loadError": "No pudimos cargar tu perfil. Inténtalo nuevamente.",
     "updateSuccess": "Perfil actualizado exitosamente",
     "updateError": "Error al actualizar el perfil",
@@ -337,14 +338,19 @@
       "WORKSHOP": "Mecánico del taller"
     }
   },
+  "clients": {
+    "vehicles": "Vehículos",
+    "empty": "Aún no tienes clientes con vehículos compartidos.",
+    "loadError": "No pudimos cargar tus clientes. Inténtalo nuevamente."
+  },
   "languages": {
     "spanish": "Español",
     "english": "English"
   },
   "userTypes": {
-    "CLIENTE": "Cliente (Solo Lectura)",
-    "USUARIO": "Usuario (Gestor)",
-    "MECANICO": "Mecánico (Taller)"
+    "CLIENT": "Cliente (Solo Lectura)",
+    "OWNER": "Usuario (Gestor)",
+    "MECHANIC": "Mecánico (Taller)"
   },
   "workshop": {
     "title": "Taller",

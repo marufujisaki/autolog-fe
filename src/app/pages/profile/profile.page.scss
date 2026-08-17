@@ -320,13 +320,20 @@
   margin: 2px 0 0;
 }
 
+.empty-text {
+  font-family: t.$font-family-base;
+  font-size: t.$font-size-base;
+  color: t.$color-text-secondary;
+  margin: 0;
+}
+
 // ---------------------------------------------------------------------------
 // Edit profile form + feedback
 // ---------------------------------------------------------------------------
 
 // `app-modal`'s bottom-sheet/confirmation-sheet variants default to a tall
 // fixed/auto height meant for long scrollable content. These popups (profile
-// form, CLIENTE/MECANICO confirmations) are all short, so each is sized to
+// form, CLIENT/MECHANIC confirmations) are all short, so each is sized to
 // fit its own content instead — scoped per-instance via this wrapper so
 // other bottom sheets elsewhere in the app keep their own default height.
 .auto-height-modal {

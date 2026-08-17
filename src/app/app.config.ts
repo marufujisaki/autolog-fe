@@ -36,6 +36,7 @@ import { WorkshopService } from './core/ports/workshop.port';
 import { SecureStorageService } from './core/ports/secure-storage.port';
 import { VehicleCatalogService } from './core/ports/vehicle-catalog.port';
 import { MechanicService } from './core/ports/mechanic.port';
+import { ClientService } from './core/ports/client.port';
 
 // HTTP service implementations (from data/http)
 import { HttpAuthService } from './data/http/http-auth.service';
@@ -46,6 +47,7 @@ import { HttpShareService } from './data/http/http-share.service';
 import { HttpWorkshopService } from './data/http/http-workshop.service';
 import { HttpVehicleCatalogService } from './data/http/http-vehicle-catalog.service';
 import { HttpMechanicService } from './data/http/http-mechanic.service';
+import { HttpClientService } from './data/http/http-client.service';
 
 // Storage implementations (from data/storage)
 import { CapacitorStorageService } from './data/storage/capacitor-storage.service';
@@ -113,5 +115,8 @@ export function getAppProviders(): ApplicationConfig['providers'] {
 
     // Service port bindings - Mechanic directory
     { provide: MechanicService, useClass: HttpMechanicService },
+
+    // Service port bindings - Mechanic's client list
+    { provide: ClientService, useClass: HttpClientService },
   ];
 }

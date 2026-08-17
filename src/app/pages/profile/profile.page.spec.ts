@@ -10,6 +10,8 @@ import { User, UserType } from '../../core/models/user.model';
 import { MechanicService } from '../../core/ports/mechanic.port';
 import { Mechanic, MechanicSource } from '../../core/models/mechanic.model';
 import { Workshop, WorkshopService } from '../../core/ports/workshop.port';
+import { ClientService } from '../../core/ports/client.port';
+import { Client } from '../../core/models/client.model';
 
 /**
  * Minimal fake matching the subset of HttpResourceRef<T> the component
@@ -40,10 +42,12 @@ describe('ProfilePage', () => {
   let mockTranslateService: jasmine.SpyObj<TranslateService>;
   let mockMechanicService: jasmine.SpyObj<MechanicService>;
   let mockWorkshopService: jasmine.SpyObj<WorkshopService>;
+  let mockClientService: jasmine.SpyObj<ClientService>;
   let userSignal: ReturnType<typeof signal<User | null>>;
   let fakeProfileResource: ReturnType<typeof createFakeResource<User>>;
   let fakeMechanicsResource: ReturnType<typeof createFakeResource<Mechanic[]>>;
   let fakeWorkshopsResource: ReturnType<typeof createFakeResource<Workshop[]>>;
+  let fakeClientsResource: ReturnType<typeof createFakeResource<Client[]>>;
 
   const testMechanic: Mechanic = {
     id: 'mechanic-1',
@@ -63,7 +67,7 @@ describe('ProfilePage', () => {
     firstName: 'John',
     lastName: 'Doe',
     phone: '+584120000000',
-    userType: UserType.USUARIO,
+    userType: UserType.OWNER,
     preferredLanguage: 'es',
     allowSharing: false,
   };
@@ -86,6 +90,8 @@ describe('ProfilePage', () => {
     fakeMechanicsResource.setValue([]);
     fakeWorkshopsResource = createFakeResource<Workshop[]>();
     fakeWorkshopsResource.setValue([]);
+    fakeClientsResource = createFakeResource<Client[]>();
+    fakeClientsResource.setValue([]);
 
     mockAuthService = jasmine.createSpyObj('AuthService', [
       'logout',
@@ -138,6 +144,11 @@ describe('ProfilePage', () => {
       fakeWorkshopsResource,
     );
 
+    mockClientService = jasmine.createSpyObj('ClientService', [
+      'getClientsResource',
+    ]);
+    mockClientService.getClientsResource.and.returnValue(fakeClientsResource);
+
     await TestBed.configureTestingModule({
       imports: [ProfilePage],
       providers: [
@@ -146,6 +157,7 @@ describe('ProfilePage', () => {
         { provide: TranslateService, useValue: mockTranslateService },
         { provide: MechanicService, useValue: mockMechanicService },
         { provide: WorkshopService, useValue: mockWorkshopService },
+        { provide: ClientService, useValue: mockClientService },
       ],
     }).compileComponents();
   });
@@ -182,7 +194,7 @@ describe('ProfilePage', () => {
     component.ngOnInit();
 
     expect(component.userTypeOptions.length).toBe(3);
-    expect(component.userTypeOptions[0].value).toBe(UserType.USUARIO);
+    expect(component.userTypeOptions[0].value).toBe(UserType.OWNER);
   });
 
   it('should prefill the edit form from the loaded profile', fakeAsync(() => {
@@ -212,7 +224,7 @@ describe('ProfilePage', () => {
       lastName: 'Doe',
       email: 'test@example.com',
       phone: '+584120000000',
-      userType: UserType.USUARIO,
+      userType: UserType.OWNER,
     });
     expect(component.showEditProfileModal).toBeFalse();
   }));
@@ -281,6 +293,28 @@ describe('ProfilePage', () => {
     );
     expect(component.mechanics.length).toBe(0);
   });
+
+  it('should load the client list for a mechanic user instead of the mechanics directory', fakeAsync(() => {
+    const mechanicUser: User = { ...testUser, userType: UserType.MECHANIC, workshopId: 'workshop-1' };
+    const testClient: Client = {
+      id: 'owner-1',
+      name: 'Juan Perez',
+      phone: '+584120000001',
+      email: 'juan@autolog.com',
+      vehicles: [{ id: 'vehicle-1', brand: 'Jeep', model: 'Grand Cherokee' }],
+    };
+    userSignal.set(mechanicUser);
+    fakeClientsResource.setValue([testClient]);
+
+    createComponent();
+    fixture.detectChanges();
+    tick();
+
+    expect(component.isMechanicUser()).toBeTrue();
+    expect(mockClientService.getClientsResource).toHaveBeenCalled();
+    expect(component.clients).toEqual([testClient]);
+    expect(component.formatClientVehicles(testClient)).toBe('Jeep Grand Cherokee');
+  }));
 
   it('should show a confirmation modal before logging out', () => {
     createComponent();

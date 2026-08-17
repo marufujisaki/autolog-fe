@@ -47,19 +47,19 @@ export class WelcomeSelectionPage {
 
   userTypes: UserTypeOption[] = [
     {
-      id: 'USUARIO',
+      id: 'OWNER',
       titleKey: 'auth.roles.person',
       descriptionKey: 'auth.roles.personDesc',
       icon: UserRoundIcon,
     },
     {
-      id: 'CLIENTE',
+      id: 'CLIENT',
       titleKey: 'auth.roles.client',
       descriptionKey: 'auth.roles.clientDesc',
       icon: HandshakeIcon,
     },
     {
-      id: 'MECANICO',
+      id: 'MECHANIC',
       titleKey: 'auth.roles.mechanic',
       descriptionKey: 'auth.roles.mechanicDesc',
       icon: WrenchIcon,

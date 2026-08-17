@@ -19,7 +19,7 @@ import { ButtonComponent } from '../../presentation/shared/components/button/but
 import { InputComponent } from '../../presentation/shared/components/input/input.component';
 
 /**
- * "Scan to link" page for MECANICO users: reads the QR a vehicle owner
+ * "Scan to link" page for MECHANIC users: reads the QR a vehicle owner
  * generates from the Share Vehicle sheet (or accepts the same link/token
  * pasted manually) and claims it, granting the mechanic's workshop access
  * to that vehicle.

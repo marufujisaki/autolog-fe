@@ -63,9 +63,9 @@ export class TabsPage {
     this.fabMenuOpen = false;
     this.newLogModalOpen = false;
 
-    // MECANICO users don't own vehicles to add — they link to one shared
+    // MECHANIC users don't own vehicles to add — they link to one shared
     // with them by scanning its QR/link instead.
-    if (this.authService.getUserType() === UserType.MECANICO) {
+    if (this.authService.getUserType() === UserType.MECHANIC) {
       void this.router.navigate(['/scan-vehicle']);
       return;
     }

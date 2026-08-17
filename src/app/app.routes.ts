@@ -12,7 +12,7 @@ import { UserType } from './core/models/user.model';
  * Route Structure:
  * - Public routes (welcome, login, sign-up) - no guards
  * - Authenticated routes (tabs, vehicles, profile) - authGuard
- * - Role-restricted routes (workshop) - authGuard + roleGuard(MECANICO)
+ * - Role-restricted routes (workshop) - authGuard + roleGuard(MECHANIC)
  *
  * All routes use lazy loading to optimize bundle size and initial load time.
  * The router uses Ionic's RouteReuseStrategy (configured in app.config.ts)
@@ -101,19 +101,19 @@ export const routes: Routes = [
   },
 
   // Role-restricted routes
-  // Workshop page is only accessible to MECANICO users (Requirement 3.6, 9.5)
+  // Workshop page is only accessible to MECHANIC users (Requirement 3.6, 9.5)
   {
     path: 'workshop',
     loadComponent: () =>
       import('./pages/workshop/workshop.page').then((m) => m.WorkshopPage),
-    canActivate: [authGuard, roleGuard([UserType.MECANICO])],
+    canActivate: [authGuard, roleGuard([UserType.MECHANIC])],
   },
-  // Scan-to-link page: only MECANICO users can claim a shared vehicle.
+  // Scan-to-link page: only MECHANIC users can claim a shared vehicle.
   {
     path: 'scan-vehicle',
     loadComponent: () =>
       import('./pages/scan-vehicle/scan-vehicle.page').then((m) => m.ScanVehiclePage),
-    canActivate: [authGuard, roleGuard([UserType.MECANICO])],
+    canActivate: [authGuard, roleGuard([UserType.MECHANIC])],
   },
 
   // Catch-all redirect to welcome page

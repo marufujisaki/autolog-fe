@@ -134,7 +134,7 @@ export class DashboardPage implements OnInit, OnDestroy {
     let list = this.vehiclesSignal();
     if (query) {
       list = list.filter((vehicle) =>
-        [vehicle.brand, vehicle.model, vehicle.licensePlate, vehicle.displayName]
+        [vehicle.brand, vehicle.model, vehicle.licensePlate, this.vehicleSubLabel(vehicle)]
           .filter((value): value is string => !!value)
           .some((value) => value.toLowerCase().includes(query)),
       );
@@ -145,15 +145,20 @@ export class DashboardPage implements OnInit, OnDestroy {
     return [...list].sort((a, b) => this.compareVehicles(a, b, sort));
   });
 
+  /** MECHANIC users see the owner's name instead of the vehicle's nickname/displayName. */
+  readonly isMechanicUser = computed(
+    () => this.authService.user()?.userType === UserType.MECHANIC,
+  );
+
   readonly canManageVehicleActions = computed(() =>
     this.isVehicleManager(this.authService.user()?.userType ?? null),
   );
-  /** USUARIO owners need `allowSharing` enabled; CLIENTE owners can always share. */
+  /** OWNER owners need `allowSharing` enabled; CLIENT owners can always share. */
   readonly canShareVehicles = computed(() => {
     const user = this.authService.user();
     if (!user) return false;
-    if (user.userType === UserType.CLIENTE) return true;
-    return user.userType === UserType.USUARIO && user.allowSharing;
+    if (user.userType === UserType.CLIENT) return true;
+    return user.userType === UserType.OWNER && user.allowSharing;
   });
   showEditModal = false;
   showDeleteModal = false;
@@ -200,7 +205,7 @@ export class DashboardPage implements OnInit, OnDestroy {
   }
 
   private isVehicleManager(userType: UserType | null): boolean {
-    return userType === UserType.USUARIO || userType === UserType.CLIENTE;
+    return userType === UserType.OWNER || userType === UserType.CLIENT;
   }
 
   private initializeEditForm(): void {
@@ -293,12 +298,17 @@ export class DashboardPage implements OnInit, OnDestroy {
     void this.router.navigate(['/vehicles', vehicleId]);
   }
 
-  /** True for vehicles a MECANICO has been shared access to (not their own). */
+  /** Owner name for MECHANIC users, vehicle nickname/displayName otherwise. */
+  vehicleSubLabel(vehicle: Vehicle): string {
+    return this.isMechanicUser() ? (vehicle.ownerName ?? '') : (vehicle.displayName ?? '');
+  }
+
+  /** True for vehicles a MECHANIC has been shared access to (not their own). */
   isSharedWithMechanic(vehicle: Vehicle): boolean {
     const user = this.authService.user();
     return (
       !!user &&
-      user.userType === UserType.MECANICO &&
+      user.userType === UserType.MECHANIC &&
       vehicle.ownerId !== user.id
     );
   }
@@ -520,7 +530,7 @@ export class DashboardPage implements OnInit, OnDestroy {
         );
       case 'nickname':
         return (
-          (a.displayName || '').localeCompare(b.displayName || '') * multiplier
+          this.vehicleSubLabel(a).localeCompare(this.vehicleSubLabel(b)) * multiplier
         );
       case 'brand':
         return a.brand.localeCompare(b.brand) * multiplier;

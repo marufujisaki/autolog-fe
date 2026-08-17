@@ -23,7 +23,7 @@ export class HttpWorkshopService extends WorkshopService {
     );
   }
 
-  /** Lists every registered workshop, for the "select your workshop" flow when becoming a MECANICO. */
+  /** Lists every registered workshop, for the "select your workshop" flow when becoming a MECHANIC. */
   override getWorkshopsResource(): HttpResourceRef<Workshop[] | undefined> {
     return httpResource<Workshop[]>(() => this.apiUrl);
   }

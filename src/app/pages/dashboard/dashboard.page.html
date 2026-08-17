@@ -130,8 +130,8 @@
       <div class="card-content">
         <h3 class="card-make">{{ vehicle.brand }}</h3>
         <h4 class="card-model">{{ vehicle.model }}</h4>
-        @if (vehicle.displayName) {
-        <p class="card-owner">{{ vehicle.displayName }}</p>
+        @if (vehicleSubLabel(vehicle)) {
+        <p class="card-owner">{{ vehicleSubLabel(vehicle) }}</p>
         }
         <div class="card-bottom">
           <div class="card-details">

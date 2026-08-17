@@ -13,7 +13,7 @@ import { ButtonComponent } from '../button/button.component';
 /**
  * "Share Vehicle" bottom sheet (Figma frame "Add Vehicle - Link client",
  * node 149:1968 / 152:*): QR code with the app logo in the center, plus a
- * "Share Link" action, so a USUARIO/CLIENTE owner can grant a mechanic
+ * "Share Link" action, so a OWNER/CLIENT owner can grant a mechanic
  * access to the vehicle. The QR/link is a short-lived (15 min) session —
  * while the sheet stays open past that window it silently regenerates.
  */

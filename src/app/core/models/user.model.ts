@@ -4,9 +4,9 @@
 
 /** Type of user account within the system. */
 export enum UserType {
-  CLIENTE = 'CLIENTE',
-  USUARIO = 'USUARIO',
-  MECANICO = 'MECANICO',
+  CLIENT = 'CLIENT',
+  OWNER = 'OWNER',
+  MECHANIC = 'MECHANIC',
 }
 
 /** Level of a mechanic within their workshop. */
@@ -36,7 +36,7 @@ export interface UpdateProfileData {
   email: string;
   phone?: string;
   userType: UserType;
-  /** Required only when `userType` is changing to MECANICO for a user who has never had a workshop. */
+  /** Required only when `userType` is changing to MECHANIC for a user who has never had a workshop. */
   workshopId?: string;
 }
 

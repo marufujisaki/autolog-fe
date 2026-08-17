@@ -16,6 +16,8 @@ export interface Vehicle {
   photoUrl?: string;
   cardColor?: string;
   displayName?: string;
+  /** Nombre del cliente dueño del vehículo. Solo lo envía el backend cuando quien consulta es un MECHANIC. */
+  ownerName?: string;
   createdAt: string;
   updatedAt: string;
 }

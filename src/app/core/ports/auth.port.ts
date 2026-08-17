@@ -67,7 +67,7 @@ export abstract class AuthService {
    */
   abstract updatePreferredLanguage(language: string): Observable<void>;
 
-  /** Update the user's sharing preference (USUARIO only) */
+  /** Update the user's sharing preference (OWNER only) */
   abstract updateAllowSharing(allowSharing: boolean): Observable<void>;
 
   /** Updates the authenticated user's editable profile fields. */

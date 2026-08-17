@@ -19,7 +19,7 @@ import { GoogleSigninButtonComponent } from '../../presentation/shared/component
 
 /**
  * SignUpPage - User registration page.
- * Supports all three user types: USUARIO, CLIENTE, MECANICO
+ * Supports all three user types: OWNER, CLIENT, MECHANIC
  * Requirement: 1.1, 1.3 (registration with role selection and mechanic fields)
  */
 @Component({
@@ -54,9 +54,9 @@ export class SignUpPage implements OnInit {
   readonly errorMessage = signal<string | null>(null);
 
   userTypeOptions = [
-    { label: 'Usuario', value: 'USUARIO' },
-    { label: 'Cliente', value: 'CLIENTE' },
-    { label: 'Mecánico', value: 'MECANICO' },
+    { label: 'Usuario', value: 'OWNER' },
+    { label: 'Cliente', value: 'CLIENT' },
+    { label: 'Mecánico', value: 'MECHANIC' },
   ];
 
   mechanicLevelOptions = [
@@ -98,7 +98,7 @@ export class SignUpPage implements OnInit {
       ],
       password: ['', [Validators.required, Validators.minLength(8)]],
       confirmPassword: ['', [Validators.required]],
-      userType: ['USUARIO', [Validators.required]],
+      userType: ['OWNER', [Validators.required]],
       mechanicLevel: ['AYUDANTE'],
       workshopId: [''],
     });
@@ -106,7 +106,7 @@ export class SignUpPage implements OnInit {
 
   private setupUserTypeListener(): void {
     this.signUpForm.get('userType')?.valueChanges.subscribe((userType) => {
-      this.isMechanico = userType === 'MECANICO';
+      this.isMechanico = userType === 'MECHANIC';
       const mechanicLevelControl = this.signUpForm.get('mechanicLevel');
       const workshopIdControl = this.signUpForm.get('workshopId');
 
@@ -152,7 +152,7 @@ export class SignUpPage implements OnInit {
       lastName: formValue.lastName,
       password: formValue.password,
       userType: formValue.userType,
-      ...(formValue.userType === 'MECANICO' && {
+      ...(formValue.userType === 'MECHANIC' && {
         mechanicLevel: formValue.mechanicLevel,
         workshopId: formValue.workshopId,
       }),

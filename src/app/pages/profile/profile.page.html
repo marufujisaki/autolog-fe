@@ -51,6 +51,7 @@
 
   <div class="divider"></div>
 
+  @if (!isMechanicUser()) {
   <!-- Mechanics Section -->
   <div class="section-header">
     <h3 class="section-title">{{ 'profile.mechanics' | translate }}</h3>
@@ -119,6 +120,34 @@
     </div>
     }
   </div>
+  } @else {
+  <!-- Clients Section (MECHANIC: owners of vehicles shared with their workshop) -->
+  <div class="section-header">
+    <h3 class="section-title">{{ 'profile.clients' | translate }}</h3>
+  </div>
+
+  <div class="mechanics-list">
+    @for (client of clients; track client.id) {
+    <div class="mechanic-card">
+      <div class="mechanic-icon" aria-hidden="true">
+        <lucide-angular [img]="UsersIcon" [size]="24"></lucide-angular>
+      </div>
+      <div class="mechanic-info">
+        <h4 class="mechanic-name">{{ client.name }}</h4>
+        @if (client.phone) {
+        <p class="mechanic-phone">{{ client.phone }}</p>
+        }
+        <p class="mechanic-contact">
+          {{ 'clients.vehicles' | translate }}:
+          {{ formatClientVehicles(client) }}
+        </p>
+      </div>
+    </div>
+    } @empty {
+    <p class="empty-text">{{ 'clients.empty' | translate }}</p>
+    }
+  </div>
+  }
 </div>
 
 <!-- Edit profile modal -->
@@ -188,7 +217,7 @@
   </app-modal>
 </div>
 
-<!-- CLIENTE downgrade confirmation -->
+<!-- CLIENT downgrade confirmation -->
 <div class="auto-height-modal">
   <app-modal
     [isOpen]="showClienteConfirmModal"
@@ -218,7 +247,7 @@
   </app-modal>
 </div>
 
-<!-- MECANICO workshop registration / selection -->
+<!-- MECHANIC workshop registration / selection -->
 <div class="auto-height-modal">
   <app-modal
     [isOpen]="showMecanicoConfirmModal"

@@ -23,7 +23,7 @@ describe('ScanVehiclePage', () => {
     email: 'mechanic@test.com',
     firstName: 'Juan',
     lastName: 'García',
-    userType: UserType.MECANICO,
+    userType: UserType.MECHANIC,
     workshopId: 'workshop-123',
     preferredLanguage: 'es',
     allowSharing: false,

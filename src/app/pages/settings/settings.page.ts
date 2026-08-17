@@ -68,7 +68,7 @@ export class SettingsPage implements OnDestroy {
       const user = this.authService.user();
       if (!user) return;
       this.allowSharing = user.allowSharing ?? false;
-      this.canManageSharing = user.userType === UserType.USUARIO;
+      this.canManageSharing = user.userType === UserType.OWNER;
       this.selectedLanguage =
         user.preferredLanguage || this.translationService.getCurrentLanguage();
     });

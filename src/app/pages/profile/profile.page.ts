@@ -14,11 +14,13 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { AuthService } from '../../core/ports/auth.port';
 import { MechanicService } from '../../core/ports/mechanic.port';
 import { WorkshopService } from '../../core/ports/workshop.port';
+import { ClientService } from '../../core/ports/client.port';
 import {
   CreateMechanicData,
   Mechanic,
   MechanicSource,
 } from '../../core/models/mechanic.model';
+import { Client } from '../../core/models/client.model';
 import {
   UpdateProfileData,
   User,
@@ -45,6 +47,7 @@ import {
   PencilIcon,
   PlusIcon,
   UserRoundIcon,
+  UsersIcon,
   WrenchIcon,
   Trash2Icon,
 } from 'lucide-angular';
@@ -81,6 +84,7 @@ export class ProfilePage implements OnInit, OnDestroy {
   private readonly authService = inject(AuthService);
   private readonly mechanicService = inject(MechanicService);
   private readonly workshopService = inject(WorkshopService);
+  private readonly clientService = inject(ClientService);
   private readonly router = inject(Router);
   private readonly formBuilder = inject(FormBuilder);
   private readonly translate = inject(TranslateService);
@@ -93,6 +97,7 @@ export class ProfilePage implements OnInit, OnDestroy {
   readonly LogOutIcon = LogOutIcon;
   readonly ChevronRightIcon = ChevronRightIcon;
   readonly UserRoundIcon = UserRoundIcon;
+  readonly UsersIcon = UsersIcon;
   readonly EllipsisVerticalIcon = EllipsisVerticalIcon;
 
   openMechanicMenuId: string | null = null;
@@ -100,7 +105,7 @@ export class ProfilePage implements OnInit, OnDestroy {
   userName = '';
   userEmail = '';
   userPhone = '';
-  userType: UserType = UserType.USUARIO;
+  userType: UserType = UserType.OWNER;
 
   private currentUser: User | null = null;
 
@@ -119,10 +124,19 @@ export class ProfilePage implements OnInit, OnDestroy {
   /** Mechanics visible to the authenticated user, loaded from the API. */
   mechanics: MechanicEntry[] = [];
 
+  /** Owners of vehicles shared with this MECHANIC's workshop, loaded from the API. */
+  clients: Client[] = [];
+
   userTypeOptions: SelectOption[] = [];
+
+  /** MECHANIC users see a "client list" section instead of the "mechanics" directory. */
+  readonly isMechanicUser = computed(
+    () => this.authService.user()?.userType === UserType.MECHANIC,
+  );
 
   private readonly mechanicsResource = this.mechanicService.getMechanicsResource();
   private readonly workshopsResource = this.workshopService.getWorkshopsResource();
+  private readonly clientsResource = this.clientService.getClientsResource(this.isMechanicUser);
   readonly workshopOptions = computed<SelectOption[]>(() =>
     (this.workshopsResource.value() ?? []).map((workshop) => ({
       value: workshop.id,
@@ -133,8 +147,8 @@ export class ProfilePage implements OnInit, OnDestroy {
   /** Placeholder — the workshop self-registration web form doesn't exist yet. */
   private readonly workshopRegistrationUrl = 'https://autolog.app/registro-taller';
 
-  /** Last userType change the user actually committed to (via confirmation or a direct USUARIO pick). Reverts to on cancel. */
-  private confirmedUserType: UserType = UserType.USUARIO;
+  /** Last userType change the user actually committed to (via confirmation or a direct OWNER pick). Reverts to on cancel. */
+  private confirmedUserType: UserType = UserType.OWNER;
 
   showClienteConfirmModal = false;
   showMecanicoConfirmModal = false;
@@ -151,6 +165,16 @@ export class ProfilePage implements OnInit, OnDestroy {
       }
       if (this.mechanicsResource.error()) {
         this.showToast('mechanics.loadError', 'error');
+      }
+    });
+
+    effect(() => {
+      const clients = this.clientsResource.value();
+      if (clients) {
+        this.clients = clients;
+      }
+      if (this.clientsResource.error()) {
+        this.showToast('clients.loadError', 'error');
       }
     });
 
@@ -217,9 +241,9 @@ export class ProfilePage implements OnInit, OnDestroy {
 
   private buildUserTypeOptions(): void {
     this.userTypeOptions = [
-      UserType.USUARIO,
-      UserType.CLIENTE,
-      UserType.MECANICO,
+      UserType.OWNER,
+      UserType.CLIENT,
+      UserType.MECHANIC,
     ].map((type) => ({
       value: type,
       label: this.translate.instant(`userTypes.${type}`),
@@ -235,7 +259,7 @@ export class ProfilePage implements OnInit, OnDestroy {
         [Validators.required, Validators.email, Validators.maxLength(255)],
       ],
       phone: ['', [Validators.maxLength(30)]],
-      userType: [UserType.USUARIO, [Validators.required]],
+      userType: [UserType.OWNER, [Validators.required]],
     });
   }
 
@@ -247,7 +271,7 @@ export class ProfilePage implements OnInit, OnDestroy {
     this.showMecanicoConfirmModal = false;
     this.mecanicoStep = 'confirm';
     // emitEvent: false — this restores the currently-saved userType, which
-    // never needs the CLIENTE/MECANICO confirmation flow triggered below.
+    // never needs the CLIENT/MECHANIC confirmation flow triggered below.
     this.profileForm.reset(
       {
         firstName: this.currentUser?.firstName ?? '',
@@ -265,16 +289,16 @@ export class ProfilePage implements OnInit, OnDestroy {
     this.showEditProfileModal = false;
   }
 
-  /** Intercepts CLIENTE/MECANICO picks on the userType select to run their confirmation flow before the change sticks. */
+  /** Intercepts CLIENT/MECHANIC picks on the userType select to run their confirmation flow before the change sticks. */
   private handleUserTypeChange(newType: UserType): void {
     if (newType === this.confirmedUserType) return;
 
-    if (newType === UserType.CLIENTE) {
+    if (newType === UserType.CLIENT) {
       this.showClienteConfirmModal = true;
       return;
     }
 
-    if (newType === UserType.MECANICO) {
+    if (newType === UserType.MECHANIC) {
       this.mecanicoStep = 'confirm';
       this.selectedWorkshopId = '';
       this.showMecanicoConfirmModal = true;
@@ -285,7 +309,7 @@ export class ProfilePage implements OnInit, OnDestroy {
   }
 
   confirmClienteChange(): void {
-    this.confirmedUserType = UserType.CLIENTE;
+    this.confirmedUserType = UserType.CLIENT;
     this.showClienteConfirmModal = false;
   }
 
@@ -312,7 +336,7 @@ export class ProfilePage implements OnInit, OnDestroy {
 
   confirmWorkshopSelection(): void {
     if (!this.selectedWorkshopId) return;
-    this.confirmedUserType = UserType.MECANICO;
+    this.confirmedUserType = UserType.MECHANIC;
     this.showMecanicoConfirmModal = false;
     this.mecanicoStep = 'confirm';
   }
@@ -336,8 +360,8 @@ export class ProfilePage implements OnInit, OnDestroy {
       lastName: (raw.lastName ?? '').trim(),
       email: (raw.email ?? '').trim(),
       phone: (raw.phone ?? '').trim(),
-      userType: raw.userType ?? UserType.USUARIO,
-      ...(raw.userType === UserType.MECANICO &&
+      userType: raw.userType ?? UserType.OWNER,
+      ...(raw.userType === UserType.MECHANIC &&
         this.selectedWorkshopId && { workshopId: this.selectedWorkshopId }),
     };
 
@@ -424,6 +448,11 @@ export class ProfilePage implements OnInit, OnDestroy {
         },
         error: () => this.showToast('mechanics.deleteError', 'error'),
       });
+  }
+
+  /** "Brand Model, Brand Model" summary for a client's shared vehicles. */
+  formatClientVehicles(client: Client): string {
+    return client.vehicles.map((vehicle) => `${vehicle.brand} ${vehicle.model}`).join(', ');
   }
 
   private loadMechanics(): void {

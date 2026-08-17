@@ -102,7 +102,7 @@ export class LoginPage implements OnInit {
   navigateToSignUp(): void {
     // The welcome/role-selection flow lives at the root path ('/', not
     // '/welcome/...' — see app.routes.ts/welcome.routes.ts), so the person
-    // picks USUARIO/CLIENTE/MECANICO before landing on the sign-up form.
+    // picks OWNER/CLIENT/MECHANIC before landing on the sign-up form.
     // welcomeGuard allows this in-app navigation through even on an
     // already-onboarded device (it only forces the skip-to-login/tabs
     // redirect on the app's actual cold launch).

@@ -45,7 +45,7 @@ describe('WorkshopPage', () => {
     email: 'mechanic@test.com',
     firstName: 'Juan',
     lastName: 'García',
-    userType: UserType.MECANICO,
+    userType: UserType.MECHANIC,
     mechanicLevel: 'SUPERVISOR' as MechanicLevel,
     workshopId: 'workshop-123',
     preferredLanguage: 'es',

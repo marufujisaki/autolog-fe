@@ -58,7 +58,7 @@ export class WorkshopPage {
    */
   private readonly workshopIdSignal = computed(() => {
     const user = this.authService.user();
-    return user?.userType === UserType.MECANICO ? (user.workshopId ?? '') : '';
+    return user?.userType === UserType.MECHANIC ? (user.workshopId ?? '') : '';
   });
   private readonly workshopResource = this.workshopService.getWorkshopResource(
     this.workshopIdSignal,
@@ -71,7 +71,7 @@ export class WorkshopPage {
         this.router.navigate(['/']);
         return;
       }
-      if (user.userType !== UserType.MECANICO || !user.workshopId) {
+      if (user.userType !== UserType.MECHANIC || !user.workshopId) {
         this.error = this.translateService.instant('workshop.noWorkshop');
         return;
       }

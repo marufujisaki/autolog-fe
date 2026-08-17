@@ -82,9 +82,9 @@
     "userType": "User Type",
     "userTypeLabel": "Select your role",
     "userTypes": {
-      "CLIENTE": "Client (Read-Only)",
-      "USUARIO": "User (Manager)",
-      "MECANICO": "Mechanic (Workshop)"
+      "CLIENT": "Client (Read-Only)",
+      "OWNER": "User (Manager)",
+      "MECHANIC": "Mechanic (Workshop)"
     },
     "roles": {
       "person": "Person",
@@ -295,6 +295,7 @@
     "lastName": "Last Name",
     "phone": "Phone",
     "mechanics": "Mechanics",
+    "clients": "Client list",
     "loadError": "We couldn't load your profile. Please try again.",
     "updateSuccess": "Profile updated successfully",
     "updateError": "Error updating profile",
@@ -337,14 +338,19 @@
       "WORKSHOP": "Workshop mechanic"
     }
   },
+  "clients": {
+    "vehicles": "Vehicles",
+    "empty": "You don't have any clients with shared vehicles yet.",
+    "loadError": "We couldn't load your clients. Please try again."
+  },
   "languages": {
     "spanish": "Español",
     "english": "English"
   },
   "userTypes": {
-    "CLIENTE": "Client (Read-Only)",
-    "USUARIO": "User (Manager)",
-    "MECANICO": "Mechanic (Workshop)"
+    "CLIENT": "Client (Read-Only)",
+    "OWNER": "User (Manager)",
+    "MECHANIC": "Mechanic (Workshop)"
   },
   "workshop": {
     "title": "Workshop",
