@@ -9,6 +9,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { User, UserType } from '../../core/models/user.model';
 import { MechanicService } from '../../core/ports/mechanic.port';
 import { Mechanic, MechanicSource } from '../../core/models/mechanic.model';
+import { Workshop, WorkshopService } from '../../core/ports/workshop.port';
 
 /**
  * Minimal fake matching the subset of HttpResourceRef<T> the component
@@ -38,9 +39,11 @@ describe('ProfilePage', () => {
   let mockRouter: jasmine.SpyObj<Router>;
   let mockTranslateService: jasmine.SpyObj<TranslateService>;
   let mockMechanicService: jasmine.SpyObj<MechanicService>;
+  let mockWorkshopService: jasmine.SpyObj<WorkshopService>;
   let userSignal: ReturnType<typeof signal<User | null>>;
   let fakeProfileResource: ReturnType<typeof createFakeResource<User>>;
   let fakeMechanicsResource: ReturnType<typeof createFakeResource<Mechanic[]>>;
+  let fakeWorkshopsResource: ReturnType<typeof createFakeResource<Workshop[]>>;
 
   const testMechanic: Mechanic = {
     id: 'mechanic-1',
@@ -81,6 +84,8 @@ describe('ProfilePage', () => {
     fakeProfileResource = createFakeResource<User>();
     fakeMechanicsResource = createFakeResource<Mechanic[]>();
     fakeMechanicsResource.setValue([]);
+    fakeWorkshopsResource = createFakeResource<Workshop[]>();
+    fakeWorkshopsResource.setValue([]);
 
     mockAuthService = jasmine.createSpyObj('AuthService', [
       'logout',
@@ -125,6 +130,14 @@ describe('ProfilePage', () => {
     mockMechanicService.updateMechanic.and.returnValue(of(testMechanic));
     mockMechanicService.deleteMechanic.and.returnValue(of(void 0));
 
+    mockWorkshopService = jasmine.createSpyObj('WorkshopService', [
+      'getWorkshopResource',
+      'getWorkshopsResource',
+    ]);
+    mockWorkshopService.getWorkshopsResource.and.returnValue(
+      fakeWorkshopsResource,
+    );
+
     await TestBed.configureTestingModule({
       imports: [ProfilePage],
       providers: [
@@ -132,6 +145,7 @@ describe('ProfilePage', () => {
         { provide: Router, useValue: mockRouter },
         { provide: TranslateService, useValue: mockTranslateService },
         { provide: MechanicService, useValue: mockMechanicService },
+        { provide: WorkshopService, useValue: mockWorkshopService },
       ],
     }).compileComponents();
   });
@@ -268,11 +282,32 @@ describe('ProfilePage', () => {
     expect(component.mechanics.length).toBe(0);
   });
 
-  it('should logout and navigate to home', () => {
+  it('should show a confirmation modal before logging out', () => {
     createComponent();
-    component.logout();
+    component.openLogoutConfirm();
 
+    expect(component.showLogoutConfirmModal).toBeTrue();
+    expect(mockAuthService.logout).not.toHaveBeenCalled();
+  });
+
+  it('should not logout when the confirmation is cancelled', () => {
+    createComponent();
+    component.openLogoutConfirm();
+    component.closeLogoutConfirm();
+
+    expect(component.showLogoutConfirmModal).toBeFalse();
+    expect(mockAuthService.logout).not.toHaveBeenCalled();
+  });
+
+  it('should logout once the confirmation is accepted', () => {
+    // Navigation to /login is AuthService.logout()'s own responsibility
+    // (see HttpAuthService) — this page just has to trigger it, not
+    // duplicate the navigation itself.
+    createComponent();
+    component.openLogoutConfirm();
+    component.confirmLogout();
+
+    expect(component.showLogoutConfirmModal).toBeFalse();
     expect(mockAuthService.logout).toHaveBeenCalled();
-    expect(mockRouter.navigate).toHaveBeenCalledWith(['/']);
   });
 });

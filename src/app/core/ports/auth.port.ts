@@ -36,8 +36,21 @@ export abstract class AuthService {
 
   abstract login(credentials: LoginCredentials): Observable<AuthTokens>;
   abstract register(data: RegisterData): Observable<AuthTokens>;
+  /**
+   * "Continue with Google" — same action from the Login and Sign Up pages.
+   * Triggers the native/web Google sign-in itself (no credentials passed
+   * in), then exchanges the resulting ID token for this app's own tokens.
+   */
+  abstract loginWithGoogle(): Observable<AuthTokens>;
   abstract refreshToken(): Observable<AuthTokens>;
-  abstract logout(): void;
+  /**
+   * Clears the session and navigates to `/login`.
+   * @param reason "expired" (a forced logout because the session could no
+   *   longer be refreshed — see jwt.interceptor.ts) shows a "session
+   *   expired" notice on the login page via a query param; "manual" (the
+   *   default) is a normal user-initiated logout, no notice shown.
+   */
+  abstract logout(reason?: 'expired' | 'manual'): void;
   abstract isAuthenticated(): boolean;
   /**
    * Resolves whether the app currently has (or can silently obtain via
@@ -59,4 +72,21 @@ export abstract class AuthService {
 
   /** Updates the authenticated user's editable profile fields. */
   abstract updateProfile(data: UpdateProfileData): Observable<User>;
+
+  /**
+   * Requests a password reset code be sent to the given email. Always
+   * resolves regardless of whether the email is registered — the backend
+   * never reveals that, to prevent account enumeration.
+   */
+  abstract requestPasswordReset(email: string): Observable<void>;
+
+  /**
+   * Completes the password reset flow with the code received by email.
+   * Rejects (400) if the code is invalid, already used, or expired.
+   */
+  abstract resetPassword(
+    email: string,
+    code: string,
+    newPassword: string,
+  ): Observable<void>;
 }

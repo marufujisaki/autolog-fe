@@ -14,7 +14,7 @@
       <button
         type="button"
         class="icon-btn icon-btn--danger"
-        (click)="logout()"
+        (click)="openLogoutConfirm()"
         [attr.aria-label]="'profile.logout' | translate"
       >
         <lucide-angular [img]="LogOutIcon" [size]="24"></lucide-angular>
@@ -62,7 +62,11 @@
 
   <div class="mechanics-list">
     @for (mechanic of mechanics; track mechanic.id) {
-    <div class="mechanic-card">
+    <div
+      class="mechanic-card"
+      [class.menu-open]="openMechanicMenuId === mechanic.id"
+      (click)="closeMechanicMenu()"
+    >
       <div class="mechanic-icon" aria-hidden="true">
         <lucide-angular [img]="WrenchIcon" [size]="24"></lucide-angular>
       </div>
@@ -78,12 +82,39 @@
         }
       </div>
       <div class="mechanic-actions">
-        <button type="button" (click)="openEditMechanic(mechanic)">
-          <lucide-angular [img]="PencilIcon" [size]="16"></lucide-angular>
+        <button
+          type="button"
+          class="mechanic-menu-trigger"
+          [attr.aria-label]="'vehicles.actions' | translate"
+          [attr.aria-expanded]="openMechanicMenuId === mechanic.id"
+          (click)="toggleMechanicMenu(mechanic.id, $event)"
+        >
+          <lucide-angular
+            [img]="EllipsisVerticalIcon"
+            [size]="20"
+          ></lucide-angular>
         </button>
-        <button type="button" (click)="deleteMechanic(mechanic)">
-          <lucide-angular [img]="Trash2Icon" [size]="16"></lucide-angular>
-        </button>
+        @if (openMechanicMenuId === mechanic.id) {
+        <div class="mechanic-menu" role="menu">
+          <button
+            type="button"
+            role="menuitem"
+            (click)="openEditMechanic(mechanic); closeMechanicMenu()"
+          >
+            <lucide-angular [img]="PencilIcon" [size]="16"></lucide-angular>
+            <span>{{ 'common.edit' | translate }}</span>
+          </button>
+          <button
+            type="button"
+            role="menuitem"
+            class="mechanic-menu-delete"
+            (click)="deleteMechanic(mechanic); closeMechanicMenu()"
+          >
+            <lucide-angular [img]="Trash2Icon" [size]="16"></lucide-angular>
+            <span>{{ 'common.delete' | translate }}</span>
+          </button>
+        </div>
+        }
       </div>
     </div>
     }
@@ -91,69 +122,183 @@
 </div>
 
 <!-- Edit profile modal -->
-<app-modal
-  [isOpen]="showEditProfileModal"
-  [variant]="'bottom-sheet'"
-  [showCloseButton]="true"
-  [title]="'profile.editProfile' | translate"
-  (closed)="closeEditProfile()"
->
-  <form
-    class="profile-form"
-    [formGroup]="profileForm"
-    (ngSubmit)="saveProfile()"
+<div class="auto-height-modal">
+  <app-modal
+    [isOpen]="showEditProfileModal"
+    [variant]="'bottom-sheet'"
+    [showCloseButton]="true"
+    [title]="'profile.editProfile' | translate"
+    (closed)="closeEditProfile()"
   >
-    <app-input
-      [formControl]="firstNameControl"
-      type="text"
-      [label]="'profile.firstName' | translate"
-      [errorMessage]="controlError(firstNameControl) | translate"
-    ></app-input>
+    <form
+      class="profile-form"
+      [formGroup]="profileForm"
+      (ngSubmit)="saveProfile()"
+    >
+      <app-input
+        [formControl]="firstNameControl"
+        type="text"
+        [label]="'profile.firstName' | translate"
+        [errorMessage]="controlError(firstNameControl) | translate"
+      ></app-input>
 
-    <app-input
-      [formControl]="lastNameControl"
-      type="text"
-      [label]="'profile.lastName' | translate"
-      [errorMessage]="controlError(lastNameControl) | translate"
-    ></app-input>
+      <app-input
+        [formControl]="lastNameControl"
+        type="text"
+        [label]="'profile.lastName' | translate"
+        [errorMessage]="controlError(lastNameControl) | translate"
+      ></app-input>
 
-    <app-input
-      [formControl]="emailControl"
-      type="email"
-      [label]="'profile.email' | translate"
-      [errorMessage]="controlError(emailControl) | translate"
-    ></app-input>
+      <app-input
+        [formControl]="emailControl"
+        type="email"
+        [label]="'profile.email' | translate"
+        [errorMessage]="controlError(emailControl) | translate"
+      ></app-input>
 
-    <app-input
-      [formControl]="phoneControl"
-      type="tel"
-      [label]="'profile.phone' | translate"
-      placeholder="+58 412 000 0000"
-      [errorMessage]="controlError(phoneControl) | translate"
-    ></app-input>
+      <app-input
+        [formControl]="phoneControl"
+        type="tel"
+        [label]="'profile.phone' | translate"
+        placeholder="+58 412 000 0000"
+        [errorMessage]="controlError(phoneControl) | translate"
+      ></app-input>
 
-    <app-select
-      [formControl]="userTypeControl"
-      [label]="'profile.user_type' | translate"
-      [options]="userTypeOptions"
-    ></app-select>
+      <app-select
+        [formControl]="userTypeControl"
+        [label]="'profile.user_type' | translate"
+        [options]="userTypeOptions"
+      ></app-select>
 
-    @if (profileErrorKey) {
-    <p class="form-error" role="alert">{{ profileErrorKey | translate }}</p>
-    }
+      @if (profileErrorKey) {
+      <p class="form-error" role="alert">{{ profileErrorKey | translate }}</p>
+      }
 
-    <div class="form-actions">
-      <app-button
-        variant="primary"
-        type="submit"
-        [fullWidth]="true"
-        [disabled]="profileForm.invalid || isSavingProfile"
-      >
-        {{ 'common.save' | translate }}
-      </app-button>
+      <div class="form-actions">
+        <app-button
+          variant="primary"
+          type="submit"
+          [fullWidth]="true"
+          [disabled]="profileForm.invalid || isSavingProfile"
+        >
+          {{ 'common.save' | translate }}
+        </app-button>
+      </div>
+    </form>
+  </app-modal>
+</div>
+
+<!-- CLIENTE downgrade confirmation -->
+<div class="auto-height-modal">
+  <app-modal
+    [isOpen]="showClienteConfirmModal"
+    [variant]="'confirmation-sheet'"
+    [title]="'profile.confirmClienteTitle' | translate"
+    (closed)="cancelClienteChange()"
+  >
+    <div class="confirm-content">
+      <p>{{ 'profile.confirmClienteMessage' | translate }}</p>
+      <div class="form-actions form-actions--row">
+        <app-button
+          variant="secondary"
+          [fullWidth]="true"
+          (click)="cancelClienteChange()"
+        >
+          {{ 'common.cancel' | translate }}
+        </app-button>
+        <app-button
+          variant="primary"
+          [fullWidth]="true"
+          (click)="confirmClienteChange()"
+        >
+          {{ 'common.confirm' | translate }}
+        </app-button>
+      </div>
     </div>
-  </form>
-</app-modal>
+  </app-modal>
+</div>
+
+<!-- MECANICO workshop registration / selection -->
+<div class="auto-height-modal">
+  <app-modal
+    [isOpen]="showMecanicoConfirmModal"
+    [variant]="'confirmation-sheet'"
+    [title]="'profile.confirmMecanicoTitle' | translate"
+    (closed)="closeMecanicoModal()"
+  >
+    <div class="confirm-content">
+      <p>{{ 'profile.confirmMecanicoMessage' | translate }}</p>
+
+      @if (mecanicoStep === 'confirm') {
+      <div class="form-actions form-actions--row">
+        <app-button
+          variant="secondary"
+          [fullWidth]="true"
+          (click)="declineWorkshopRegistered()"
+        >
+          {{ 'common.no' | translate }}
+        </app-button>
+        <app-button
+          variant="primary"
+          [fullWidth]="true"
+          (click)="confirmWorkshopRegistered()"
+        >
+          {{ 'common.yes' | translate }}
+        </app-button>
+      </div>
+      } @if (mecanicoStep === 'selectWorkshop') {
+      <div class="workshop-select">
+        <app-select
+          [label]="'profile.selectWorkshop' | translate"
+          [options]="workshopOptions()"
+          [ngModel]="selectedWorkshopId"
+          (ngModelChange)="selectedWorkshopId = $event"
+        ></app-select>
+      </div>
+      <div class="form-actions">
+        <app-button
+          variant="primary"
+          [fullWidth]="true"
+          [disabled]="!selectedWorkshopId"
+          (click)="confirmWorkshopSelection()"
+        >
+          {{ 'common.confirm' | translate }}
+        </app-button>
+      </div>
+      }
+    </div>
+  </app-modal>
+</div>
+
+<!-- Logout confirmation -->
+<div class="auto-height-modal">
+  <app-modal
+    [isOpen]="showLogoutConfirmModal"
+    [variant]="'confirmation-sheet'"
+    [title]="'profile.logout' | translate"
+    (closed)="closeLogoutConfirm()"
+  >
+    <div class="confirm-content">
+      <p>{{ 'profile.logoutConfirm' | translate }}</p>
+      <div class="form-actions form-actions--row">
+        <app-button
+          variant="secondary"
+          [fullWidth]="true"
+          (click)="closeLogoutConfirm()"
+        >
+          {{ 'common.cancel' | translate }}
+        </app-button>
+        <app-button
+          variant="primary"
+          [fullWidth]="true"
+          (click)="confirmLogout()"
+        >
+          {{ 'profile.logout' | translate }}
+        </app-button>
+      </div>
+    </div>
+  </app-modal>
+</div>
 
 <!-- Add mechanic modal (Figma: "Profile - Add mechanic") -->
 <app-add-mechanic-modal

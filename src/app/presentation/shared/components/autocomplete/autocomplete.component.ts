@@ -1,4 +1,4 @@
-import { Component, forwardRef, ChangeDetectorRef, OnDestroy, computed, input, output, signal, inject } from '@angular/core';
+import { Component, ElementRef, ViewChild, forwardRef, ChangeDetectorRef, OnDestroy, computed, input, output, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { Subject, debounceTime, distinctUntilChanged, switchMap, of } from 'rxjs';
@@ -28,6 +28,13 @@ let nextId = 0;
 export class AutocompleteComponent implements ControlValueAccessor, OnDestroy {
   private cdr = inject(ChangeDetectorRef);
 
+  @ViewChild('nativeInputEl') private readonly nativeInputEl?: ElementRef<HTMLInputElement>;
+
+  /** Focuses the underlying native input — for callers that need to autofocus after a conditional render. */
+  focus(): void {
+    this.nativeInputEl?.nativeElement.focus();
+  }
+
   readonly label = input<string>();
   readonly placeholder = input('');
   readonly disabled = input(false);
@@ -43,8 +50,14 @@ export class AutocompleteComponent implements ControlValueAccessor, OnDestroy {
   /** Function that performs the search and returns an Observable of string[] */
   readonly searchFn = input<(query: string) => Observable<string[]>>();
 
+  /** Native `maxlength` attribute, enforced as the user types. */
+  readonly maxLength = input<number | null>(null);
+
   /** Emitted when a suggestion is selected */
   readonly optionSelected = output<string>();
+
+  /** Emitted when the native input loses focus. */
+  readonly blurred = output<void>();
 
   readonly inputId = `app-autocomplete-${nextId++}`;
 
@@ -99,6 +112,7 @@ export class AutocompleteComponent implements ControlValueAccessor, OnDestroy {
       this.cdr.markForCheck();
     }, 200);
     this.onTouched();
+    this.blurred.emit();
   }
 
   onFocus(): void {

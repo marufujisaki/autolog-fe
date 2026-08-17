@@ -1,7 +1,7 @@
 @use "../../presentation/shared/styles/tokens" as t;
 
 .profile-page {
-  padding: t.$space-6;
+  padding: t.$space-5 t.$space-4;
   background: t.$color-background;
   min-height: 100%;
 }
@@ -14,7 +14,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: t.$space-7;
+  // Matches dashboard.page.scss's .dashboard-header margin.
+  margin-bottom: t.$space-6;
 }
 
 .header-actions {
@@ -207,6 +208,15 @@
   background: t.$color-surface;
   border-radius: t.$radius-sm;
   box-shadow: t.$shadow-card;
+  position: relative;
+  // Explicit z-index (rather than `auto`) makes every card its own
+  // stacking context, so `&.menu-open` reliably paints above later
+  // sibling cards — see the same fix on the dashboard vehicle cards.
+  z-index: 0;
+
+  &.menu-open {
+    z-index: 10;
+  }
 }
 
 .mechanic-icon {
@@ -223,6 +233,74 @@
 
 .mechanic-info {
   min-width: 0;
+  flex: 1;
+}
+
+.mechanic-actions {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.mechanic-menu-trigger {
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  border-radius: t.$radius-full;
+  color: t.$color-text-secondary;
+  background: transparent;
+  cursor: pointer;
+
+  lucide-angular {
+    transform: rotate(90deg);
+  }
+
+  &:hover,
+  &:focus-visible {
+    background: t.$color-surface-alt;
+    outline: none;
+  }
+}
+
+.mechanic-menu {
+  position: absolute;
+  top: 38px;
+  right: 0;
+  min-width: 142px;
+  padding: t.$space-1;
+  border: 1px solid rgba(17, 24, 39, 0.08);
+  border-radius: t.$radius-md;
+  background: t.$color-surface;
+  box-shadow: t.$shadow-lg;
+  z-index: 20;
+
+  button {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: t.$space-2;
+    padding: t.$space-2 t.$space-3;
+    border: 0;
+    border-radius: t.$radius-sm;
+    color: t.$color-text-primary;
+    background: transparent;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+
+    &:hover,
+    &:focus-visible {
+      background: t.$color-surface-alt;
+      outline: none;
+    }
+  }
+
+  .mechanic-menu-delete {
+    color: t.$color-error;
+  }
 }
 
 .mechanic-name {
@@ -246,6 +324,18 @@
 // Edit profile form + feedback
 // ---------------------------------------------------------------------------
 
+// `app-modal`'s bottom-sheet/confirmation-sheet variants default to a tall
+// fixed/auto height meant for long scrollable content. These popups (profile
+// form, CLIENTE/MECANICO confirmations) are all short, so each is sized to
+// fit its own content instead — scoped per-instance via this wrapper so
+// other bottom sheets elsewhere in the app keep their own default height.
+.auto-height-modal {
+  ::ng-deep .app-modal--bottom-sheet .app-modal__container {
+    height: auto !important;
+    max-height: calc(100dvh - 48px);
+  }
+}
+
 .profile-form {
   display: flex;
   flex-direction: column;
@@ -261,6 +351,48 @@
 
 .form-actions {
   margin-top: t.$space-3;
+
+  &--row {
+    display: flex;
+    gap: t.$space-3;
+
+    app-button {
+      flex: 1;
+      min-width: 0;
+    }
+
+    // ButtonComponent's primary/secondary variants default to a large
+    // 24px/bold/55px-min-height sizing meant for a single full-width CTA —
+    // two side by side in this narrow confirmation-sheet row overflow
+    // ("Cancelar"/"Confirmar" don't fit). ::ng-deep + !important to reach
+    // past the child component's own view-encapsulated styles (same
+    // pattern used elsewhere in this app for ButtonComponent/ModalComponent).
+    ::ng-deep .app-button--primary,
+    ::ng-deep .app-button--secondary {
+      font-size: t.$font-size-base !important;
+      font-weight: t.$font-weight-semibold !important;
+      padding: t.$space-3 t.$space-2 !important;
+      min-height: auto !important;
+    }
+  }
+}
+
+.confirm-content {
+  display: flex;
+  flex-direction: column;
+  gap: t.$space-5;
+  padding-top: t.$space-2;
+  text-align: center;
+
+  p {
+    margin: 0;
+    color: t.$color-text-secondary;
+    line-height: 1.5;
+  }
+}
+
+.workshop-select {
+  text-align: left;
 }
 
 .toast {

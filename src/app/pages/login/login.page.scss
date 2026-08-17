@@ -1,7 +1,11 @@
 @use "../../presentation/shared/styles/tokens" as t;
 
 .center {
-  height: 100%;
+  // min-height (not height): lets the block grow taller than the viewport
+  // and scroll (ion-content scrollY="true") instead of the error-alert
+  // below overlapping the pinned-bottom button-row it used to collide with
+  // when .button-row was position:absolute (removed below — see .button-row).
+  min-height: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -56,11 +60,15 @@ h2 {
 }
 
 .button-row {
-  margin: 100px auto auto auto;
-  position: absolute;
-  bottom: 24px;
-  left: 0;
-  right: 0;
+  // Was position: absolute + a fixed bottom offset, decoupled from
+  // .input-row's height — when the login error-alert appeared it grew
+  // .input-row without pushing this row down, so the two visually
+  // overlapped. Now a normal flex child of .center: it always renders
+  // right after .input-row, so it can never overlap regardless of how
+  // tall the error message gets (and the page scrolls instead of clipping
+  // if the combined content is taller than the viewport).
+  width: 100%;
+  margin-top: t.$space-7;
 
   p {
     text-align: center;

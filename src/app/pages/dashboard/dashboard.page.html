@@ -1,23 +1,58 @@
 <div class="dashboard-page">
   <!-- Header -->
   <header class="dashboard-header">
+    @if (searchActive()) {
+    <div class="search-bar">
+      <app-input
+        #searchInputRef
+        type="search"
+        class="search-bar-input"
+        [placeholder]="'vehicles.searchPlaceholder' | translate"
+        [ngModel]="searchQuery()"
+        (ngModelChange)="searchQuery.set($event)"
+      ></app-input>
+      <button
+        type="button"
+        class="search-close-btn"
+        [attr.aria-label]="'common.close' | translate"
+        (click)="closeSearch()"
+      >
+        <lucide-angular [img]="XIcon" [size]="22"></lucide-angular>
+      </button>
+    </div>
+    } @else {
     <app-brand></app-brand>
-    <button class="search-btn" [attr.aria-label]="'common.search' | translate">
+    @if (hasVehicles()) {
+    <button
+      type="button"
+      class="search-btn"
+      [attr.aria-label]="'common.search' | translate"
+      (click)="openSearch()"
+    >
       <lucide-angular [img]="SearchIcon" [size]="24"></lucide-angular>
     </button>
+    }
+    }
   </header>
 
   <!-- Section Title -->
   <div class="section-header">
     <h2 class="section-title">{{ 'vehicles.title' | translate }}</h2>
-    <button class="filter-btn" aria-label="Filter">
+    <button
+      type="button"
+      class="filter-btn"
+      [class.active]="!!sortOption()"
+      [attr.aria-label]="'vehicles.sort' | translate"
+      [disabled]="!hasVehicles()"
+      (click)="openSortPopup()"
+    >
       <lucide-angular [img]="ListFilterIcon" [size]="20"></lucide-angular>
     </button>
   </div>
 
   <!-- Vehicle Cards -->
   <div class="vehicle-cards">
-    @for (vehicle of vehicles; track vehicle.id) {
+    @for (vehicle of displayedVehicles(); track vehicle.id) {
     <div
       class="vehicle-card"
       [class.menu-open]="openMenuVehicleId === vehicle.id"
@@ -109,9 +144,13 @@
         </div>
       </div>
     </div>
-    } @if (!isLoading && vehicles.length === 0) {
+    } @if (!isLoading && !hasVehicles()) {
     <div class="empty-state">
       <p class="empty-text">{{ 'emptyStates.noVehicles' | translate }}</p>
+    </div>
+    } @if (!isLoading && hasVehicles() && displayedVehicles().length === 0) {
+    <div class="empty-state">
+      <p class="empty-text">{{ 'emptyStates.noSearchResults' | translate }}</p>
     </div>
     }
   </div>
@@ -129,91 +168,18 @@
       class="edit-vehicle-form"
       (ngSubmit)="submitEditVehicle()"
     >
-      <div class="form-group">
-        <app-input
-          type="text"
-          [label]="'vehicles.brand' | translate"
-          [placeholder]="'vehicles.brand' | translate"
-          formControlName="brand"
-          [class.error]="hasFieldError('brand')"
-        ></app-input>
-        @if (hasFieldError('brand')) {
-        <p class="error-message">{{ getFieldError('brand') | translate }}</p>
-        }
-      </div>
-
-      <div class="form-group">
-        <app-input
-          type="text"
-          [label]="'vehicles.model' | translate"
-          [placeholder]="'vehicles.model' | translate"
-          formControlName="model"
-          [class.error]="hasFieldError('model')"
-        ></app-input>
-        @if (hasFieldError('model')) {
-        <p class="error-message">{{ getFieldError('model') | translate }}</p>
-        }
-      </div>
-
-      <div class="form-row">
-        <div class="form-group form-group--short">
-          <app-input
-            type="text"
-            [label]="'vehicles.year' | translate"
-            [placeholder]="'vehicles.year' | translate"
-            formControlName="year"
-            [class.error]="hasFieldError('year')"
-          ></app-input>
-        </div>
-        <div class="form-group form-group--medium">
-          <app-input
-            type="text"
-            [label]="'vehicles.licensePlate' | translate"
-            [placeholder]="'vehicles.licensePlate' | translate"
-            formControlName="licensePlate"
-          ></app-input>
-        </div>
-      </div>
-      @if (hasFieldError('year')) {
-      <p class="error-message">{{ getFieldError('year') | translate }}</p>
-      }
-
-      <div class="form-group">
-        <app-input
-          type="text"
-          [label]="'vehicles.color' | translate"
-          [placeholder]="'vehicles.color' | translate"
-          formControlName="color"
-        ></app-input>
-      </div>
-
-      <div class="form-group">
-        <app-input
-          type="text"
-          [label]="'vehicles.displayName' | translate"
-          [placeholder]="'vehicles.displayName' | translate"
-          formControlName="displayName"
-        ></app-input>
-      </div>
-
-      <div class="card-color-section">
-        <label class="card-color-label">
-          {{ 'vehicles.cardColor' | translate }}
-        </label>
-        <div class="card-color-picker">
-          @for (color of cardColorOptions; track color) {
-          <button
-            type="button"
-            class="card-color-dot"
-            [style.background]="color"
-            [class.selected]="editVehicleForm.get('cardColor')?.value === color"
-            [attr.aria-label]="color"
-            [attr.aria-pressed]="editVehicleForm.get('cardColor')?.value === color"
-            (click)="selectCardColor(color)"
-          ></button>
-          }
-        </div>
-      </div>
+      <app-vehicle-form
+        [formGroup]="editVehicleForm"
+        [showFieldErrors]="true"
+        [placeholders]="{
+          brand: 'vehicles.brand' | translate,
+          model: 'vehicles.model' | translate,
+          year: 'vehicles.year' | translate,
+          licensePlate: 'vehicles.licensePlate' | translate,
+          color: 'vehicles.color' | translate,
+          displayName: 'vehicles.displayName' | translate
+        }"
+      ></app-vehicle-form>
 
       <div class="button-section">
         <app-button
@@ -294,6 +260,129 @@
     [vehicle]="shareModalVehicle"
     (closed)="closeShareModal()"
   ></app-share-vehicle-modal>
+
+  <div class="sort-modal">
+    <app-modal
+      [isOpen]="sortPopupOpen()"
+      [variant]="'bottom-sheet'"
+      [showCloseButton]="true"
+      [title]="'vehicles.sortTitle' | translate"
+      (closed)="closeSortPopup()"
+    >
+      <div class="sort-options">
+        <div class="sort-option">
+          <span class="sort-option-label">{{ 'vehicles.sortByLastLog' | translate }}</span>
+          <div class="sort-option-targets">
+            <button
+              type="button"
+              class="sort-target"
+              [class.active]="isSortActive('lastLog', 'asc')"
+              [attr.aria-label]="'common.ascending' | translate"
+              (click)="selectSort('lastLog', 'asc')"
+            >
+              <lucide-angular [img]="ArrowUpIcon" [size]="16"></lucide-angular>
+            </button>
+            <button
+              type="button"
+              class="sort-target"
+              [class.active]="isSortActive('lastLog', 'desc')"
+              [attr.aria-label]="'common.descending' | translate"
+              (click)="selectSort('lastLog', 'desc')"
+            >
+              <lucide-angular [img]="ArrowDownIcon" [size]="16"></lucide-angular>
+            </button>
+          </div>
+        </div>
+
+        <div class="sort-option">
+          <span class="sort-option-label">{{ 'vehicles.sortByNickname' | translate }}</span>
+          <div class="sort-option-targets">
+            <button
+              type="button"
+              class="sort-target"
+              [class.active]="isSortActive('nickname', 'asc')"
+              (click)="selectSort('nickname', 'asc')"
+            >
+              @if (isSortActive('nickname', 'asc')) {
+              <lucide-angular [img]="CheckIcon" [size]="14"></lucide-angular>
+              } A-Z
+            </button>
+            <button
+              type="button"
+              class="sort-target"
+              [class.active]="isSortActive('nickname', 'desc')"
+              (click)="selectSort('nickname', 'desc')"
+            >
+              @if (isSortActive('nickname', 'desc')) {
+              <lucide-angular [img]="CheckIcon" [size]="14"></lucide-angular>
+              } Z-A
+            </button>
+          </div>
+        </div>
+
+        <div class="sort-option">
+          <span class="sort-option-label">{{ 'vehicles.sortByBrand' | translate }}</span>
+          <div class="sort-option-targets">
+            <button
+              type="button"
+              class="sort-target"
+              [class.active]="isSortActive('brand', 'asc')"
+              (click)="selectSort('brand', 'asc')"
+            >
+              @if (isSortActive('brand', 'asc')) {
+              <lucide-angular [img]="CheckIcon" [size]="14"></lucide-angular>
+              } A-Z
+            </button>
+            <button
+              type="button"
+              class="sort-target"
+              [class.active]="isSortActive('brand', 'desc')"
+              (click)="selectSort('brand', 'desc')"
+            >
+              @if (isSortActive('brand', 'desc')) {
+              <lucide-angular [img]="CheckIcon" [size]="14"></lucide-angular>
+              } Z-A
+            </button>
+          </div>
+        </div>
+
+        <div class="sort-option">
+          <span class="sort-option-label">{{ 'vehicles.sortByYear' | translate }}</span>
+          <div class="sort-option-targets">
+            <button
+              type="button"
+              class="sort-target"
+              [class.active]="isSortActive('year', 'asc')"
+              [attr.aria-label]="'common.ascending' | translate"
+              (click)="selectSort('year', 'asc')"
+            >
+              <lucide-angular [img]="ArrowUpIcon" [size]="16"></lucide-angular>
+            </button>
+            <button
+              type="button"
+              class="sort-target"
+              [class.active]="isSortActive('year', 'desc')"
+              [attr.aria-label]="'common.descending' | translate"
+              (click)="selectSort('year', 'desc')"
+            >
+              <lucide-angular [img]="ArrowDownIcon" [size]="16"></lucide-angular>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      @if (sortOption()) {
+      <app-button
+        variant="secondary"
+        [fullWidth]="true"
+        class="sort-clear-btn"
+        (click)="clearSort()"
+      >
+        {{ 'vehicles.clearSort' | translate }}
+      </app-button>
+      }
+    </app-modal>
+  </div>
 
   @if (toastVisible) {
   <app-toast [message]="toastMessage | translate" class="toast"></app-toast>

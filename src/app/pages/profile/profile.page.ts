@@ -1,9 +1,10 @@
-import { Component, OnDestroy, OnInit, effect, inject } from '@angular/core';
+import { Component, OnDestroy, OnInit, computed, effect, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   FormBuilder,
   FormControl,
   FormGroup,
+  FormsModule,
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
@@ -12,6 +13,7 @@ import { Subject, takeUntil } from 'rxjs';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { AuthService } from '../../core/ports/auth.port';
 import { MechanicService } from '../../core/ports/mechanic.port';
+import { WorkshopService } from '../../core/ports/workshop.port';
 import {
   CreateMechanicData,
   Mechanic,
@@ -38,6 +40,7 @@ import {
 import {
   LucideAngularModule,
   ChevronRightIcon,
+  EllipsisVerticalIcon,
   LogOutIcon,
   PencilIcon,
   PlusIcon,
@@ -61,6 +64,7 @@ interface MechanicEntry extends Mechanic {
   standalone: true,
   imports: [
     CommonModule,
+    FormsModule,
     ReactiveFormsModule,
     TranslatePipe,
     LucideAngularModule,
@@ -76,6 +80,7 @@ interface MechanicEntry extends Mechanic {
 export class ProfilePage implements OnInit, OnDestroy {
   private readonly authService = inject(AuthService);
   private readonly mechanicService = inject(MechanicService);
+  private readonly workshopService = inject(WorkshopService);
   private readonly router = inject(Router);
   private readonly formBuilder = inject(FormBuilder);
   private readonly translate = inject(TranslateService);
@@ -88,6 +93,9 @@ export class ProfilePage implements OnInit, OnDestroy {
   readonly LogOutIcon = LogOutIcon;
   readonly ChevronRightIcon = ChevronRightIcon;
   readonly UserRoundIcon = UserRoundIcon;
+  readonly EllipsisVerticalIcon = EllipsisVerticalIcon;
+
+  openMechanicMenuId: string | null = null;
 
   userName = '';
   userEmail = '';
@@ -114,6 +122,26 @@ export class ProfilePage implements OnInit, OnDestroy {
   userTypeOptions: SelectOption[] = [];
 
   private readonly mechanicsResource = this.mechanicService.getMechanicsResource();
+  private readonly workshopsResource = this.workshopService.getWorkshopsResource();
+  readonly workshopOptions = computed<SelectOption[]>(() =>
+    (this.workshopsResource.value() ?? []).map((workshop) => ({
+      value: workshop.id,
+      label: workshop.name,
+    })),
+  );
+
+  /** Placeholder — the workshop self-registration web form doesn't exist yet. */
+  private readonly workshopRegistrationUrl = 'https://autolog.app/registro-taller';
+
+  /** Last userType change the user actually committed to (via confirmation or a direct USUARIO pick). Reverts to on cancel. */
+  private confirmedUserType: UserType = UserType.USUARIO;
+
+  showClienteConfirmModal = false;
+  showMecanicoConfirmModal = false;
+  mecanicoStep: 'confirm' | 'selectWorkshop' = 'confirm';
+  selectedWorkshopId = '';
+
+  showLogoutConfirmModal = false;
 
   constructor() {
     effect(() => {
@@ -175,6 +203,9 @@ export class ProfilePage implements OnInit, OnDestroy {
     this.translate.onLangChange
       .pipe(takeUntil(this.destroy$))
       .subscribe(() => this.buildUserTypeOptions());
+    this.userTypeControl.valueChanges
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((newType) => this.handleUserTypeChange(newType));
 
     // `user`/`profile`/`mechanics` are all synced by the effects in the constructor.
   }
@@ -210,18 +241,87 @@ export class ProfilePage implements OnInit, OnDestroy {
 
   openEditProfile(): void {
     this.profileErrorKey = '';
-    this.profileForm.reset({
-      firstName: this.currentUser?.firstName ?? '',
-      lastName: this.currentUser?.lastName ?? '',
-      email: this.userEmail,
-      phone: this.userPhone,
-      userType: this.userType,
-    });
+    this.confirmedUserType = this.userType;
+    this.selectedWorkshopId = '';
+    this.showClienteConfirmModal = false;
+    this.showMecanicoConfirmModal = false;
+    this.mecanicoStep = 'confirm';
+    // emitEvent: false — this restores the currently-saved userType, which
+    // never needs the CLIENTE/MECANICO confirmation flow triggered below.
+    this.profileForm.reset(
+      {
+        firstName: this.currentUser?.firstName ?? '',
+        lastName: this.currentUser?.lastName ?? '',
+        email: this.userEmail,
+        phone: this.userPhone,
+        userType: this.userType,
+      },
+      { emitEvent: false },
+    );
     this.showEditProfileModal = true;
   }
 
   closeEditProfile(): void {
     this.showEditProfileModal = false;
+  }
+
+  /** Intercepts CLIENTE/MECANICO picks on the userType select to run their confirmation flow before the change sticks. */
+  private handleUserTypeChange(newType: UserType): void {
+    if (newType === this.confirmedUserType) return;
+
+    if (newType === UserType.CLIENTE) {
+      this.showClienteConfirmModal = true;
+      return;
+    }
+
+    if (newType === UserType.MECANICO) {
+      this.mecanicoStep = 'confirm';
+      this.selectedWorkshopId = '';
+      this.showMecanicoConfirmModal = true;
+      return;
+    }
+
+    this.confirmedUserType = newType;
+  }
+
+  confirmClienteChange(): void {
+    this.confirmedUserType = UserType.CLIENTE;
+    this.showClienteConfirmModal = false;
+  }
+
+  cancelClienteChange(): void {
+    this.showClienteConfirmModal = false;
+    this.userTypeControl.setValue(this.confirmedUserType, { emitEvent: false });
+  }
+
+  /** "Sí" on "is your workshop already registered?" — reveals the workshop picker in the same popup. */
+  confirmWorkshopRegistered(): void {
+    this.mecanicoStep = 'selectWorkshop';
+  }
+
+  /** "No" — redirects to the (future) workshop self-registration form and reverts the pending userType change. */
+  declineWorkshopRegistered(): void {
+    window.open(this.workshopRegistrationUrl, '_blank', 'noopener');
+    this.cancelMecanicoChange();
+  }
+
+  /** Closing the popup without finishing (backdrop/close button) reverts the same as declining, minus the redirect. */
+  closeMecanicoModal(): void {
+    this.cancelMecanicoChange();
+  }
+
+  confirmWorkshopSelection(): void {
+    if (!this.selectedWorkshopId) return;
+    this.confirmedUserType = UserType.MECANICO;
+    this.showMecanicoConfirmModal = false;
+    this.mecanicoStep = 'confirm';
+  }
+
+  private cancelMecanicoChange(): void {
+    this.showMecanicoConfirmModal = false;
+    this.mecanicoStep = 'confirm';
+    this.selectedWorkshopId = '';
+    this.userTypeControl.setValue(this.confirmedUserType, { emitEvent: false });
   }
 
   saveProfile(): void {
@@ -237,6 +337,8 @@ export class ProfilePage implements OnInit, OnDestroy {
       email: (raw.email ?? '').trim(),
       phone: (raw.phone ?? '').trim(),
       userType: raw.userType ?? UserType.USUARIO,
+      ...(raw.userType === UserType.MECANICO &&
+        this.selectedWorkshopId && { workshopId: this.selectedWorkshopId }),
     };
 
     this.isSavingProfile = true;
@@ -259,6 +361,16 @@ export class ProfilePage implements OnInit, OnDestroy {
 
   openSettings(): void {
     void this.router.navigate(['/tabs/settings']);
+  }
+
+  toggleMechanicMenu(mechanicId: string, event: Event): void {
+    event.stopPropagation();
+    this.openMechanicMenuId =
+      this.openMechanicMenuId === mechanicId ? null : mechanicId;
+  }
+
+  closeMechanicMenu(): void {
+    this.openMechanicMenuId = null;
   }
 
   openAddMechanic(): void {
@@ -331,9 +443,17 @@ export class ProfilePage implements OnInit, OnDestroy {
     return 'errors.invalidField';
   }
 
-  logout(): void {
+  openLogoutConfirm(): void {
+    this.showLogoutConfirmModal = true;
+  }
+
+  closeLogoutConfirm(): void {
+    this.showLogoutConfirmModal = false;
+  }
+
+  confirmLogout(): void {
+    this.showLogoutConfirmModal = false;
     this.authService.logout();
-    void this.router.navigate(['/']);
   }
 
   private showToast(messageKey: string, type: 'success' | 'error'): void {

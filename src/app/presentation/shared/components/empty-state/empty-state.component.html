@@ -1,5 +1,9 @@
 <article class="app-empty-state" role="status" aria-live="polite">
-  <div class="app-empty-state__icon">{{ icon() }}</div>
+  @if (iconData; as data) {
+  <lucide-angular class="app-empty-state__icon" [img]="data" [size]="64"></lucide-angular>
+  } @else {
+  <div class="app-empty-state__icon">{{ iconText }}</div>
+  }
 
   <h2 class="app-empty-state__title">{{ title() }}</h2>
 

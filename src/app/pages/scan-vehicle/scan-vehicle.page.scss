@@ -1,8 +1,8 @@
 @use "../../presentation/shared/styles/tokens" as tokens;
 
 .scan-vehicle-content {
-  --padding-start: #{tokens.$space-5};
-  --padding-end: #{tokens.$space-5};
+  --padding-start: #{tokens.$space-3};
+  --padding-end: #{tokens.$space-3};
   --padding-top: #{tokens.$space-6};
 }
 

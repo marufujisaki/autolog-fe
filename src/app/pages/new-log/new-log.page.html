@@ -16,6 +16,7 @@
     <div class="header-spacer"></div>
   </header>
 
+  <div class="page-content">
   <!-- Header Section (Vehicle/Mechanic left column + Odometer/Date right column) -->
   <div class="log-meta">
     <div class="meta-col meta-col--left">
@@ -29,31 +30,32 @@
       ></app-select>
       <div class="info-item mechanic-selector">
         <lucide-angular [img]="UserRoundIcon" [size]="12"></lucide-angular>
-        @if (showNewMechanicInput) {
-        <span class="mechanic-label" (click)="selectNewMechanic()">
-          {{ newMechanicName || ('newLog.mechanicName' | translate) }}
-        </span>
-        } @else {
-        <span class="mechanic-label" (click)="toggleMechanicDropdown()">
-          {{ selectedMechanic || ('newLog.mechanic' | translate) }}
-        </span>
-        } @if (mechanicDropdownOpen) {
+        <input
+          type="text"
+          class="mechanic-input"
+          [placeholder]="'newLog.mechanic' | translate"
+          [(ngModel)]="newMechanicName"
+          (ngModelChange)="onMechanicNameChange($event)"
+          (focus)="openMechanicDropdown()"
+        />
+        @if (mechanicDropdownOpen) {
         <div
           class="mechanic-dropdown-overlay"
           (click)="closeMechanicDropdown()"
         ></div>
         <div class="mechanic-dropdown">
-          @for (mechanic of mechanics; track mechanic.id) {
+          @for (mechanic of filteredMechanics(); track mechanic.id) {
           <div class="mechanic-option" (click)="selectMechanic(mechanic)">
             {{ mechanic.name }}
           </div>
-          }
+          } @if (showAddMechanicOption()) {
           <div
             class="mechanic-option mechanic-option--new"
-            (click)="selectNewMechanic()"
+            (click)="addNewMechanic()"
           >
             {{ 'newLog.newMechanic' | translate }}
           </div>
+          }
         </div>
         }
       </div>
@@ -125,20 +127,58 @@
     <div #jobCard class="job-card">
       <!-- Job Title Row -->
       <div class="job-title-row">
+        <!--
+          Always in the DOM (never behind an @if): #jobTitleInput's DOM
+          order has to stay stable so jobTitleInputs()[i] in
+          startEditingTitle() keeps lining up with the job's own index i —
+          an @if here would remove it from the query for every row that
+          isn't mid-edit, shifting every later row's index.
+        -->
         <app-autocomplete
+          #jobTitleInput
           class="job-title-autocomplete"
+          [hidden]="!(editingTitleJobIndex === i || !job.title)"
           [placeholder]="'newLog.searchJob' | translate"
           [searchFn]="searchJobsWithCache"
+          [maxLength]="jobTitleMaxLength"
           [ngModel]="job.title"
-          (ngModelChange)="job.title = $event"
+          (ngModelChange)="onJobTitleChange(i, $event)"
           (optionSelected)="onJobSelected(i, $event)"
+          (blurred)="onJobTitleBlur(i)"
         ></app-autocomplete>
+        @if (!(editingTitleJobIndex === i || !job.title)) {
+        <div class="job-title-display" (click)="startEditingTitle(i)">
+          {{ job.title }}
+        </div>
+        }
         @if (job.icon) {
-        <lucide-angular
-          [img]="getJobIcon(job.icon)"
-          [size]="17"
-          class="job-icon-display"
-        ></lucide-angular>
+        <div class="job-icon-picker">
+          <button
+            type="button"
+            class="job-icon-trigger"
+            [attr.aria-label]="'newLog.selectIcon' | translate"
+            (click)="toggleIconPicker(i)"
+          >
+            <lucide-angular [img]="getJobIcon(job.icon)" [size]="17"></lucide-angular>
+          </button>
+          @if (iconPickerJobIndex === i) {
+          <div class="icon-picker-overlay" (click)="closeIconPicker()"></div>
+          <div class="icon-picker" role="listbox" [attr.aria-label]="'newLog.selectIcon' | translate">
+            @for (iconName of iconOptions; track iconName) {
+            <button
+              type="button"
+              class="icon-picker-option"
+              role="option"
+              [class.active]="job.icon === iconName"
+              [attr.aria-selected]="job.icon === iconName"
+              (click)="selectJobIcon(i, iconName)"
+            >
+              <lucide-angular [img]="getJobIcon(iconName)" [size]="18"></lucide-angular>
+            </button>
+            }
+          </div>
+          }
+        </div>
         }
         <div class="job-actions">
           <button class="action-btn" (click)="deleteJob(i)">
@@ -150,8 +190,22 @@
       <!-- Labels -->
       <div class="job-labels">
         @for (type of job.types; track type) {
-        <span class="label" [ngClass]="getTypeClass(type)">
+        <span
+          class="label"
+          [ngClass]="getTypeClass(type)"
+          (click)="onTagClick(i, type)"
+        >
           {{ ('maintenance.types.' + type) | translate }}
+          @if (isTagRemovable(i, type)) {
+          <button
+            type="button"
+            class="label-remove-btn"
+            [attr.aria-label]="'common.remove' | translate"
+            (click)="removeTagFromJob(i, type); $event.stopPropagation()"
+          >
+            <lucide-angular [img]="XIcon" [size]="10"></lucide-angular>
+          </button>
+          }
         </span>
         }
         <div class="tag-selector">
@@ -208,12 +262,38 @@
             <span class="col-unit">{{ 'newLog.unitCost' | translate }}</span>
             <span class="col-sub">{{ 'newLog.subtotal' | translate }}</span>
           </div>
-          @for (item of job.items; track item.name) {
-          <div class="table-row">
-            <span class="col-name">{{ item.name }}</span>
-            <span class="col-qty">{{ item.qty }}</span>
-            <span class="col-unit">${{ item.unitCost }}</span>
-            <span class="col-sub">${{ item.subtotal }}</span>
+          @for (item of job.items; track item.name; let itemIndex = $index) {
+          <div class="table-row-wrapper">
+            <div class="table-row-actions">
+              <button
+                type="button"
+                class="row-action-btn"
+                [attr.aria-label]="'common.edit' | translate"
+                (click)="openEditItemPopup(i, itemIndex)"
+              >
+                <lucide-angular [img]="PencilIcon" [size]="14"></lucide-angular>
+              </button>
+              <button
+                type="button"
+                class="row-action-btn row-action-btn--delete"
+                [attr.aria-label]="'common.delete' | translate"
+                (click)="deleteItem(i, itemIndex)"
+              >
+                <lucide-angular [img]="Trash2Icon" [size]="14"></lucide-angular>
+              </button>
+            </div>
+            <div
+              class="table-row"
+              appSwipeToReveal
+              [swipeRevealWidth]="80"
+              [revealed]="isItemRevealed(i, itemIndex)"
+              (revealedChange)="onItemRevealedChange(i, itemIndex, $event)"
+            >
+              <span class="col-name">{{ item.name }}</span>
+              <span class="col-qty">{{ item.qty }}</span>
+              <span class="col-unit">${{ item.unitCost }}</span>
+              <span class="col-sub">${{ item.subtotal }}</span>
+            </div>
           </div>
           }
           <div class="table-total">
@@ -267,6 +347,7 @@
       {{ 'newLog.save' | translate }}
     </app-button>
   </div>
+  </div>
 </div>
 
 <!-- ========================================================================= -->
@@ -279,7 +360,9 @@
     <div class="popup-handle"></div>
 
     <!-- Title -->
-    <h2 class="popup-title">{{ 'newLog.addItem' | translate }}</h2>
+    <h2 class="popup-title">
+      {{ (editingItemIndex !== null ? 'newLog.editItem' : 'newLog.addItem') | translate }}
+    </h2>
 
     <!-- Description Field -->
     <div class="popup-field">
@@ -321,18 +404,9 @@
         [fullWidth]="true"
         (clicked)="confirmAddItem()"
       >
-        {{ 'common.add' | translate }}
+        {{ (editingItemIndex !== null ? 'common.save' : 'common.add') | translate }}
       </app-button>
     </div>
   </div>
 </div>
 }
-
-<!-- ========================================================================= -->
-<!-- Add Mechanic Sheet (Figma: "Profile - Add mechanic")                       -->
-<!-- ========================================================================= -->
-<app-add-mechanic-modal
-  [isOpen]="showAddMechanicModal"
-  (closed)="closeAddMechanicModal()"
-  (submitted)="onMechanicCreated($event)"
-></app-add-mechanic-modal>

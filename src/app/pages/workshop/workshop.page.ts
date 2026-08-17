@@ -14,6 +14,7 @@ import { CardComponent } from '../../presentation/shared/components/card/card.co
 import { LoadingComponent } from '../../presentation/shared/components/loading/loading.component';
 import { EmptyStateComponent } from '../../presentation/shared/components/empty-state/empty-state.component';
 import { UserType } from '../../core/models/user.model';
+import { CircleAlertIcon } from 'lucide-angular';
 
 /**
  * Workshop page for displaying workshop information to mechanics.
@@ -46,6 +47,8 @@ export class WorkshopPage {
   workshop: Workshop | null = null;
   isLoading = false;
   error: string | null = null;
+
+  readonly CircleAlertIcon = CircleAlertIcon;
 
   /**
    * Empty (idle, no fetch) unless the current user is a mechanic with a

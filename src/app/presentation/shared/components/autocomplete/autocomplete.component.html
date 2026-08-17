@@ -5,12 +5,14 @@
 
   <div class="app-autocomplete__field">
     <input
+      #nativeInputEl
       class="app-autocomplete__input"
       [id]="inputId"
       type="text"
       [placeholder]="placeholder()"
       [disabled]="isDisabled()"
       [value]="value"
+      [attr.maxlength]="maxLength()"
       autocomplete="off"
       role="combobox"
       aria-autocomplete="list"

@@ -1,7 +1,7 @@
 @use "../../presentation/shared/styles/tokens" as t;
 
 .settings-page {
-  padding: t.$space-6;
+  padding: t.$space-6 t.$space-3;
   background: t.$color-background;
   min-height: 100%;
 }

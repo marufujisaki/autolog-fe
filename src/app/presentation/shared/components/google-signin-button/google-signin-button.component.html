@@ -1,0 +1,14 @@
+<div class="divider">
+  <span>{{ 'auth.or' | translate }}</span>
+</div>
+<button
+  type="button"
+  class="google-btn"
+  [disabled]="isLoading()"
+  (click)="onClick()"
+>
+  <img src="assets/icon/google.svg" alt="Google" class="google-icon" />
+  <span>
+    {{ (isLoading() ? 'common.loading' : 'auth.continueWithGoogle') | translate }}
+  </span>
+</button>

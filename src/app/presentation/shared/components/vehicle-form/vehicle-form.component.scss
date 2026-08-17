@@ -1,0 +1,86 @@
+@use "../../styles/tokens" as t;
+
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: t.$space-3;
+}
+
+.form-group {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: t.$space-1;
+
+  app-input {
+    &.error {
+      --input-border-color: #{t.$color-error};
+    }
+  }
+}
+
+.form-row {
+  display: flex;
+  gap: t.$space-4;
+}
+
+.form-group--short {
+  flex: 0 0 124px;
+}
+
+.form-group--medium {
+  flex: 1;
+}
+
+.error-message {
+  margin: 0;
+  color: t.$color-error;
+  font-size: t.$font-size-xs;
+}
+
+// ---------------------------------------------------------------------------
+// Card Color Selector
+// ---------------------------------------------------------------------------
+
+.card-color-section {
+  margin-top: t.$space-3;
+}
+
+.card-color-label {
+  font-size: 1rem;
+  font-weight: t.$font-weight-semibold;
+  color: t.$color-text-secondary;
+  display: block;
+  margin-bottom: t.$space-2;
+}
+
+.card-color-picker {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: t.$space-3;
+}
+
+.card-color-dot {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 3px solid transparent;
+  border-radius: t.$radius-full;
+  background: transparent;
+  cursor: pointer;
+  transition:
+    transform t.$transition-duration-fast t.$transition-easing,
+    border-color t.$transition-duration-fast t.$transition-easing;
+
+  &:hover,
+  &:focus-visible {
+    outline: none;
+    transform: scale(1.15);
+  }
+
+  &.selected {
+    border-color: t.$color-text-primary;
+    transform: scale(1.15);
+  }
+}

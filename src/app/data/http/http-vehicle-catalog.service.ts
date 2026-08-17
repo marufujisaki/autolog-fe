@@ -7,11 +7,13 @@ import {
   CatalogModel,
   JobOption,
 } from '../../core/ports/vehicle-catalog.port';
+import { TranslationService } from '../../core/services/translation.service';
 import { environment } from '../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class HttpVehicleCatalogService extends VehicleCatalogService {
   private http = inject(HttpClient);
+  private translationService = inject(TranslationService);
   private baseUrl = `${environment.apiUrl}/v1/catalog`;
 
   searchMakes(query: string): Observable<CatalogMake[]> {
@@ -25,7 +27,9 @@ export class HttpVehicleCatalogService extends VehicleCatalogService {
   }
 
   searchJobs(query: string): Observable<JobOption[]> {
-    const params = new HttpParams().set('q', query);
+    const params = new HttpParams()
+      .set('q', query)
+      .set('lang', this.translationService.getCurrentLanguage());
     return this.http.get<JobOption[]>(`${this.baseUrl}/jobs`, { params });
   }
 }

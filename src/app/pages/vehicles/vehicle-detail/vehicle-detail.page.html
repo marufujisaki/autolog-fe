@@ -4,8 +4,20 @@
       <lucide-angular [img]="ChevronLeftIcon" [size]="24"></lucide-angular>
     </button>
     <h1 class="header-title">Auto<span>Log</span></h1>
+    <button
+      type="button"
+      class="add-log-btn"
+      (click)="createLog()"
+      [attr.aria-label]="'newLog.title' | translate"
+    >
+      <lucide-angular [img]="WrenchIcon" [size]="18"></lucide-angular>
+      <span class="add-log-btn__badge" aria-hidden="true">
+        <lucide-angular [img]="PlusIcon" [size]="10"></lucide-angular>
+      </span>
+    </button>
   </header>
 
+  <div class="page-content">
   @if (isLoadingVehicle) {
   <app-loading [text]="'common.loading' | translate"></app-loading>
   } @if (!isLoadingVehicle && vehicle) {
@@ -51,7 +63,7 @@
     <app-empty-state
       [title]="'maintenance.noLogs' | translate"
       [description]="'emptyStates.noLogs' | translate"
-      [icon]="'clipboard'"
+      [icon]="ClipboardIcon"
     ></app-empty-state>
     } @if (!isLoadingLogs && logs.length > 0) {
     <div class="logs-list">
@@ -113,7 +125,9 @@
     </div>
     }
   </section>
-  } @if (toastVisible) {
+  }
+  </div>
+  @if (toastVisible) {
   <app-toast [message]="toastMessage | translate" class="toast"></app-toast>
   }
 </div>

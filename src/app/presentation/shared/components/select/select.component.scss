@@ -11,10 +11,10 @@
   font-family: tokens.$font-family-base;
 
   &__label {
-    font-size: 10px;
+    font-size: 1rem;
     font-weight: tokens.$font-weight-semibold;
     display: inline-block;
-    margin-bottom: 6px;
+    margin-bottom: 0.25rem;
     color: tokens.$color-text-secondary;
   }
 
@@ -31,20 +31,22 @@
       border-color: tokens.$color-primary;
     }
 
+    // Matches app-input's own sizing (padding: 0.9rem 1rem, font-size:
+    // 1rem) so the two controls read as the same height/weight next to
+    // each other in a form — this component was previously sized much
+    // smaller (10px text, fixed 33px height) than every app-input beside it.
     ion-select {
       --padding-start: 1rem;
       --padding-end: 2.5rem;
-      --padding-top: 0;
-      --padding-bottom: 0;
+      --padding-top: 0.9rem;
+      --padding-bottom: 0.9rem;
       --placeholder-color: #{tokens.$color-text-secondary};
       --placeholder-opacity: 1;
       --color: #{tokens.$color-secondary-dark};
       font-family: tokens.$font-family-base;
-      font-size: 10px;
+      font-size: 1rem;
       font-weight: tokens.$font-weight-semibold;
       width: 100%;
-      min-height: 33px;
-      max-height: 33px;
 
       &::part(icon) {
         display: none;

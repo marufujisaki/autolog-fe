@@ -18,7 +18,12 @@
     "loading": "Loading...",
     "noData": "No Data",
     "empty": "Empty",
-    "select": "Select an option"
+    "select": "Select an option",
+    "ascending": "Ascending",
+    "descending": "Descending",
+    "confirm": "Confirm",
+    "yes": "Yes",
+    "no": "No"
   },
   "errors": {
     "formInvalid": "Please correct the highlighted fields.",
@@ -66,9 +71,13 @@
     "sendCode": "Send code",
     "resendCode": "Resend code",
     "code": "Code",
+    "resetRequestError": "We couldn't send the code. Please try again.",
+    "resetPasswordError": "We couldn't reset your password. Please check the code and try again.",
     "noAccount": "Don't have an account?",
     "or": "OR",
     "continueWithGoogle": "Continue with Google",
+    "googleSignInError": "We couldn't sign you in with Google. Please try again.",
+    "googleSignInCancelled": "Google sign-in was cancelled.",
     "createAccount": "Create Account",
     "userType": "User Type",
     "userTypeLabel": "Select your role",
@@ -104,6 +113,8 @@
     "rememberMe": "Remember Me",
     "loginSuccess": "Signed in successfully",
     "loginError": "Invalid email or password",
+    "googleOnlyAccountError": "This account was created with Google. Try \"Continue with Google\" above, or tap \"Forgot password?\" to set one.",
+    "sessionExpired": "Your session has expired. Please sign in again.",
     "registerSuccess": "Registration successful. Signing in...",
     "registerError": "Registration failed. Please try again",
     "emailAlreadyExists": "This email is already registered",
@@ -156,7 +167,15 @@
     "licensePlateMaxLength": "License plate cannot exceed 10 characters",
     "vinMaxLength": "VIN cannot exceed 17 characters",
     "colorMaxLength": "Color cannot exceed 30 characters",
-    "invalidMileage": "Mileage must be a valid number"
+    "invalidMileage": "Mileage must be a valid number",
+    "searchPlaceholder": "Search by brand, model, plate or nickname",
+    "sort": "Sort",
+    "sortTitle": "Sort vehicles",
+    "sortByLastLog": "Last log date",
+    "sortByNickname": "Nickname",
+    "sortByBrand": "Brand",
+    "sortByYear": "Vehicle year",
+    "clearSort": "Clear sorting"
   },
   "maintenance": {
     "title": "Maintenance Records",
@@ -281,7 +300,12 @@
     "updateError": "Error updating profile",
     "logoutConfirm": "Are you sure you want to sign out?",
     "workshopAccess": "Access your workshop information",
-    "viewWorkshop": "View Workshop"
+    "viewWorkshop": "View Workshop",
+    "confirmClienteTitle": "Switch to Client",
+    "confirmClienteMessage": "You won't be able to manually add new services for your vehicle(s). Are you sure? If not, you can revert this change whenever you want.",
+    "confirmMecanicoTitle": "Switch to Mechanic",
+    "confirmMecanicoMessage": "Is your workshop already registered on AutoLog?",
+    "selectWorkshop": "Select your workshop"
   },
   "settings": {
     "title": "Settings",
@@ -359,10 +383,12 @@
     "addNewJob": "Add New Job",
     "emptyHint": "Create a new job: Oil change, brake replacement, tire rotation...",
     "searchJob": "Search job type...",
+    "selectIcon": "Select icon",
     "addTag": "Add Tag",
     "description": "Description",
     "items": "Items",
     "addItem": "Add Item",
+    "editItem": "Edit Item",
     "qty": "Qty",
     "unitCost": "Unit Cost",
     "subtotal": "Subtotal",
@@ -380,6 +406,7 @@
     "noVehicles": "You don't have any vehicles yet. Create one!",
     "noLogs": "No maintenance records for this vehicle",
     "noPhotos": "No photos in this record",
-    "noShares": "You haven't shared this vehicle"
+    "noShares": "You haven't shared this vehicle",
+    "noSearchResults": "No vehicles match your search"
   }
 }

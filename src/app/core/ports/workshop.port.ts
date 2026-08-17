@@ -22,4 +22,7 @@ export abstract class WorkshopService {
    * Requirement 9.5: Read-only access to workshop data (name, address)
    */
   abstract getWorkshopResource(workshopId: Signal<string>): HttpResourceRef<Workshop | undefined>;
+
+  /** Live resource listing every registered workshop, for the "select your workshop" flow. */
+  abstract getWorkshopsResource(): HttpResourceRef<Workshop[] | undefined>;
 }

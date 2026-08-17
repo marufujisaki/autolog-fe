@@ -14,7 +14,7 @@
   -webkit-overflow-scrolling: touch;
   background: t.$color-background;
   border-radius: 0;
-  padding: calc(t.$space-4 + env(safe-area-inset-top)) t.$space-4
+  padding: calc(t.$space-4 + env(safe-area-inset-top)) 0
     calc(140px + env(safe-area-inset-bottom));
 }
 
@@ -28,12 +28,14 @@
 // Header
 // ---------------------------------------------------------------------------
 
+// Header gets its own 12px horizontal margin, independent of the content
+// below — a separate box, not a shared padding inherited from the page root.
 .page-header {
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
-  margin-bottom: t.$space-6;
+  margin: 0 t.$space-3 t.$space-6 t.$space-1;
   padding-top: t.$space-4;
   touch-action: none;
   cursor: grab;
@@ -41,6 +43,11 @@
 
 .page-header:active {
   cursor: grabbing;
+}
+
+// Everything after the header gets its own, separate 12px horizontal padding.
+.page-content {
+  padding: 0 t.$space-3;
 }
 
 .back-btn {
@@ -86,6 +93,28 @@
 
   &--right {
     flex: 0 0 95px;
+  }
+}
+
+// SelectComponent's shared default sizing was bumped up (10px→1rem font,
+// fixed 33px→auto/~50px height) to match app-input across the rest of the
+// app — but this vehicle select sits in a tight 213px column alongside the
+// mechanic input/odometer/date fields and needs to stay compact like it was
+// before that change. ::ng-deep + !important to reach past the child
+// component's own view-encapsulated styles, scoped to just this column so
+// every other app-select usage keeps the new, bigger default.
+.meta-col--left {
+  ::ng-deep .app-select__label {
+    font-size: 10px !important;
+    margin-bottom: 6px !important;
+  }
+
+  ::ng-deep ion-select {
+    --padding-top: 0 !important;
+    --padding-bottom: 0 !important;
+    font-size: 10px !important;
+    min-height: 33px !important;
+    max-height: 33px !important;
   }
 }
 
@@ -395,9 +424,99 @@
   }
 }
 
-.job-icon-display {
-  color: t.$color-primary;
+// Read-only stand-in for .job-title-autocomplete once the title field is
+// blurred: a plain <input> can never wrap text (browsers force horizontal
+// scroll instead), so a long title is shown here as normal, wrapping text.
+// Clicking it swaps back to the editable autocomplete (see startEditingTitle()).
+.job-title-display {
+  flex: 1;
+  min-width: 0;
+  padding: t.$space-2 0;
+  font-family: t.$font-family-base;
+  font-size: t.$font-size-lg;
+  font-weight: t.$font-weight-semibold;
+  color: t.$color-text-dark;
+  white-space: normal;
+  overflow-wrap: break-word;
+  cursor: pointer;
+}
+
+.job-icon-picker {
+  position: relative;
   flex-shrink: 0;
+}
+
+.job-icon-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: t.$space-1;
+  border: none;
+  border-radius: t.$radius-full;
+  background: transparent;
+  color: t.$color-primary;
+  cursor: pointer;
+  transition: background-color t.$transition-duration-fast t.$transition-easing;
+
+  &:hover {
+    background: t.$color-surface-alt;
+  }
+}
+
+// Transparent — only there to close the picker on an outside click, same
+// pattern as .tag-dropdown-overlay. Unlike a modal, this popup never dims
+// the rest of the screen.
+.icon-picker-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+}
+
+// Anchored directly above the trigger icon (emoji-picker style), not a
+// centered full-screen modal.
+.icon-picker {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  right: 0;
+  z-index: 51;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: t.$space-1;
+  width: 228px;
+  max-height: 220px;
+  overflow-y: auto;
+  padding: t.$space-2;
+  background: t.$color-surface;
+  border-radius: t.$radius-md;
+  box-shadow: t.$shadow-lg;
+}
+
+.icon-picker-option {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: t.$radius-sm;
+  background: t.$color-surface-alt;
+  color: t.$color-text-primary;
+  cursor: pointer;
+  transition:
+    background-color t.$transition-duration-fast t.$transition-easing,
+    border-color t.$transition-duration-fast t.$transition-easing,
+    color t.$transition-duration-fast t.$transition-easing;
+
+  &:hover {
+    background: t.$color-border;
+  }
+
+  &.active {
+    border-color: t.$color-primary;
+    background: t.$color-primary;
+    color: #ffffff;
+  }
 }
 
 .job-title {
@@ -435,12 +554,31 @@
 }
 
 .label {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
   padding: 5px 10px;
   border-radius: t.$radius-xs;
   font-size: t.$font-size-xs;
   font-weight: t.$font-weight-semibold;
   text-transform: uppercase;
+  cursor: pointer;
+}
+
+.label-remove-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  opacity: 0.85;
+
+  &:hover {
+    opacity: 1;
+  }
 }
 
 .label-consumable {
@@ -461,6 +599,11 @@
 .label-repair {
   background: t.$color-label-repair-detail-bg;
   color: t.$color-label-repair-detail-text;
+}
+
+.label-inspection {
+  background: t.$color-primary;
+  color: t.$color-on-primary;
 }
 
 .add-tag-btn {
@@ -602,12 +745,58 @@
   }
 }
 
+// Clips the actions panel behind .table-row until it's swiped into view.
+.table-row-wrapper {
+  position: relative;
+  overflow: hidden;
+}
+
+// Sits behind .table-row, revealed as it slides left (see SwipeToRevealDirective).
+// Total width (2 buttons + gap + paddings) must match [swipeRevealWidth] on
+// appSwipeToReveal in the template — .table-row-wrapper's overflow:hidden
+// clips anything wider than that, which is why padding alone didn't show
+// before this was added to both places together.
+.table-row-actions {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  gap: t.$space-1;
+  padding-left: t.$space-2;
+  padding-right: t.$space-1;
+}
+
+.row-action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  border-radius: t.$radius-full;
+  background: t.$color-surface;
+  color: t.$color-text-primary;
+  cursor: pointer;
+  box-shadow: t.$shadow-sm;
+
+  &--delete {
+    color: t.$color-error;
+  }
+}
+
+// The foreground, sliding element — needs an opaque background matching
+// .job-card so it fully covers .table-row-actions behind it while closed.
 .table-row {
   display: grid;
   grid-template-columns: 1fr 40px 60px 60px;
   gap: t.$space-2;
   padding: t.$space-1 0;
   border-bottom: 1px solid t.$color-surface-alt;
+  background: #f6f6f6;
+  touch-action: pan-y;
 
   span {
     font-size: t.$font-size-sm;

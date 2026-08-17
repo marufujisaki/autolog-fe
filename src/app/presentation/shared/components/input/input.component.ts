@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, computed, forwardRef, input, signal, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, ViewChild, computed, forwardRef, input, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { LucideAngularModule, EyeIcon, EyeOffIcon } from 'lucide-angular';
@@ -51,6 +51,13 @@ let nextInputId = 0;
 })
 export class InputComponent implements ControlValueAccessor {
   private readonly changeDetectorRef = inject(ChangeDetectorRef);
+
+  @ViewChild('nativeInputEl') private readonly nativeInputEl?: ElementRef<HTMLInputElement>;
+
+  /** Focuses the underlying native input — for callers that need to autofocus after a conditional render. */
+  focus(): void {
+    this.nativeInputEl?.nativeElement.focus();
+  }
 
   /** Native input type. Controls masking (password) and semantics (search). */
   readonly type = input<InputType>('text');

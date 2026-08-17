@@ -2,7 +2,7 @@
 
 .detail-page {
   min-height: 100%;
-  padding: t.$space-5 t.$space-6 100px;
+  padding: t.$space-5 0 100px;
   background: t.$color-background;
   color: t.$color-text-primary;
 }
@@ -11,11 +11,19 @@
 // Header
 // ---------------------------------------------------------------------------
 
+// Matches vehicle-detail.page.scss's .page-header exactly (same technique,
+// same margin values) so the "AutoLog" logo lands in the identical position
+// on both screens — they're navigated between directly, so any drift shows.
 .page-header {
+  position: relative;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  margin-bottom: 36px;
+  margin: 0 t.$space-3 36px t.$space-1;
+}
+
+// Everything after the header gets its own, separate 12px horizontal padding.
+.page-content {
+  padding: 0 t.$space-3;
 }
 
 .back-btn,
@@ -32,13 +40,24 @@
   cursor: pointer;
 }
 
+.edit-btn {
+  margin-left: auto;
+}
+
 .header-title {
+  position: absolute;
+  left: 50%;
   margin: 0;
+  transform: translateX(-50%);
   color: t.$color-text-primary;
   font-family: t.$font-family-display;
   font-size: t.$font-size-4xl;
   font-weight: t.$font-weight-bold;
   line-height: 1.2;
+
+  span {
+    color: t.$color-primary;
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -274,11 +293,6 @@
 }
 
 @media (max-width: 380px) {
-  .detail-page {
-    padding-right: t.$space-4;
-    padding-left: t.$space-4;
-  }
-
   .meta-row {
     gap: t.$space-3;
   }

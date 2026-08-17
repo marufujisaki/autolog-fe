@@ -84,13 +84,10 @@
         >
           {{ 'auth.signUp' | translate }}
         </app-button>
-        <div class="divider">
-          <span>{{ 'auth.or' | translate }}</span>
-        </div>
-        <button class="google-btn" type="button">
-          <img src="assets/icon/google.svg" alt="Google" class="google-icon" />
-          <span>{{ 'auth.continueWithGoogle' | translate }}</span>
-        </button>
+        <app-google-signin-button
+          (success)="onGoogleSuccess()"
+          (signInError)="errorMessage.set($event)"
+        ></app-google-signin-button>
         <p>
           {{ 'auth.alreadyHaveAccount' | translate }}
           <a href="javascript:void(0)" (click)="navigateToLogin()" class="link"

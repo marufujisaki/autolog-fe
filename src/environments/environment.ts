@@ -5,6 +5,10 @@
 export const environment = {
   production: false,
   apiUrl: 'http://localhost:8080/api',
+  // OAuth Client IDs from Google Cloud Console (not secret — safe to commit).
+  // See "Setting up Google OAuth" for how to create these.
+  googleWebClientId: '713491819628-p18u6m35ki4aq0uss3l3ctn17bio23c3.apps.googleusercontent.com',
+  googleIosClientId: '',
 };
 
 /*

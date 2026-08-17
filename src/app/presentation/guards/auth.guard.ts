@@ -1,7 +1,8 @@
 /**
  * Functional route guard that protects authenticated routes
  * (Requirement 3.6: unauthenticated access must be denied).
- * Redirects unauthenticated users to the welcome/login flow.
+ * Redirects unauthenticated users (no session, or one that's expired and
+ * couldn't be silently refreshed) straight to /login.
  *
  * Uses hasValidSession() rather than the synchronous isAuthenticated(),
  * so a deep-link/reload straight into a protected route awaits session
@@ -19,5 +20,5 @@ export const authGuard: CanActivateFn = async () => {
   const router = inject(Router);
 
   const authenticated = await authService.hasValidSession();
-  return authenticated ? true : router.createUrlTree(['/']);
+  return authenticated ? true : router.createUrlTree(['/login']);
 };

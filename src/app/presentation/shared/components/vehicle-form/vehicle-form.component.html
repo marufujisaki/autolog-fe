@@ -1,0 +1,82 @@
+<div class="form-group">
+  <app-autocomplete
+    [formControl]="brandControl"
+    [label]="'vehicles.brand' | translate"
+    [placeholder]="placeholders().brand"
+    [searchFn]="searchMakes"
+    (optionSelected)="onMakeSelected()"
+  ></app-autocomplete>
+  @if (showFieldErrors() && hasFieldError('brand')) {
+  <p class="error-message">{{ getFieldError('brand') | translate }}</p>
+  }
+</div>
+
+<div class="form-group">
+  <app-autocomplete
+    [formControl]="modelControl"
+    [label]="'vehicles.model' | translate"
+    [placeholder]="placeholders().model"
+    [searchFn]="searchModels"
+  ></app-autocomplete>
+  @if (showFieldErrors() && hasFieldError('model')) {
+  <p class="error-message">{{ getFieldError('model') | translate }}</p>
+  }
+</div>
+
+<div class="form-row">
+  <div class="form-group form-group--short">
+    <app-input
+      [formControl]="yearControl"
+      type="text"
+      [placeholder]="placeholders().year"
+      [label]="'vehicles.year' | translate"
+      [class.error]="showFieldErrors() && hasFieldError('year')"
+    ></app-input>
+  </div>
+  <div class="form-group form-group--medium">
+    <app-input
+      [formControl]="plateControl"
+      type="text"
+      [placeholder]="placeholders().licensePlate"
+      [label]="'vehicles.licensePlate' | translate"
+    ></app-input>
+  </div>
+</div>
+@if (showFieldErrors() && hasFieldError('year')) {
+<p class="error-message">{{ getFieldError('year') | translate }}</p>
+}
+
+<div class="form-group">
+  <app-input
+    [formControl]="colorControl"
+    type="text"
+    [placeholder]="placeholders().color"
+    [label]="'vehicles.color' | translate"
+  ></app-input>
+</div>
+
+<div class="form-group">
+  <app-input
+    [formControl]="displayNameControl"
+    type="text"
+    [placeholder]="placeholders().displayName"
+    [label]="'vehicles.displayName' | translate"
+  ></app-input>
+</div>
+
+<div class="card-color-section">
+  <label class="card-color-label">{{ 'vehicles.cardColor' | translate }}</label>
+  <div class="card-color-picker">
+    @for (color of cardColorOptions(); track color) {
+    <button
+      type="button"
+      class="card-color-dot"
+      [style.background]="color"
+      [class.selected]="isCardColorSelected(color)"
+      [attr.aria-label]="color"
+      [attr.aria-pressed]="isCardColorSelected(color)"
+      (click)="selectCardColor(color)"
+    ></button>
+    }
+  </div>
+</div>

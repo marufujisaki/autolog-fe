@@ -35,10 +35,7 @@ import { ButtonComponent } from '../../presentation/shared/components/button/but
 import { InputComponent } from '../../presentation/shared/components/input/input.component';
 import { AutocompleteComponent } from '../../presentation/shared/components/autocomplete/autocomplete.component';
 import { SwipeToDismissDirective } from '../../presentation/shared/directives/swipe-to-dismiss.directive';
-import {
-  AddMechanicModalComponent,
-  MechanicDraft,
-} from '../../presentation/shared/components/add-mechanic-modal/add-mechanic-modal.component';
+import { SwipeToRevealDirective } from '../../presentation/shared/directives/swipe-to-reveal.directive';
 import {
   SelectComponent,
   SelectOption,
@@ -63,6 +60,40 @@ import {
   GaugeIcon,
   RefreshCwIcon,
   ClipboardCheckIcon,
+  FilterIcon,
+  DropletsIcon,
+  ThermometerIcon,
+  FlaskRoundIcon,
+  SprayCanIcon,
+  CircleDotIcon,
+  GripVerticalIcon,
+  CircleIcon,
+  MoveHorizontalIcon,
+  ScaleIcon,
+  ZapIcon,
+  ClockIcon,
+  SettingsIcon,
+  ScanLineIcon,
+  BatteryIcon,
+  BoltIcon,
+  PowerIcon,
+  LightbulbIcon,
+  ZapOffIcon,
+  ArrowDownUpIcon,
+  ArrowUpDownIcon,
+  LinkIcon,
+  CogIcon,
+  Link2Icon,
+  Volume2Icon,
+  FlameIcon,
+  PaintbrushIcon,
+  HammerIcon,
+  SquareIcon,
+  CloudRainIcon,
+  WavesIcon,
+  SparklesIcon,
+  TruckIcon,
+  XIcon,
   LucideIconData,
 } from 'lucide-angular';
 
@@ -101,7 +132,7 @@ interface JobEntry {
     InputComponent,
     AutocompleteComponent,
     SwipeToDismissDirective,
-    AddMechanicModalComponent,
+    SwipeToRevealDirective,
     SelectComponent,
     LucideAngularModule,
     IonModal,
@@ -146,13 +177,6 @@ export class NewLogPage implements OnInit {
       const mechanics = this.mechanicsResource.value();
       if (mechanics) {
         this.mechanics = mechanics;
-        this.previousMechanics = mechanics.map((mechanic) => mechanic.name);
-        if (mechanics.length === 0 && !this.selectedMechanic) {
-          this.showNewMechanicInput = true;
-        }
-      }
-      if (this.mechanicsResource.error() && !this.selectedMechanic) {
-        this.showNewMechanicInput = true;
       }
     });
 
@@ -173,6 +197,16 @@ export class NewLogPage implements OnInit {
   readonly dismissed = output<void>();
 
   private readonly jobCards = viewChildren('jobCard', { read: ElementRef });
+  private readonly jobTitleInputs = viewChildren('jobTitleInput', { read: AutocompleteComponent });
+
+  /** Max length of `jobs.title` in the DB (V1__create_schema.sql) — mirrored here so the front rejects the same input the backend would. */
+  readonly jobTitleMaxLength = 255;
+
+  /** Row index currently showing the editable title input instead of the wrapped, read-only display. */
+  editingTitleJobIndex: number | null = null;
+
+  /** `"${jobIndex}-${type}"` of the one tag currently showing its remove (X) button. */
+  private revealedTagKey: string | null = null;
 
   editLogId = '';
   isEditMode = false;
@@ -189,8 +223,12 @@ export class NewLogPage implements OnInit {
   readonly CirclePlusIcon = CirclePlusIcon;
   readonly UserRoundIcon = UserRoundIcon;
   readonly CalendarIcon = CalendarIcon;
+  readonly XIcon = XIcon;
 
-  // Icon map for job types
+  // Icon map for job types — covers every icon slug in the job_options
+  // catalog seed data (V1__create_schema.sql), so every catalog suggestion
+  // shows its own icon instead of silently falling back to the generic
+  // wrench for anything not listed here.
   private readonly iconMap: Record<string, LucideIconData> = {
     droplet: DropletIcon,
     wrench: WrenchIcon,
@@ -201,7 +239,46 @@ export class NewLogPage implements OnInit {
     gauge: GaugeIcon,
     'refresh-cw': RefreshCwIcon,
     'clipboard-check': ClipboardCheckIcon,
+    filter: FilterIcon,
+    droplets: DropletsIcon,
+    thermometer: ThermometerIcon,
+    'flask-round': FlaskRoundIcon,
+    'spray-can': SprayCanIcon,
+    'circle-dot': CircleDotIcon,
+    'grip-vertical': GripVerticalIcon,
+    circle: CircleIcon,
+    'move-horizontal': MoveHorizontalIcon,
+    scale: ScaleIcon,
+    zap: ZapIcon,
+    clock: ClockIcon,
+    settings: SettingsIcon,
+    'scan-line': ScanLineIcon,
+    battery: BatteryIcon,
+    bolt: BoltIcon,
+    power: PowerIcon,
+    lightbulb: LightbulbIcon,
+    'zap-off': ZapOffIcon,
+    'arrow-down-up': ArrowDownUpIcon,
+    'arrow-up-down': ArrowUpDownIcon,
+    link: LinkIcon,
+    cog: CogIcon,
+    'link-2': Link2Icon,
+    'volume-2': Volume2Icon,
+    flame: FlameIcon,
+    paintbrush: PaintbrushIcon,
+    hammer: HammerIcon,
+    square: SquareIcon,
+    'cloud-rain': CloudRainIcon,
+    waves: WavesIcon,
+    sparkles: SparklesIcon,
+    truck: TruckIcon,
   };
+
+  /** Every selectable slug for the manual icon picker, in the same order as iconMap. */
+  readonly iconOptions: string[] = Object.keys(this.iconMap);
+
+  /** Row index currently showing the manual icon picker popup. */
+  iconPickerJobIndex: number | null = null;
 
   // Tag dropdown state
   tagDropdownJobIndex: number | null = null;
@@ -226,13 +303,8 @@ export class NewLogPage implements OnInit {
   // Mechanic selector state
   mechanics: Mechanic[] = [];
   selectedMechanicId = '';
-  previousMechanics: string[] = [];
-  selectedMechanic = '';
-  showNewMechanicInput = false;
   newMechanicName = '';
   mechanicDropdownOpen = false;
-  showAddMechanicModal = false;
-  newMechanicDetails: MechanicDraft | null = null;
 
   ngOnInit(): void {
     this.editLogId = this.route.snapshot.paramMap.get('logId') || '';
@@ -253,9 +325,7 @@ export class NewLogPage implements OnInit {
     this.selectedDate = this.formatDateForDisplay(log.serviceDate);
     this.odometerValue = log.mileageAtService;
     this.selectedMechanicId = log.mechanicId || '';
-    this.selectedMechanic = log.mechanicName || '';
-    this.newMechanicName = '';
-    this.showNewMechanicInput = !log.mechanicName;
+    this.newMechanicName = log.mechanicName || '';
     this.jobs = [...(log.jobs || [])]
       .sort((a, b) => a.sortOrder - b.sortOrder)
       .map((job, index) => ({
@@ -310,18 +380,31 @@ export class NewLogPage implements OnInit {
     );
   }
 
-  onMechanicChange(value: string): void {
-    if (value === '__new__') {
-      this.showNewMechanicInput = true;
-      this.selectedMechanic = '';
-    } else {
-      this.showNewMechanicInput = false;
-      this.selectedMechanic = value;
-    }
+  /** Mechanics matching what's currently typed (full list when empty), for the dropdown. */
+  filteredMechanics(): Mechanic[] {
+    const query = this.newMechanicName.trim().toLowerCase();
+    if (!query) return this.mechanics;
+    return this.mechanics.filter((m) => m.name.toLowerCase().includes(query));
   }
 
-  toggleMechanicDropdown(): void {
-    this.mechanicDropdownOpen = !this.mechanicDropdownOpen;
+  /** True when the typed text doesn't exactly match an existing mechanic. */
+  showAddMechanicOption(): boolean {
+    const name = this.newMechanicName.trim();
+    if (!name) return false;
+    return !this.mechanics.some(
+      (m) => m.name.toLowerCase() === name.toLowerCase(),
+    );
+  }
+
+  onMechanicNameChange(value: string): void {
+    // Free typing invalidates a previous selection unless it still matches exactly.
+    const exact = this.mechanics.find((m) => m.name === value);
+    this.selectedMechanicId = exact ? exact.id : '';
+    this.mechanicDropdownOpen = true;
+  }
+
+  openMechanicDropdown(): void {
+    this.mechanicDropdownOpen = true;
   }
 
   closeMechanicDropdown(): void {
@@ -330,41 +413,25 @@ export class NewLogPage implements OnInit {
 
   selectMechanic(mechanic: Mechanic): void {
     this.selectedMechanicId = mechanic.id;
-    this.selectedMechanic = mechanic.name;
-    this.showNewMechanicInput = false;
+    this.newMechanicName = mechanic.name;
     this.mechanicDropdownOpen = false;
   }
 
-  /** Opens the "Add a mechanic" sheet instead of the inline text input. */
-  selectNewMechanic(): void {
-    this.mechanicDropdownOpen = false;
-    this.showAddMechanicModal = true;
-  }
+  /** Creates a new personal mechanic with just the typed name — no phone/description upfront. */
+  addNewMechanic(): void {
+    const name = this.newMechanicName.trim();
+    if (!name) return;
 
-  closeAddMechanicModal(): void {
-    this.showAddMechanicModal = false;
-  }
-
-  /**
-   * Applies the mechanic captured in the sheet. Only the name is persisted
-   * with the log today; phone and description are kept in memory until a
-   * mechanics endpoint exists.
-   */
-  onMechanicCreated(draft: MechanicDraft): void {
     const data: CreateMechanicData = {
       source: MechanicSource.PERSONAL,
-      name: draft.name,
-      phone: draft.phone || undefined,
-      description: draft.description || undefined,
+      name,
     };
     this.mechanicService.createMechanic(data).subscribe({
       next: (mechanic) => {
         this.mechanics = [...this.mechanics, mechanic];
-        this.previousMechanics = this.mechanics.map((item) => item.name);
         this.selectedMechanicId = mechanic.id;
-        this.selectedMechanic = mechanic.name;
-        this.showNewMechanicInput = false;
-        this.showAddMechanicModal = false;
+        this.newMechanicName = mechanic.name;
+        this.mechanicDropdownOpen = false;
       },
       error: (error) => {
         console.error('Error creating mechanic:', error);
@@ -390,18 +457,17 @@ export class NewLogPage implements OnInit {
     this.showDatePicker = false;
   }
 
-  get effectiveMechanicName(): string {
-    return this.showNewMechanicInput
-      ? this.newMechanicName
-      : this.selectedMechanic;
-  }
-
-  // Add Item popup state
+  // Add/Edit Item popup state
   showAddItemPopup = false;
   activeJobIndex = 0;
+  /** Index of the item being edited within the active job, or null when the popup is adding a new one. */
+  editingItemIndex: number | null = null;
   newItemDescription = '';
   newItemQuantity = '';
   newItemUnitCost = '';
+
+  /** `"${jobIndex}-${itemIndex}"` of the one item row currently swiped open. */
+  revealedItemKey: string | null = null;
 
   jobs: JobEntry[] = [];
 
@@ -424,6 +490,36 @@ export class NewLogPage implements OnInit {
     }
   }
 
+  /** Typing in the title field (as opposed to picking a suggestion) — clearing it resets the icon back to the default. */
+  onJobTitleChange(jobIndex: number, value: string): void {
+    // A job that starts with an empty title shows the autocomplete purely
+    // via the `!job.title` fallback in the template (no explicit edit
+    // session yet, since the user never had to click a display div to get
+    // here). The instant the first character lands, `!job.title` goes
+    // false — without marking this row as the active edit session here too,
+    // `[hidden]` immediately re-evaluates to true on that very keystroke,
+    // hiding the input the user is still typing into mid-word.
+    this.editingTitleJobIndex = jobIndex;
+    const job = this.jobs[jobIndex];
+    job.title = value;
+    if (!value.trim()) {
+      job.icon = 'wrench';
+    }
+  }
+
+  /** Switches a job's title from its wrapped, read-only display into the editable autocomplete, then focuses it. */
+  startEditingTitle(jobIndex: number): void {
+    this.editingTitleJobIndex = jobIndex;
+    setTimeout(() => this.jobTitleInputs()[jobIndex]?.focus());
+  }
+
+  /** Leaving the title field switches back to the wrapped display — never while it's empty (there'd be nothing to click back into). */
+  onJobTitleBlur(jobIndex: number): void {
+    if (this.editingTitleJobIndex === jobIndex) {
+      this.editingTitleJobIndex = null;
+    }
+  }
+
   /** Search function that also stores results for icon lookup */
   searchJobsWithCache = (query: string): Observable<string[]> => {
     return this.catalogService.searchJobs(query).pipe(
@@ -442,6 +538,20 @@ export class NewLogPage implements OnInit {
     return this.iconMap[iconName] || WrenchIcon;
   }
 
+  toggleIconPicker(jobIndex: number): void {
+    this.iconPickerJobIndex =
+      this.iconPickerJobIndex === jobIndex ? null : jobIndex;
+  }
+
+  closeIconPicker(): void {
+    this.iconPickerJobIndex = null;
+  }
+
+  selectJobIcon(jobIndex: number, iconName: string): void {
+    this.jobs[jobIndex].icon = iconName;
+    this.iconPickerJobIndex = null;
+  }
+
   toggleTagDropdown(jobIndex: number): void {
     this.tagDropdownJobIndex =
       this.tagDropdownJobIndex === jobIndex ? null : jobIndex;
@@ -457,6 +567,26 @@ export class NewLogPage implements OnInit {
       job.types.push(type);
     }
     this.tagDropdownJobIndex = null;
+  }
+
+  private tagKey(jobIndex: number, type: MaintenanceType): string {
+    return `${jobIndex}-${type}`;
+  }
+
+  /** A tag's remove (X) button only shows once the tag itself has been clicked — this toggles that reveal. */
+  onTagClick(jobIndex: number, type: MaintenanceType): void {
+    const key = this.tagKey(jobIndex, type);
+    this.revealedTagKey = this.revealedTagKey === key ? null : key;
+  }
+
+  isTagRemovable(jobIndex: number, type: MaintenanceType): boolean {
+    return this.revealedTagKey === this.tagKey(jobIndex, type);
+  }
+
+  removeTagFromJob(jobIndex: number, type: MaintenanceType): void {
+    const job = this.jobs[jobIndex];
+    job.types = job.types.filter((t) => t !== type);
+    this.revealedTagKey = null;
   }
 
   getJobTotal(job: JobEntry): number {
@@ -497,18 +627,32 @@ export class NewLogPage implements OnInit {
     this.jobs.splice(index, 1);
   }
 
-  // --- Add Item Popup ---
+  // --- Add/Edit Item Popup ---
 
   openAddItemPopup(jobIndex: number): void {
     this.activeJobIndex = jobIndex;
+    this.editingItemIndex = null;
     this.newItemDescription = '';
     this.newItemQuantity = '';
     this.newItemUnitCost = '';
     this.showAddItemPopup = true;
   }
 
+  /** Opens the same popup pre-filled with an existing item's values, in-place edit mode. */
+  openEditItemPopup(jobIndex: number, itemIndex: number): void {
+    const item = this.jobs[jobIndex].items[itemIndex];
+    this.activeJobIndex = jobIndex;
+    this.editingItemIndex = itemIndex;
+    this.newItemDescription = item.name;
+    this.newItemQuantity = String(item.qty);
+    this.newItemUnitCost = String(item.unitCost);
+    this.showAddItemPopup = true;
+    this.closeItemReveal();
+  }
+
   closeAddItemPopup(): void {
     this.showAddItemPopup = false;
+    this.editingItemIndex = null;
   }
 
   confirmAddItem(): void {
@@ -516,15 +660,41 @@ export class NewLogPage implements OnInit {
     const unitCost = parseFloat(this.newItemUnitCost) || 0;
 
     if (this.newItemDescription.trim() && qty > 0) {
-      this.jobs[this.activeJobIndex].items.push({
+      const item: JobItem = {
         name: this.newItemDescription.trim(),
         qty,
         unitCost,
         subtotal: qty * unitCost,
-      });
+      };
+      if (this.editingItemIndex !== null) {
+        this.jobs[this.activeJobIndex].items[this.editingItemIndex] = item;
+      } else {
+        this.jobs[this.activeJobIndex].items.push(item);
+      }
     }
 
     this.closeAddItemPopup();
+  }
+
+  deleteItem(jobIndex: number, itemIndex: number): void {
+    this.jobs[jobIndex].items.splice(itemIndex, 1);
+    this.closeItemReveal();
+  }
+
+  private itemKey(jobIndex: number, itemIndex: number): string {
+    return `${jobIndex}-${itemIndex}`;
+  }
+
+  isItemRevealed(jobIndex: number, itemIndex: number): boolean {
+    return this.revealedItemKey === this.itemKey(jobIndex, itemIndex);
+  }
+
+  onItemRevealedChange(jobIndex: number, itemIndex: number, revealed: boolean): void {
+    this.revealedItemKey = revealed ? this.itemKey(jobIndex, itemIndex) : null;
+  }
+
+  closeItemReveal(): void {
+    this.revealedItemKey = null;
   }
 
   saveLog(): void {
@@ -537,7 +707,7 @@ export class NewLogPage implements OnInit {
       serviceDate: this.formatDateForApi(),
       mileageAtService: this.odometerValue || this.currentVehicleMileage,
       mechanicId: this.selectedMechanicId || undefined,
-      mechanicName: this.effectiveMechanicName || undefined,
+      mechanicName: this.newMechanicName.trim() || undefined,
       jobs: this.jobs.map((job) => ({
         title: job.title,
         icon: job.icon || undefined,

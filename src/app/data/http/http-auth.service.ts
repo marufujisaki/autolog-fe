@@ -17,6 +17,7 @@ import { Injectable, Injector, Signal, computed, effect, inject, signal } from '
 import { Router } from '@angular/router';
 import { Observable, firstValueFrom, from } from 'rxjs';
 import { switchMap, tap } from 'rxjs/operators';
+import { SocialLogin } from '@capgo/capacitor-social-login';
 
 import { environment } from '../../../environments/environment';
 import { AuthService } from '../../core/ports/auth.port';
@@ -95,6 +96,14 @@ export class HttpAuthService extends AuthService {
     super();
     this.sessionRestored = this.restoreSession();
 
+    // Fire-and-forget, eagerly (not lazily on button click): the Google
+    // OAuth popup on web does a full page reload of this app at the
+    // redirect URL to complete sign-in. That reload needs the plugin's web
+    // implementation constructed immediately so its own self-close/postMessage
+    // logic runs — which only happens once some SocialLogin.* call has fired.
+    // Without this, the popup finishes the Google auth but never closes.
+    void this.ensureGoogleInitialized();
+
     // Keep `user` in sync with the authoritative stored profile once it
     // loads — a merge, not a replace, so JWT-derived fields already set by
     // setSessionState() aren't clobbered by a slower-resolving fetch.
@@ -138,6 +147,60 @@ export class HttpAuthService extends AuthService {
     );
   }
 
+  /** Memoized so the plugin is only ever initialized once, no matter how many sign-in attempts happen. */
+  private googleInitialized: Promise<void> | null = null;
+
+  loginWithGoogle(): Observable<AuthTokens> {
+    return from(this.performGoogleSignIn()).pipe(
+      switchMap(({ idToken, deviceId }) =>
+        this.http.post<AuthTokens>(`${this.baseUrl}/google`, {
+          idToken,
+          deviceId,
+          platform: this.deviceService.getPlatform(),
+          preferredLanguage: this.translationService.getCurrentLanguage(),
+        }),
+      ),
+      tap((tokens) => this.applyTokens(tokens)),
+      tap(() => void this.deviceService.markOnboarded()),
+    );
+  }
+
+  private ensureGoogleInitialized(): Promise<void> {
+    if (!this.googleInitialized) {
+      this.googleInitialized = SocialLogin.initialize({
+        google: {
+          webClientId: environment.googleWebClientId,
+          iOSClientId: environment.googleIosClientId,
+          mode: 'online',
+          // Web only: pin the OAuth popup's return URL to the origin so it's
+          // the same regardless of which page (login/sign-up) opened it —
+          // only that one URL needs registering as an Authorized redirect
+          // URI in Google Cloud Console, not every page the button appears on.
+          redirectUrl: window.location.origin,
+        },
+      });
+    }
+    return this.googleInitialized;
+  }
+
+  private async performGoogleSignIn(): Promise<{ idToken: string; deviceId: string }> {
+    await this.ensureGoogleInitialized();
+
+    const [{ result }, deviceId] = await Promise.all([
+      SocialLogin.login({
+        provider: 'google',
+        options: { scopes: ['profile', 'email'] },
+      }),
+      this.deviceService.getDeviceId(),
+    ]);
+
+    if (result.responseType !== 'online' || !result.idToken) {
+      throw new Error('Google sign-in did not return an ID token');
+    }
+
+    return { idToken: result.idToken, deviceId };
+  }
+
   refreshToken(): Observable<AuthTokens> {
     return from(this.storage.getItem(REFRESH_TOKEN_KEY)).pipe(
       switchMap((refreshToken) =>
@@ -147,7 +210,7 @@ export class HttpAuthService extends AuthService {
     );
   }
 
-  logout(): void {
+  logout(reason: 'expired' | 'manual' = 'manual'): void {
     // Fire-and-forget: invalidate the refresh token server-side without
     // blocking the synchronous logout contract required by the port.
     this.http
@@ -158,7 +221,10 @@ export class HttpAuthService extends AuthService {
     void this.storage.removeItem(REFRESH_TOKEN_KEY);
     this.cachedAccessTokenSignal.set(null);
     this.userSignal.set(null);
-    void this.router.navigate(['/']);
+    void this.router.navigate(
+      ['/login'],
+      reason === 'expired' ? { queryParams: { sessionExpired: 'true' } } : undefined,
+    );
   }
 
   isAuthenticated(): boolean {
@@ -221,6 +287,18 @@ export class HttpAuthService extends AuthService {
     return this.http
       .put<User>(`${this.baseUrl}/profile`, data)
       .pipe(tap((user) => this.userSignal.set(user)));
+  }
+
+  requestPasswordReset(email: string): Observable<void> {
+    return this.http.post<void>(`${this.baseUrl}/forgot-password`, { email });
+  }
+
+  resetPassword(email: string, code: string, newPassword: string): Observable<void> {
+    return this.http.post<void>(`${this.baseUrl}/reset-password`, {
+      email,
+      code,
+      newPassword,
+    });
   }
 
   /** Keeps the in-memory user in sync after a partial preference update. */

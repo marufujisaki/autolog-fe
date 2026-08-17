@@ -5,6 +5,18 @@
 
 @use "../../styles/tokens" as tokens;
 
+// ModalComponent's bottom-sheet variant defaults to a fixed height (matching
+// its tallest use case, the Share Vehicle sheet). This sheet's content is
+// much shorter, so size it to content instead — capped at that same
+// previous maximum — scoped to this component's own subtree only.
+// !important is required: ModalComponent's own
+// `.app-modal--bottom-sheet .app-modal__container { height: min(740px, ...); }`
+// rule outweighs this ::ng-deep override on specificity alone.
+:host ::ng-deep .app-modal--bottom-sheet .app-modal__container {
+  height: auto !important;
+  max-height: min(740px, calc(100dvh - 48px));
+}
+
 .mechanic-form {
   display: flex;
   flex-direction: column;

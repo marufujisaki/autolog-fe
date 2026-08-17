@@ -1,20 +1,21 @@
 @use "../../presentation/shared/styles/tokens" as t;
 
+// Floating card over the dimmed dashboard backdrop (see `.page-modal` in
+// tabs.page.scss), matching Figma's bottom-sheet-style "Add vehicle" frame
+// rather than a full-screen page — width/radius mirror `ModalComponent`'s
+// own bottom-sheet variant so both look like the same design system.
 .add-vehicle-page {
-  position: fixed;
-  inset: 0;
+  position: relative;
   z-index: 200;
-  width: 100%;
-  height: 100dvh;
-  max-height: 100dvh;
+  width: min(356px, calc(100vw - 34px));
+  max-height: calc(100dvh - 48px);
   box-sizing: border-box;
   overflow-y: auto;
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
-  background: t.$color-background;
-  border-radius: 0;
-  padding: calc(t.$space-6 + env(safe-area-inset-top)) t.$space-8
-    calc(t.$space-6 + env(safe-area-inset-bottom));
+  background: t.$color-surface;
+  border-radius: t.$radius-5xl;
+  padding: t.$space-6;
 }
 
 // The whole header (handle line + title) is the drag-to-dismiss area.
@@ -54,65 +55,6 @@
   display: flex;
   flex-direction: column;
   gap: t.$space-3;
-}
-
-.form-group {
-  width: 100%;
-}
-
-.form-row {
-  display: flex;
-  gap: t.$space-4;
-}
-
-.form-group--short {
-  flex: 0 0 124px;
-}
-
-.form-group--medium {
-  flex: 1;
-}
-
-// ---------------------------------------------------------------------------
-// Card Color Selector
-// ---------------------------------------------------------------------------
-
-.card-color-section {
-  margin-top: t.$space-3;
-}
-
-.card-color-label {
-  font-size: 1rem;
-  font-weight: t.$font-weight-semibold;
-  color: t.$color-text-secondary;
-  display: block;
-  margin-bottom: t.$space-2;
-}
-
-.card-color-picker {
-  display: flex;
-  align-items: center;
-  gap: t.$space-3;
-}
-
-.card-color-dot {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  cursor: pointer;
-  border: 3px solid transparent;
-  transition:
-    transform t.$transition-duration-fast t.$transition-easing,
-    border-color t.$transition-duration-fast t.$transition-easing;
-
-  &:hover {
-    transform: scale(1.15);
-  }
-
-  &.selected {
-    border-color: t.$color-text-primary;
-    transform: scale(1.15);
-  }
 }
 
 // ---------------------------------------------------------------------------

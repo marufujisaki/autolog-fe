@@ -23,9 +23,11 @@ import {
   ChevronRightIcon,
   CircleDollarSignIcon,
   CircleIcon,
+  ClipboardIcon,
   Disc3Icon,
   DropletIcon,
   GaugeIcon,
+  PlusIcon,
   UserRoundIcon,
   WrenchIcon,
 } from 'lucide-angular';
@@ -66,6 +68,9 @@ export class VehicleDetailPage implements OnInit, OnDestroy {
   readonly CircleDollarSignIcon = CircleDollarSignIcon;
   readonly UserRoundIcon = UserRoundIcon;
   readonly CalendarIcon = CalendarIcon;
+  readonly WrenchIcon = WrenchIcon;
+  readonly PlusIcon = PlusIcon;
+  readonly ClipboardIcon = ClipboardIcon;
   private readonly iconMap: Record<string, any> = {
     droplet: DropletIcon,
     droplets: DropletIcon,

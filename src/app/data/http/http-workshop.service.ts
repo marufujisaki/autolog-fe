@@ -1,6 +1,7 @@
-import { Injectable, Signal, inject } from '@angular/core';
+import { Injectable, Signal } from '@angular/core';
 import { HttpResourceRef, httpResource } from '@angular/common/http';
 import { WorkshopService, Workshop } from '../../core/ports/workshop.port';
+import { environment } from '../../../environments/environment';
 
 /**
  * HTTP implementation of WorkshopService.
@@ -9,7 +10,7 @@ import { WorkshopService, Workshop } from '../../core/ports/workshop.port';
  */
 @Injectable()
 export class HttpWorkshopService extends WorkshopService {
-  private readonly apiUrl = '/api/workshops';
+  private readonly apiUrl = `${environment.apiUrl}/workshops`;
 
   /**
    * Get workshop information by ID.
@@ -20,5 +21,10 @@ export class HttpWorkshopService extends WorkshopService {
     return httpResource<Workshop>(() =>
       workshopId() ? `${this.apiUrl}/${workshopId()}` : undefined,
     );
+  }
+
+  /** Lists every registered workshop, for the "select your workshop" flow when becoming a MECANICO. */
+  override getWorkshopsResource(): HttpResourceRef<Workshop[] | undefined> {
+    return httpResource<Workshop[]>(() => this.apiUrl);
   }
 }

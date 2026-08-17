@@ -1,4 +1,4 @@
-<ion-content fullscreen [scrollY]="false">
+<ion-content fullscreen [scrollY]="true">
   <ion-grid class="center">
     <ion-row class="input-row">
       <ion-col size="12">
@@ -57,6 +57,10 @@
         >
           {{ 'auth.login' | translate }}
         </app-button>
+        <app-google-signin-button
+          (success)="onGoogleSuccess()"
+          (signInError)="errorMessage.set($event)"
+        ></app-google-signin-button>
         <p>
           {{ 'auth.noAccount' | translate }}
           <a href="javascript:void(0)" (click)="navigateToSignUp()" class="link"

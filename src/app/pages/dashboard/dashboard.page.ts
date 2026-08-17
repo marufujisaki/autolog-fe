@@ -1,8 +1,16 @@
-import { Component, OnDestroy, OnInit, computed, effect, inject } from '@angular/core';
+import {
+  Component,
+  OnDestroy,
+  OnInit,
+  ViewChild,
+  computed,
+  effect,
+  inject,
+  signal,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   FormBuilder,
-  FormGroup,
   FormsModule,
   ReactiveFormsModule,
   Validators,
@@ -20,12 +28,19 @@ import { UserType } from '../../core/models/user.model';
 import { CreateVehicleData, Vehicle } from '../../core/models/vehicle.model';
 import { ButtonComponent } from '../../presentation/shared/components/button/button.component';
 import { InputComponent } from '../../presentation/shared/components/input/input.component';
+import {
+  VehicleFormComponent,
+  VehicleFormGroup,
+} from '../../presentation/shared/components/vehicle-form/vehicle-form.component';
 import { ModalComponent } from '../../presentation/shared/components/modal/modal.component';
 import { ToastComponent } from '../../presentation/shared/components/toast/toast.component';
 import { BrandComponent } from '../../presentation/shared/components/brand/brand.component';
 import { ShareVehicleModalComponent } from '../../presentation/shared/components/share-vehicle-modal/share-vehicle-modal.component';
 import { TranslatePipe } from '@ngx-translate/core';
 import {
+  ArrowDownIcon,
+  ArrowUpIcon,
+  CheckIcon,
   EllipsisVerticalIcon,
   LucideAngularModule,
   ListFilterIcon,
@@ -34,7 +49,16 @@ import {
   Share2Icon,
   Trash2Icon,
   UnlinkIcon,
+  XIcon,
 } from 'lucide-angular';
+
+type VehicleSortField = 'lastLog' | 'nickname' | 'brand' | 'year';
+type SortDirection = 'asc' | 'desc';
+
+interface VehicleSortOption {
+  field: VehicleSortField;
+  direction: SortDirection;
+}
 
 /**
  * DashboardPage — Main vehicles dashboard (Figma: "Dashboard Clients & Persons").
@@ -51,6 +75,7 @@ import {
     ReactiveFormsModule,
     ButtonComponent,
     InputComponent,
+    VehicleFormComponent,
     ModalComponent,
     ToastComponent,
     BrandComponent,
@@ -77,9 +102,49 @@ export class DashboardPage implements OnInit, OnDestroy {
   readonly Trash2Icon = Trash2Icon;
   readonly Share2Icon = Share2Icon;
   readonly UnlinkIcon = UnlinkIcon;
+  readonly CheckIcon = CheckIcon;
+  readonly XIcon = XIcon;
+  readonly ArrowUpIcon = ArrowUpIcon;
+  readonly ArrowDownIcon = ArrowDownIcon;
 
-  vehicles: Vehicle[] = [];
+  @ViewChild('searchInputRef') private searchInputRef?: InputComponent;
+
+  private readonly vehiclesSignal = signal<Vehicle[]>([]);
   isLoading = false;
+
+  readonly hasVehicles = computed(() => this.vehiclesSignal().length > 0);
+
+  readonly searchActive = signal(false);
+  readonly searchQuery = signal('');
+
+  readonly sortPopupOpen = signal(false);
+  readonly sortOption = signal<VehicleSortOption | null>(null);
+
+  /**
+   * `latestMaintenanceDates` is a plain Map mutated by `loadLatestMaintenanceDates`
+   * (async forkJoin, not itself a signal) — bumped after every mutation so
+   * `computed()`s that depend on last-log dates (sort comparator, date range
+   * for the sort popup) re-run. Read, never otherwise used, purely to
+   * establish the reactive dependency.
+   */
+  private readonly maintenanceDatesVersion = signal(0);
+
+  readonly displayedVehicles = computed(() => {
+    const query = this.searchQuery().trim().toLowerCase();
+    let list = this.vehiclesSignal();
+    if (query) {
+      list = list.filter((vehicle) =>
+        [vehicle.brand, vehicle.model, vehicle.licensePlate, vehicle.displayName]
+          .filter((value): value is string => !!value)
+          .some((value) => value.toLowerCase().includes(query)),
+      );
+    }
+    const sort = this.sortOption();
+    if (!sort) return list;
+    this.maintenanceDatesVersion();
+    return [...list].sort((a, b) => this.compareVehicles(a, b, sort));
+  });
+
   readonly canManageVehicleActions = computed(() =>
     this.isVehicleManager(this.authService.user()?.userType ?? null),
   );
@@ -98,7 +163,7 @@ export class DashboardPage implements OnInit, OnDestroy {
   activeVehicle: Vehicle | null = null;
   toastMessage = '';
   toastVisible = false;
-  editVehicleForm!: FormGroup;
+  editVehicleForm!: VehicleFormGroup;
 
   private readonly latestMaintenanceDates = new Map<string, string>();
   private readonly defaultCardColor = '#3B82F6';
@@ -107,13 +172,6 @@ export class DashboardPage implements OnInit, OnDestroy {
   readonly currentYear = new Date().getFullYear();
   readonly minYear = 1886;
   readonly maxYear = this.currentYear + 1;
-  readonly cardColorOptions = [
-    '#3B82F6',
-    '#EC4899',
-    '#22C55E',
-    '#F97316',
-    '#A855F7',
-  ];
 
   /** Reactively refetches on `dataRefresh.refreshTrigger()` changes — no manual reload wiring needed. */
   private readonly vehiclesResource = this.vehicleService.getVehiclesResource();
@@ -123,7 +181,7 @@ export class DashboardPage implements OnInit, OnDestroy {
       this.isLoading = this.vehiclesResource.isLoading();
       const vehicles = this.vehiclesResource.value();
       if (vehicles) {
-        this.vehicles = vehicles;
+        this.vehiclesSignal.set(vehicles);
         this.loadLatestMaintenanceDates(vehicles);
       }
       if (this.vehiclesResource.error()) {
@@ -146,7 +204,7 @@ export class DashboardPage implements OnInit, OnDestroy {
   }
 
   private initializeEditForm(): void {
-    this.editVehicleForm = this.formBuilder.group({
+    this.editVehicleForm = this.formBuilder.nonNullable.group({
       brand: ['', [Validators.required, Validators.maxLength(50)]],
       model: ['', [Validators.required, Validators.maxLength(50)]],
       year: [
@@ -167,7 +225,10 @@ export class DashboardPage implements OnInit, OnDestroy {
 
   private loadLatestMaintenanceDates(vehicles: Vehicle[]): void {
     this.latestMaintenanceDates.clear();
-    if (vehicles.length === 0) return;
+    if (vehicles.length === 0) {
+      this.maintenanceDatesVersion.update((version) => version + 1);
+      return;
+    }
 
     forkJoin(
       vehicles.map((vehicle) =>
@@ -187,15 +248,23 @@ export class DashboardPage implements OnInit, OnDestroy {
             );
           }
         });
+        this.maintenanceDatesVersion.update((version) => version + 1);
       });
   }
 
   formatLastUpdate(vehicle: Vehicle): string {
+    const date = this.resolveLastLogDate(vehicle);
+    if (Number.isNaN(date.getTime())) return '';
+    return this.formatDateLabel(date);
+  }
+
+  private resolveLastLogDate(vehicle: Vehicle): Date {
     const dateString =
       this.latestMaintenanceDates.get(vehicle.id) || vehicle.updatedAt;
-    const date = this.parseDateOnly(dateString);
-    if (Number.isNaN(date.getTime())) return '';
+    return this.parseDateOnly(dateString);
+  }
 
+  formatDateLabel(date: Date): string {
     const locale = this.translationService.getCurrentLanguage() === 'es' ? 'es-ES' : 'en-US';
     return date.toLocaleDateString(locale, {
       month: 'short',
@@ -252,17 +321,13 @@ export class DashboardPage implements OnInit, OnDestroy {
     this.editVehicleForm.patchValue({
       brand: vehicle.brand,
       model: vehicle.model,
-      year: vehicle.year,
+      year: String(vehicle.year),
       licensePlate: vehicle.licensePlate || '',
       color: vehicle.color || '',
       displayName: vehicle.displayName || '',
       cardColor: vehicle.cardColor || '#3B82F6',
     });
     this.showEditModal = true;
-  }
-
-  selectCardColor(color: string): void {
-    this.editVehicleForm.get('cardColor')?.setValue(color);
   }
 
   closeEditModal(): void {
@@ -277,7 +342,7 @@ export class DashboardPage implements OnInit, OnDestroy {
       return;
     }
 
-    const formValue = this.editVehicleForm.value;
+    const formValue = this.editVehicleForm.getRawValue();
     const vehicleData: CreateVehicleData = {
       brand: formValue.brand.trim(),
       model: formValue.model.trim(),
@@ -301,8 +366,10 @@ export class DashboardPage implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (updatedVehicle) => {
-          this.vehicles = this.vehicles.map((vehicle) =>
-            vehicle.id === updatedVehicle.id ? updatedVehicle : vehicle,
+          this.vehiclesSignal.update((vehicles) =>
+            vehicles.map((vehicle) =>
+              vehicle.id === updatedVehicle.id ? updatedVehicle : vehicle,
+            ),
           );
           this.closeEditModal();
           this.showToast('vehicles.updateSuccess');
@@ -336,10 +403,11 @@ export class DashboardPage implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => {
-          this.vehicles = this.vehicles.filter(
-            (vehicle) => vehicle.id !== vehicleId,
+          this.vehiclesSignal.update((vehicles) =>
+            vehicles.filter((vehicle) => vehicle.id !== vehicleId),
           );
           this.latestMaintenanceDates.delete(vehicleId);
+          this.maintenanceDatesVersion.update((version) => version + 1);
           this.closeDeleteModal();
           this.showToast('vehicles.deleteSuccess');
         },
@@ -384,8 +452,8 @@ export class DashboardPage implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => {
-          this.vehicles = this.vehicles.filter(
-            (vehicle) => vehicle.id !== vehicleId,
+          this.vehiclesSignal.update((vehicles) =>
+            vehicles.filter((vehicle) => vehicle.id !== vehicleId),
           );
           this.closeUnlinkModal();
           this.dataRefresh.notifyChanged();
@@ -398,21 +466,67 @@ export class DashboardPage implements OnInit, OnDestroy {
       });
   }
 
-  getFieldError(fieldName: string): string {
-    const control = this.editVehicleForm.get(fieldName);
-    if (!control || !control.errors) return '';
+  // ---------------------------------------------------------------------------
+  // Search
+  // ---------------------------------------------------------------------------
 
-    if (control.errors['required']) return 'validation.required';
-    if (control.errors['maxlength']) return 'errors.maxLength';
-    if (control.errors['min']) return 'errors.minValue';
-    if (control.errors['max']) return 'errors.maxValue';
-
-    return 'errors.invalidField';
+  openSearch(): void {
+    if (!this.hasVehicles()) return;
+    this.searchActive.set(true);
+    setTimeout(() => this.searchInputRef?.focus());
   }
 
-  hasFieldError(fieldName: string): boolean {
-    const control = this.editVehicleForm.get(fieldName);
-    return !!(control && control.invalid && (control.dirty || control.touched));
+  closeSearch(): void {
+    this.searchActive.set(false);
+    this.searchQuery.set('');
+  }
+
+  // ---------------------------------------------------------------------------
+  // Sort
+  // ---------------------------------------------------------------------------
+
+  openSortPopup(): void {
+    if (!this.hasVehicles()) return;
+    this.sortPopupOpen.set(true);
+  }
+
+  closeSortPopup(): void {
+    this.sortPopupOpen.set(false);
+  }
+
+  selectSort(field: VehicleSortField, direction: SortDirection): void {
+    this.sortOption.set({ field, direction });
+    this.closeSortPopup();
+  }
+
+  isSortActive(field: VehicleSortField, direction: SortDirection): boolean {
+    const sort = this.sortOption();
+    return sort?.field === field && sort?.direction === direction;
+  }
+
+  clearSort(): void {
+    this.sortOption.set(null);
+    this.closeSortPopup();
+  }
+
+  private compareVehicles(a: Vehicle, b: Vehicle, sort: VehicleSortOption): number {
+    const multiplier = sort.direction === 'asc' ? 1 : -1;
+
+    switch (sort.field) {
+      case 'lastLog':
+        return (
+          (this.resolveLastLogDate(a).getTime() - this.resolveLastLogDate(b).getTime()) *
+          multiplier
+        );
+      case 'nickname':
+        return (
+          (a.displayName || '').localeCompare(b.displayName || '') * multiplier
+        );
+      case 'brand':
+        return a.brand.localeCompare(b.brand) * multiplier;
+      case 'year':
+        return (a.year - b.year) * multiplier;
+    }
   }
 
   getYearOptions(): number[] {

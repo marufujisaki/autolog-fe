@@ -140,11 +140,18 @@
 // Full-screen page modals (Add Vehicle / New Log)
 // ---------------------------------------------------------------------------
 
+// Dimmed backdrop + centering so a floating card (Add Vehicle) reads as a
+// component over the dashboard, per the Figma design. New Log's own root is
+// independently `position: fixed; inset: 0`, so it ignores this flex
+// centering and keeps rendering full-screen, unaffected by this change.
 .page-modal {
   position: fixed;
   inset: 0;
   z-index: 200;
   display: flex;
   flex-direction: column;
+  align-items: center;
+  justify-content: center;
   overflow: hidden;
+  background: rgba(0, 0, 0, 0.5);
 }

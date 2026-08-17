@@ -1,0 +1,74 @@
+@use "../../styles/tokens" as t;
+
+.divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  color: t.$color-border;
+  font-size: t.$font-size-md;
+  font-weight: t.$font-weight-semibold;
+  margin: 28px 0;
+
+  &::before,
+  &::after {
+    content: "";
+    flex: 1;
+    border-bottom: 1px solid t.$color-border;
+  }
+
+  &::before {
+    margin-right: 12px;
+  }
+
+  &::after {
+    margin-left: 12px;
+  }
+}
+
+.google-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: t.$space-3;
+  width: 100%;
+  padding: t.$space-4;
+  background: t.$color-background;
+  border: 1px solid t.$color-primary;
+  border-radius: t.$radius-4xl;
+  cursor: pointer;
+  font-size: t.$font-size-lg;
+  font-weight: t.$font-weight-semibold;
+  color: t.$color-text-secondary;
+  transition: background t.$transition-duration-base t.$transition-easing;
+
+  &:hover:not(:disabled) {
+    background: t.$color-surface-alt;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.google-icon {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+}
+
+@media screen and (max-width: 575px) {
+  .divider {
+    margin: 18px 0;
+  }
+
+  .google-btn {
+    padding: t.$space-3;
+    font-size: t.$font-size-md;
+  }
+
+  .google-icon {
+    width: 24px;
+    height: 24px;
+  }
+}

@@ -36,6 +36,8 @@ export interface UpdateProfileData {
   email: string;
   phone?: string;
   userType: UserType;
+  /** Required only when `userType` is changing to MECANICO for a user who has never had a workshop. */
+  workshopId?: string;
 }
 
 /** Credentials submitted on login. */

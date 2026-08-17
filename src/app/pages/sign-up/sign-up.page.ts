@@ -15,6 +15,7 @@ import { ButtonComponent } from '../../presentation/shared/components/button/but
 import { InputComponent } from '../../presentation/shared/components/input/input.component';
 import { SelectComponent } from '../../presentation/shared/components/select/select.component';
 import { LoadingComponent } from '../../presentation/shared/components/loading/loading.component';
+import { GoogleSigninButtonComponent } from '../../presentation/shared/components/google-signin-button/google-signin-button.component';
 
 /**
  * SignUpPage - User registration page.
@@ -38,6 +39,7 @@ import { LoadingComponent } from '../../presentation/shared/components/loading/l
     InputComponent,
     SelectComponent,
     LoadingComponent,
+    GoogleSigninButtonComponent,
     TranslatePipe,
   ],
 })
@@ -174,6 +176,10 @@ export class SignUpPage implements OnInit {
 
   navigateToLogin(): void {
     void this.router.navigate(['/login']);
+  }
+
+  onGoogleSuccess(): void {
+    void this.router.navigate(['/tabs/vehicles']);
   }
 
   get emailControl() {

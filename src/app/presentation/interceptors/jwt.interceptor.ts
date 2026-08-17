@@ -73,7 +73,7 @@ export const jwtInterceptor = (
           next(withAuthHeader(request, tokens.accessToken)),
         ),
         catchError((refreshError: unknown) => {
-          authService.logout();
+          authService.logout('expired');
           return throwError(() => refreshError);
         }),
       );
