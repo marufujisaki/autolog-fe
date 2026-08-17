@@ -4,6 +4,7 @@ import { Router, RouterModule } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 import { AddVehiclePage } from '../pages/add-vehicle/add-vehicle.page';
 import { NewLogPage } from '../pages/new-log/new-log.page';
+import { ScanVehiclePage } from '../pages/scan-vehicle/scan-vehicle.page';
 import { AuthService } from '../core/ports/auth.port';
 import { UserType } from '../core/models/user.model';
 import {
@@ -31,6 +32,7 @@ import {
     LucideAngularModule,
     AddVehiclePage,
     NewLogPage,
+    ScanVehiclePage,
   ],
 })
 export class TabsPage {
@@ -46,6 +48,7 @@ export class TabsPage {
   fabMenuOpen = false;
   addVehicleModalOpen = false;
   newLogModalOpen = false;
+  scanVehicleModalOpen = false;
 
   navigateToVehicles(): void {
     void this.router.navigate(['/tabs/vehicles']);
@@ -66,7 +69,7 @@ export class TabsPage {
     // MECHANIC users don't own vehicles to add — they link to one shared
     // with them by scanning its QR/link instead.
     if (this.authService.getUserType() === UserType.MECHANIC) {
-      void this.router.navigate(['/scan-vehicle']);
+      this.scanVehicleModalOpen = true;
       return;
     }
 
@@ -75,6 +78,10 @@ export class TabsPage {
 
   closeAddVehicle(): void {
     this.addVehicleModalOpen = false;
+  }
+
+  closeScanVehicle(): void {
+    this.scanVehicleModalOpen = false;
   }
 
   openNewLog(): void {

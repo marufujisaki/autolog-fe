@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { provideRouter, Router } from '@angular/router';
+import { provideRouter } from '@angular/router';
 import { provideTranslateService } from '@ngx-translate/core';
 
 import { TabsPage } from './tabs.page';
@@ -40,14 +40,20 @@ describe('TabsPage', () => {
     expect(component.addVehicleModalOpen).toBeTrue();
   });
 
-  it('navigates to the scan-vehicle page for MECHANIC users instead of opening the modal', () => {
+  it('opens the scan-vehicle modal for MECHANIC users instead of the add-vehicle modal', () => {
     mockAuthService.getUserType.and.returnValue(UserType.MECHANIC);
-    const router = TestBed.inject(Router);
-    const navigateSpy = spyOn(router, 'navigate');
 
     component.openAddVehicle();
 
     expect(component.addVehicleModalOpen).toBeFalse();
-    expect(navigateSpy).toHaveBeenCalledWith(['/scan-vehicle']);
+    expect(component.scanVehicleModalOpen).toBeTrue();
+  });
+
+  it('closes the scan-vehicle modal', () => {
+    component.scanVehicleModalOpen = true;
+
+    component.closeScanVehicle();
+
+    expect(component.scanVehicleModalOpen).toBeFalse();
   });
 });

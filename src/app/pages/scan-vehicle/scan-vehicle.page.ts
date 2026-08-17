@@ -1,15 +1,7 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, input, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import {
-  IonHeader,
-  IonToolbar,
-  IonTitle,
-  IonContent,
-  IonBackButton,
-  IonButtons,
-} from '@ionic/angular/standalone';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { BarcodeFormat, BarcodeScanner } from '@capacitor-mlkit/barcode-scanning';
 import { ShareService } from '../../core/ports/share.port';
@@ -17,12 +9,15 @@ import { AuthService } from '../../core/ports/auth.port';
 import { VehicleDataRefreshService } from '../../core/services/vehicle-data-refresh.service';
 import { ButtonComponent } from '../../presentation/shared/components/button/button.component';
 import { InputComponent } from '../../presentation/shared/components/input/input.component';
+import { SwipeToDismissDirective } from '../../presentation/shared/directives/swipe-to-dismiss.directive';
 
 /**
  * "Scan to link" page for MECHANIC users: reads the QR a vehicle owner
  * generates from the Share Vehicle sheet (or accepts the same link/token
  * pasted manually) and claims it, granting the mechanic's workshop access
- * to that vehicle.
+ * to that vehicle. Presented as a floating overlay from the tabs shell (see
+ * `TabsPage.openAddVehicle`), same pattern as `AddVehiclePage`; still
+ * independently routable at `/tabs/scan-vehicle` as a full-page fallback.
  */
 @Component({
   selector: 'app-scan-vehicle',
@@ -32,15 +27,10 @@ import { InputComponent } from '../../presentation/shared/components/input/input
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    IonHeader,
-    IonToolbar,
-    IonTitle,
-    IonContent,
-    IonBackButton,
-    IonButtons,
     TranslatePipe,
     ButtonComponent,
     InputComponent,
+    SwipeToDismissDirective,
   ],
 })
 export class ScanVehiclePage {
@@ -49,6 +39,10 @@ export class ScanVehiclePage {
   private readonly dataRefresh = inject(VehicleDataRefreshService);
   private readonly translateService = inject(TranslateService);
   private readonly router = inject(Router);
+
+  /** When true the page is rendered as an overlay and closing emits instead of navigating. */
+  readonly presentedAsModal = input(false);
+  readonly dismissed = output<void>();
 
   readonly manualCodeControl = new FormControl('', {
     nonNullable: true,
@@ -111,7 +105,7 @@ export class ScanVehiclePage {
       next: () => {
         this.isSubmitting = false;
         this.dataRefresh.notifyChanged();
-        void this.router.navigate(['/tabs/vehicles']);
+        this.goBack();
       },
       error: (error) => {
         this.isSubmitting = false;
@@ -119,6 +113,14 @@ export class ScanVehiclePage {
           error?.error?.message || this.translateService.instant('share.invalidToken');
       },
     });
+  }
+
+  goBack(): void {
+    if (this.presentedAsModal()) {
+      this.dismissed.emit();
+      return;
+    }
+    void this.router.navigate(['/tabs/vehicles']);
   }
 
   /** Accepts a raw token, a full share URL (`?token=`), or a URL ending in the token. */

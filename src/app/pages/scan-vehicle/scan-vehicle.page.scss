@@ -1,47 +1,92 @@
-@use "../../presentation/shared/styles/tokens" as tokens;
+@use "../../presentation/shared/styles/tokens" as t;
 
-.scan-vehicle-content {
-  --padding-start: #{tokens.$space-3};
-  --padding-end: #{tokens.$space-3};
-  --padding-top: #{tokens.$space-6};
+// Floating card over the dimmed dashboard backdrop (see `.page-modal` in
+// tabs.page.scss) — mirrors add-vehicle.page.scss so both "add" flows share
+// the same bottom-sheet-style look, whether presented as an overlay or
+// loaded directly via the `/tabs/scan-vehicle` route fallback.
+.scan-vehicle-page {
+  position: relative;
+  z-index: 200;
+  width: min(356px, calc(100vw - 34px));
+  max-height: calc(100dvh - 48px);
+  box-sizing: border-box;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  background: t.$color-surface;
+  border-radius: t.$radius-5xl;
+  padding: t.$space-6;
 }
+
+// The whole header (handle line + title) is the drag-to-dismiss area.
+.page-header {
+  display: block;
+  touch-action: none;
+  user-select: none;
+  cursor: grab;
+}
+
+.page-header:active {
+  cursor: grabbing;
+}
+
+.handle-bar {
+  width: 61px;
+  height: 5px;
+  background: #f5f5fc;
+  border-radius: 133px;
+  margin: 0 auto t.$space-6;
+}
+
+.page-title {
+  font-family: t.$font-family-base;
+  font-size: t.$font-size-xl;
+  font-weight: t.$font-weight-bold;
+  color: #303030;
+  text-align: center;
+  margin: 0 0 t.$space-7;
+}
+
+// ---------------------------------------------------------------------------
+// Content
+// ---------------------------------------------------------------------------
 
 .scan-vehicle {
   display: flex;
   flex-direction: column;
-  gap: tokens.$space-5;
+  gap: t.$space-5;
 
   &__instructions {
     margin: 0;
-    color: tokens.$color-text-secondary;
-    font-size: tokens.$font-size-md;
+    color: t.$color-text-secondary;
+    font-size: t.$font-size-md;
     text-align: center;
   }
 
   &__error {
     margin: 0;
-    color: tokens.$color-error;
-    font-size: tokens.$font-size-md;
+    color: t.$color-error;
+    font-size: t.$font-size-md;
     text-align: center;
   }
 
   &__divider {
     width: 100%;
     border: none;
-    border-top: 1px solid tokens.$color-border-light;
-    margin: tokens.$space-2 0;
+    border-top: 1px solid t.$color-border-light;
+    margin: t.$space-2 0;
   }
 
   &__manual-label {
     margin: 0;
-    color: tokens.$color-text-secondary;
-    font-size: tokens.$font-size-md;
+    color: t.$color-text-secondary;
+    font-size: t.$font-size-md;
     text-align: center;
   }
 
   &__manual-form {
     display: flex;
     flex-direction: column;
-    gap: tokens.$space-4;
+    gap: t.$space-4;
   }
 }

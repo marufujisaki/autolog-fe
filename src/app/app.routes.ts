@@ -108,14 +108,6 @@ export const routes: Routes = [
       import('./pages/workshop/workshop.page').then((m) => m.WorkshopPage),
     canActivate: [authGuard, roleGuard([UserType.MECHANIC])],
   },
-  // Scan-to-link page: only MECHANIC users can claim a shared vehicle.
-  {
-    path: 'scan-vehicle',
-    loadComponent: () =>
-      import('./pages/scan-vehicle/scan-vehicle.page').then((m) => m.ScanVehiclePage),
-    canActivate: [authGuard, roleGuard([UserType.MECHANIC])],
-  },
-
   // Catch-all redirect to welcome page
   {
     path: '**',

@@ -1,5 +1,7 @@
 import { Routes } from '@angular/router';
 import { TabsPage } from './tabs.page';
+import { roleGuard } from '../presentation/guards/role.guard';
+import { UserType } from '../core/models/user.model';
 
 export const routes: Routes = [
   {
@@ -19,6 +21,17 @@ export const routes: Routes = [
           import('../pages/add-vehicle/add-vehicle.page').then(
             (m) => m.AddVehiclePage,
           ),
+      },
+      // Scan-to-link fallback route (deep link / direct URL access) — only
+      // MECHANIC users can claim a shared vehicle. Normal usage opens this
+      // as an overlay from TabsPage.openAddVehicle instead.
+      {
+        path: 'scan-vehicle',
+        loadComponent: () =>
+          import('../pages/scan-vehicle/scan-vehicle.page').then(
+            (m) => m.ScanVehiclePage,
+          ),
+        canActivate: [roleGuard([UserType.MECHANIC])],
       },
       {
         path: 'new-log',

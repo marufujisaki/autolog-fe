@@ -1,13 +1,15 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-back-button defaultHref="/tabs/vehicles"></ion-back-button>
-    </ion-buttons>
-    <ion-title>{{ 'share.scanTitle' | translate }}</ion-title>
-  </ion-toolbar>
-</ion-header>
+<div
+  class="scan-vehicle-page"
+  appSwipeToDismiss
+  [swipeHandleSelector]="'.page-header'"
+  (swipeDismissed)="goBack()"
+>
+  <!-- Drag area: handle bar + title -->
+  <header class="page-header">
+    <div class="handle-bar" aria-hidden="true"></div>
+    <h1 class="page-title">{{ 'share.scanTitle' | translate }}</h1>
+  </header>
 
-<ion-content class="scan-vehicle-content">
   <div class="scan-vehicle">
     <p class="scan-vehicle__instructions">
       {{ 'share.scanInstructions' | translate }}
@@ -50,4 +52,4 @@
       </app-button>
     </form>
   </div>
-</ion-content>
+</div>

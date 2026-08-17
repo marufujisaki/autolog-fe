@@ -83,5 +83,17 @@
       (dismissed)="closeNewLog()"
     ></app-new-log>
   </div>
+  } } @defer (when scanVehicleModalOpen) { @if (scanVehicleModalOpen) {
+  <div
+    class="page-modal"
+    role="dialog"
+    aria-modal="true"
+    [attr.aria-label]="'share.scanTitle' | translate"
+  >
+    <app-scan-vehicle
+      [presentedAsModal]="true"
+      (dismissed)="closeScanVehicle()"
+    ></app-scan-vehicle>
+  </div>
   } }
 </div>

@@ -130,4 +130,23 @@ describe('ScanVehiclePage', () => {
     expect(mockShareService.claimShare).not.toHaveBeenCalled();
     expect(component.errorMessage).toBe('share.workshopNotFound');
   });
+
+  it('emits dismissed instead of navigating when presented as a modal and the claim succeeds', () => {
+    mockShareService.claimShare.and.returnValue(of(undefined));
+    fixture.componentRef.setInput('presentedAsModal', true);
+    const dismissedSpy = jasmine.createSpy('dismissed');
+    component.dismissed.subscribe(dismissedSpy);
+    component.manualCodeControl.setValue('raw-token-abc');
+
+    component.submitManualCode();
+
+    expect(dismissedSpy).toHaveBeenCalled();
+    expect(mockRouter.navigate).not.toHaveBeenCalled();
+  });
+
+  it('navigates to the vehicles tab when goBack is called outside modal mode', () => {
+    component.goBack();
+
+    expect(mockRouter.navigate).toHaveBeenCalledWith(['/tabs/vehicles']);
+  });
 });
